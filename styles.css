@@ -1,0 +1,72 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Georgia, 'Times New Roman', serif;
+}
+
+.hero {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #4a0d1f 0%, #6b1e2f 50%, #8b2e3f 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 30% 40%, rgba(212, 185, 150, 0.15) 0%, transparent 60%);
+    pointer-events: none;
+}
+
+.hero-content {
+    max-width: 720px;
+    text-align: center;
+    color: #f5ecd9;
+    position: relative;
+    z-index: 1;
+}
+
+.hero-title {
+    font-size: clamp(3rem, 8vw, 6rem);
+    font-weight: 400;
+    letter-spacing: 0.05em;
+    margin-bottom: 1.5rem;
+    color: #e8d5b5;
+    font-style: italic;
+}
+
+.hero-subtitle {
+    font-size: clamp(1rem, 2vw, 1.25rem);
+    line-height: 1.6;
+    margin-bottom: 2.5rem;
+    color: #d4b996;
+    font-weight: 300;
+    letter-spacing: 0.02em;
+}
+
+.hero-cta {
+    display: inline-block;
+    padding: 1rem 2.75rem;
+    background-color: transparent;
+    color: #f5ecd9;
+    text-decoration: none;
+    border: 1px solid #d4b996;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.hero-cta:hover {
+    background-color: #d4b996;
+    color: #4a0d1f;
+}

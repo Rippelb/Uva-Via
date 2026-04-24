@@ -1,12 +1,12 @@
-CREATE TABLE perfis_viagem (
+CREATE TABLE perfis_viagem (   
   id SERIAL PRIMARY KEY,
-  nome VARCHAR(80) NOT NULL,
+  nome VARCHAR(80) NOT NULL,    
   criado_em TIMESTAMP DEFAULT NOW(),
   atualizado_em TIMESTAMP DEFAULT NOW()
 );
 
 CREATE TABLE tags_interesse (
-  id SERIAL PRIMARY KEY,
+  id SERIAL PRIMARY KEY, 
   nome VARCHAR(120) NOT NULL,
   criado_em TIMESTAMP DEFAULT NOW(),
   atualizado_em TIMESTAMP DEFAULT NOW()
@@ -15,9 +15,10 @@ CREATE TABLE tags_interesse (
 CREATE TABLE categorias_experiencia (
   id SERIAL PRIMARY KEY,
   nome VARCHAR(120) NOT NULL,
-  criado_em TIMESTAMP DEFAULT NOW(),
+  criado_em TIMESTAMP DEFAULT NOW(), 
   atualizado_em TIMESTAMP DEFAULT NOW()
 );
+
 
 CREATE TABLE vinicolas (
   id SERIAL PRIMARY KEY,
