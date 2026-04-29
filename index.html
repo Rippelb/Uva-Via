@@ -7,12 +7,150 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <section class="hero">
+    <header class="nav">
+        <div class="nav-inner">
+            <a href="#home" class="nav-brand">Uva &amp; Via</a>
+            <button class="nav-toggle" aria-label="Abrir menu" aria-expanded="false" aria-controls="nav-menu">
+                <span></span><span></span><span></span>
+            </button>
+            <nav id="nav-menu" class="nav-menu">
+                <a href="#home" class="nav-link active">Início</a>
+                <a href="#planejar" class="nav-link">Planejar</a>
+                <a href="#roteiro" class="nav-link">Roteiro</a>
+                <a href="#mapa" class="nav-link">Mapa</a>
+                <a href="#reservas" class="nav-link">Reservas</a>
+            </nav>
+        </div>
+    </header>
+
+    <section id="home" class="hero">
         <div class="hero-content">
             <h1 class="hero-title">Uva &amp; Via</h1>
             <p class="hero-subtitle">Vinhos selecionados que contam histórias em cada taça</p>
-            <a href="#" class="hero-cta">Explorar Adega</a>
+            <a href="#planejar" class="hero-cta">Planejar minha viagem</a>
         </div>
     </section>
+
+    <section id="planejar" class="planner">
+        <div class="planner-inner">
+            <header class="planner-header">
+                <span class="planner-eyebrow">Concierge digital</span>
+                <h2 class="planner-title">Conte sobre sua viagem</h2>
+                <p class="planner-subtitle">
+                    Suas respostas alimentam o algoritmo que monta um roteiro sob medida pelo Vale dos Vinhedos.
+                </p>
+            </header>
+
+            <form id="travel-form" class="travel-form" novalidate>
+                <div class="form-grid">
+                    <div class="form-field">
+                        <label for="start-date">Data de início</label>
+                        <input type="date" id="start-date" name="start-date" required>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="days">Dias de viagem</label>
+                        <input type="number" id="days" name="days" min="1" max="14" value="2" required>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="people">Número de pessoas</label>
+                        <input type="number" id="people" name="people" min="1" max="20" value="2" required>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="budget">Orçamento total (R$)</label>
+                        <input type="number" id="budget" name="budget" min="0" step="50" placeholder="Ex.: 1500" required>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="profile">Perfil da viagem</label>
+                        <select id="profile" name="profile" required>
+                            <option value="">Selecione…</option>
+                            <option value="casal">Casal</option>
+                            <option value="solo">Viajante solo</option>
+                            <option value="amigos">Grupo de amigos</option>
+                            <option value="familia">Família adulta</option>
+                        </select>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="pace">Ritmo do passeio</label>
+                        <select id="pace" name="pace" required>
+                            <option value="tranquilo">Tranquilo</option>
+                            <option value="equilibrado" selected>Equilibrado</option>
+                            <option value="explorador">Explorador</option>
+                        </select>
+                    </div>
+                </div>
+
+                <fieldset class="form-fieldset">
+                    <legend>Interesses</legend>
+                    <div class="chips">
+                        <label class="chip">
+                            <input type="checkbox" name="interests" value="degustacao-premium">
+                            <span>Degustação premium</span>
+                        </label>
+                        <label class="chip">
+                            <input type="checkbox" name="interests" value="harmonizado">
+                            <span>Harmonizado</span>
+                        </label>
+                        <label class="chip">
+                            <input type="checkbox" name="interests" value="boutique">
+                            <span>Boutique</span>
+                        </label>
+                        <label class="chip">
+                            <input type="checkbox" name="interests" value="por-do-sol">
+                            <span>Pôr do sol</span>
+                        </label>
+                        <label class="chip">
+                            <input type="checkbox" name="interests" value="visita-tecnica">
+                            <span>Visita técnica</span>
+                        </label>
+                        <label class="chip">
+                            <input type="checkbox" name="interests" value="gastronomia">
+                            <span>Gastronomia local</span>
+                        </label>
+                    </div>
+                </fieldset>
+
+                <div class="form-field form-field--full">
+                    <label for="notes">Observações (opcional)</label>
+                    <textarea id="notes" name="notes" rows="3" placeholder="Restrições alimentares, datas comemorativas, mobilidade…"></textarea>
+                </div>
+
+                <div class="form-actions">
+                    <button type="reset" class="btn btn-ghost">Limpar</button>
+                    <button type="submit" class="btn btn-primary">Gerar roteiro</button>
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <script>
+        const toggle = document.querySelector('.nav-toggle');
+        const menu = document.getElementById('nav-menu');
+        toggle.addEventListener('click', () => {
+            const open = menu.classList.toggle('is-open');
+            toggle.setAttribute('aria-expanded', String(open));
+        });
+
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', () => {
+                document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+                link.classList.add('active');
+                menu.classList.remove('is-open');
+                toggle.setAttribute('aria-expanded', 'false');
+            });
+        });
+
+        document.getElementById('travel-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const data = Object.fromEntries(new FormData(e.target));
+            data.interests = [...e.target.querySelectorAll('input[name="interests"]:checked')].map(i => i.value);
+            console.log('Dados da viagem:', data);
+            alert('Roteiro sendo gerado com base nas suas preferências!');
+        });
+    </script>
 </body>
 </html>
