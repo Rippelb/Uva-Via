@@ -1,10 +1,10 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Uva & Via</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Uva & Via — Concierge do Vale dos Vinhedos</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <header class="nav">
@@ -16,24 +16,36 @@
             <nav id="nav-menu" class="nav-menu">
                 <a href="#home" class="nav-link active">Início</a>
                 <a href="#planejar" class="nav-link">Planejar</a>
-                <a href="#roteiro" class="nav-link">Roteiro</a>
-                <a href="#mapa" class="nav-link">Mapa</a>
-                <a href="#reservas" class="nav-link">Reservas</a>
+                <a href="#reservar" class="nav-link">Reservar</a>
+                <a href="#minhas-reservas" class="nav-link">Minhas reservas</a>
+                <a href="#diferenciais" class="nav-link">Diferenciais</a>
             </nav>
         </div>
     </header>
 
     <section id="home" class="hero">
         <div class="hero-content">
+            <span class="hero-eyebrow">Vale dos Vinhedos · Serra Gaúcha</span>
             <h1 class="hero-title">Uva &amp; Via</h1>
             <p class="hero-subtitle">Vinhos selecionados que contam histórias em cada taça</p>
-            <a href="#planejar" class="hero-cta">Planejar minha viagem</a>
+            <div class="hero-actions">
+                <a href="#planejar" class="btn btn-primary btn-lg">Planejar viagem</a>
+                <a href="#reservar" class="btn btn-outline btn-lg">Reservar horário</a>
+            </div>
+            <div class="hero-stats" data-reveal>
+                <div class="stat"><strong>10</strong><span>vinícolas parceiras</span></div>
+                <div class="stat"><strong>26</strong><span>experiências curadas</span></div>
+                <div class="stat"><strong>4.9</strong><span>nota média dos visitantes</span></div>
+            </div>
+        </div>
+        <div class="hero-scroll" aria-hidden="true">
+            <span></span>
         </div>
     </section>
 
     <section id="planejar" class="planner">
         <div class="planner-inner">
-            <header class="planner-header">
+            <header class="planner-header" data-reveal>
                 <span class="planner-eyebrow">Concierge digital</span>
                 <h2 class="planner-title">Conte sobre sua viagem</h2>
                 <p class="planner-subtitle">
@@ -41,7 +53,7 @@
                 </p>
             </header>
 
-            <form id="travel-form" class="travel-form" novalidate>
+            <form id="travel-form" class="travel-form" data-reveal novalidate>
                 <div class="form-grid">
                     <div class="form-field">
                         <label for="start-date">Data de início</label>
@@ -86,7 +98,8 @@
 
                 <fieldset class="form-fieldset">
                     <legend>Interesses</legend>
-                    <div class="chips">
+                    <p class="fieldset-help">Escolha os temas que mais combinam com sua viagem — usamos isso para priorizar experiências.</p>
+                    <div class="chips" id="interest-chips">
                         <label class="chip">
                             <input type="checkbox" name="interests" value="degustacao-premium">
                             <span>Degustação premium</span>
@@ -111,6 +124,18 @@
                             <input type="checkbox" name="interests" value="gastronomia">
                             <span>Gastronomia local</span>
                         </label>
+                        <label class="chip">
+                            <input type="checkbox" name="interests" value="vindima">
+                            <span>Vindima</span>
+                        </label>
+                        <label class="chip">
+                            <input type="checkbox" name="interests" value="espumantes">
+                            <span>Espumantes</span>
+                        </label>
+                        <label class="chip">
+                            <input type="checkbox" name="interests" value="masterclass">
+                            <span>Masterclass</span>
+                        </label>
                     </div>
                 </fieldset>
 
@@ -127,30 +152,152 @@
         </div>
     </section>
 
-    <script>
-        const toggle = document.querySelector('.nav-toggle');
-        const menu = document.getElementById('nav-menu');
-        toggle.addEventListener('click', () => {
-            const open = menu.classList.toggle('is-open');
-            toggle.setAttribute('aria-expanded', String(open));
-        });
+    <section id="reservar" class="booking">
+        <div class="booking-inner">
+            <header class="planner-header" data-reveal>
+                <span class="planner-eyebrow">Agendamento</span>
+                <h2 class="planner-title">Reserve seu horário</h2>
+                <p class="planner-subtitle">
+                    Escolha a vinícola, a experiência e o melhor horário disponível. Confirmamos sua reserva na hora.
+                </p>
+            </header>
 
-        document.querySelectorAll('.nav-link').forEach(link => {
-            link.addEventListener('click', () => {
-                document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-                link.classList.add('active');
-                menu.classList.remove('is-open');
-                toggle.setAttribute('aria-expanded', 'false');
-            });
-        });
+            <form id="booking-form" class="booking-form" data-reveal>
+                <div class="form-grid">
+                    <div class="form-field">
+                        <label for="b-vinicola">Vinícola</label>
+                        <select id="b-vinicola" required>
+                            <option value="">Selecione uma vinícola…</option>
+                        </select>
+                    </div>
 
-        document.getElementById('travel-form').addEventListener('submit', (e) => {
-            e.preventDefault();
-            const data = Object.fromEntries(new FormData(e.target));
-            data.interests = [...e.target.querySelectorAll('input[name="interests"]:checked')].map(i => i.value);
-            console.log('Dados da viagem:', data);
-            alert('Roteiro sendo gerado com base nas suas preferências!');
-        });
-    </script>
+                    <div class="form-field">
+                        <label for="b-experiencia">Experiência</label>
+                        <select id="b-experiencia" required disabled>
+                            <option value="">Escolha uma vinícola primeiro</option>
+                        </select>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="b-pessoas">Número de pessoas</label>
+                        <input type="number" id="b-pessoas" min="1" max="20" value="2" required>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="b-nome">Nome do responsável</label>
+                        <input type="text" id="b-nome" placeholder="Como devemos chamar?" required>
+                    </div>
+                </div>
+
+                <div class="slots-block" id="slots-block" hidden>
+                    <span class="slots-label">Horários disponíveis</span>
+                    <div class="slots" id="slots"></div>
+                </div>
+
+                <div class="summary" id="summary" hidden>
+                    <div class="summary-row">
+                        <span>Experiência</span>
+                        <strong id="sum-exp">—</strong>
+                    </div>
+                    <div class="summary-row">
+                        <span>Data e horário</span>
+                        <strong id="sum-when">—</strong>
+                    </div>
+                    <div class="summary-row">
+                        <span>Pessoas × valor unitário</span>
+                        <strong id="sum-calc">—</strong>
+                    </div>
+                    <div class="summary-row summary-total">
+                        <span>Valor total estimado</span>
+                        <strong id="sum-total">R$ 0,00</strong>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary btn-lg" id="btn-reservar" disabled>
+                        Reservar horário
+                    </button>
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <section id="minhas-reservas" class="reservations">
+        <div class="reservations-inner">
+            <header class="planner-header" data-reveal>
+                <span class="planner-eyebrow">Agenda</span>
+                <h2 class="planner-title">Reservas confirmadas</h2>
+                <p class="planner-subtitle">
+                    Tudo que você reservar aparece aqui — organizado por data e horário do agendamento.
+                </p>
+            </header>
+
+            <div class="reservations-empty" id="reservations-empty">
+                <div class="empty-illustration">🍇</div>
+                <p>Você ainda não tem reservas. Que tal começar pelo <a href="#reservar">agendamento</a>?</p>
+            </div>
+
+            <ul class="reservations-list" id="reservations-list" hidden></ul>
+        </div>
+    </section>
+
+    <section id="diferenciais" class="differentials">
+        <div class="differentials-inner">
+            <header class="planner-header" data-reveal>
+                <span class="planner-eyebrow">Por que Uva &amp; Via</span>
+                <h2 class="planner-title">Diferenciais</h2>
+            </header>
+            <div class="diff-grid">
+                <article class="diff-card" data-reveal>
+                    <div class="diff-icon">🍷</div>
+                    <h3>Curadoria local</h3>
+                    <p>Vinícolas selecionadas a dedo — das familiares centenárias às boutiques premiadas.</p>
+                </article>
+                <article class="diff-card" data-reveal>
+                    <div class="diff-icon">⏱️</div>
+                    <h3>Tempo otimizado</h3>
+                    <p>Roteiros calculam deslocamento entre cantinas para você aproveitar cada minuto.</p>
+                </article>
+                <article class="diff-card" data-reveal>
+                    <div class="diff-icon">💳</div>
+                    <h3>Custo transparente</h3>
+                    <p>Valor total estimado em tempo real, sem surpresas no fim da viagem.</p>
+                </article>
+                <article class="diff-card" data-reveal>
+                    <div class="diff-icon">📅</div>
+                    <h3>Agenda integrada</h3>
+                    <p>Confirmação de horários direto com as vinícolas, com lembretes antes da visita.</p>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+    <footer class="footer">
+        <div class="footer-inner">
+            <div class="footer-brand">
+                <span class="footer-logo">Uva &amp; Via</span>
+                <p>Concierge digital para descobrir o Vale dos Vinhedos no seu ritmo.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Explorar</h4>
+                <a href="#planejar">Planejar viagem</a>
+                <a href="#reservar">Reservar horário</a>
+                <a href="#minhas-reservas">Minhas reservas</a>
+            </div>
+            <div class="footer-col">
+                <h4>Contato</h4>
+                <a href="mailto:ola@uvaevia.com.br">ola@uvaevia.com.br</a>
+                <a href="tel:+5554999990000">+55 54 99999-0000</a>
+                <span>Bento Gonçalves · RS</span>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <span>© <span id="year"></span> Uva &amp; Via — Beba com moderação.</span>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
 </body>
 </html>
