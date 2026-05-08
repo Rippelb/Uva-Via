@@ -16,9 +16,10 @@
             <nav id="nav-menu" class="nav-menu">
                 <a href="#home" class="nav-link active">Início</a>
                 <a href="#planejar" class="nav-link">Planejar</a>
+                <a href="#experiencias" class="nav-link">Experiências</a>
                 <a href="#reservar" class="nav-link">Reservar</a>
                 <a href="#minhas-reservas" class="nav-link">Minhas reservas</a>
-                <a href="#diferenciais" class="nav-link">Diferenciais</a>
+                <a href="#gestao" class="nav-link">Gestão</a>
             </nav>
         </div>
     </header>
@@ -149,6 +150,48 @@
                     <button type="submit" class="btn btn-primary">Gerar roteiro</button>
                 </div>
             </form>
+
+            <article id="roteiro-output" class="roteiro" hidden></article>
+        </div>
+    </section>
+
+    <section id="experiencias" class="experiences">
+        <div class="experiences-inner">
+            <header class="planner-header" data-reveal>
+                <span class="planner-eyebrow">Catálogo</span>
+                <h2 class="planner-title">Experiências disponíveis</h2>
+                <p class="planner-subtitle">
+                    Explore tudo que as vinícolas parceiras oferecem — filtre, ordene e reserve direto.
+                </p>
+            </header>
+
+            <div class="exp-filters" data-reveal>
+                <div class="filter-field">
+                    <label for="exp-search">Buscar</label>
+                    <input type="search" id="exp-search" placeholder="Nome da experiência…">
+                </div>
+                <div class="filter-field">
+                    <label for="exp-vinicola">Vinícola</label>
+                    <select id="exp-vinicola">
+                        <option value="">Todas</option>
+                    </select>
+                </div>
+                <div class="filter-field">
+                    <label for="exp-sort">Ordenar por</label>
+                    <select id="exp-sort">
+                        <option value="nome">Nome (A→Z)</option>
+                        <option value="preco-asc">Preço (menor → maior)</option>
+                        <option value="preco-desc">Preço (maior → menor)</option>
+                        <option value="duracao">Duração</option>
+                    </select>
+                </div>
+                <div class="filter-summary">
+                    <span id="exp-count">—</span> experiências
+                </div>
+            </div>
+
+            <div class="exp-grid" id="exp-grid"></div>
+            <p class="exp-empty" id="exp-empty" hidden>Nenhuma experiência encontrada com esses filtros.</p>
         </div>
     </section>
 
@@ -190,7 +233,12 @@
                 </div>
 
                 <div class="slots-block" id="slots-block" hidden>
-                    <span class="slots-label">Horários disponíveis</span>
+                    <div class="slots-head">
+                        <span class="slots-label">Horários disponíveis</span>
+                        <span class="slots-updated" id="slots-updated">
+                            <span class="live-dot"></span> Atualizado em <time id="slots-updated-time">agora</time>
+                        </span>
+                    </div>
                     <div class="slots" id="slots"></div>
                 </div>
 
@@ -232,6 +280,21 @@
                 </p>
             </header>
 
+            <div class="reservations-stats" id="reservations-stats" hidden>
+                <div class="rstat">
+                    <span>Reservas</span>
+                    <strong id="rstat-total">0</strong>
+                </div>
+                <div class="rstat">
+                    <span>Próxima visita</span>
+                    <strong id="rstat-proxima">—</strong>
+                </div>
+                <div class="rstat">
+                    <span>Total investido</span>
+                    <strong id="rstat-valor">R$ 0,00</strong>
+                </div>
+            </div>
+
             <div class="reservations-empty" id="reservations-empty">
                 <div class="empty-illustration">🍇</div>
                 <p>Você ainda não tem reservas. Que tal começar pelo <a href="#reservar">agendamento</a>?</p>
@@ -272,6 +335,67 @@
         </div>
     </section>
 
+    <section id="gestao" class="manage">
+        <div class="manage-inner">
+            <header class="planner-header" data-reveal>
+                <span class="planner-eyebrow">Painel da vinícola</span>
+                <h2 class="planner-title">Gestão de horários e disponibilidade</h2>
+                <p class="planner-subtitle">
+                    Cadastre novos horários, acompanhe as vagas restantes e remova slots que não estão mais ativos.
+                </p>
+            </header>
+
+            <form id="manage-form" class="manage-form" data-reveal>
+                <div class="form-grid">
+                    <div class="form-field">
+                        <label for="m-vinicola">Vinícola</label>
+                        <select id="m-vinicola" required>
+                            <option value="">Selecione…</option>
+                        </select>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="m-experiencia">Experiência</label>
+                        <select id="m-experiencia" required disabled>
+                            <option value="">Escolha uma vinícola primeiro</option>
+                        </select>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="m-data">Data</label>
+                        <input type="date" id="m-data" required>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="m-horario">Horário</label>
+                        <input type="time" id="m-horario" required>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="m-capacidade">Capacidade máxima</label>
+                        <input type="number" id="m-capacidade" min="1" max="200" value="12" required>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Adicionar horário</button>
+                </div>
+            </form>
+
+            <div class="manage-table-wrap" data-reveal>
+                <div class="manage-table-head">
+                    <h3>Horários cadastrados</h3>
+                    <div class="manage-stats">
+                        <span><strong id="stat-total">0</strong> horários</span>
+                        <span><strong id="stat-vagas">0</strong> vagas livres</span>
+                        <span><strong id="stat-ocupacao">0%</strong> ocupação</span>
+                    </div>
+                </div>
+                <div class="manage-table" id="manage-table"></div>
+            </div>
+        </div>
+    </section>
+
     <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
     <footer class="footer">
@@ -283,8 +407,10 @@
             <div class="footer-col">
                 <h4>Explorar</h4>
                 <a href="#planejar">Planejar viagem</a>
+                <a href="#experiencias">Experiências</a>
                 <a href="#reservar">Reservar horário</a>
                 <a href="#minhas-reservas">Minhas reservas</a>
+                <a href="#gestao">Gestão</a>
             </div>
             <div class="footer-col">
                 <h4>Contato</h4>
