@@ -1,5 +1,7 @@
 // ---------- Dados (espelham o seed do banco) ----------
-const VINICOLAS = [
+// Estes arrays sao usados como fallback inicial. O api-client.js substitui
+// o conteudo via splice() apos buscar do backend (api/*.php).
+let VINICOLAS = [
     { id: 1, nome: 'Vinícola Pizzato', cidade: 'Bento Gonçalves' },
     { id: 2, nome: 'Vinícola Torcello', cidade: 'Monte Belo do Sul' },
     { id: 3, nome: 'Vinícola Larentis', cidade: 'Monte Belo do Sul' },
@@ -12,7 +14,7 @@ const VINICOLAS = [
     { id: 10, nome: 'Dom Cândido', cidade: 'Garibaldi' },
 ];
 
-const EXPERIENCIAS = [
+let EXPERIENCIAS = [
     { id: 1, vinicola_id: 1, nome: 'Degustação de Merlots Pizzato', preco: 120, duracao: 75 },
     { id: 2, vinicola_id: 1, nome: 'Masterclass DNA 99', preco: 320, duracao: 120 },
     { id: 3, vinicola_id: 1, nome: 'Tour pelas caves Pizzato', preco: 60, duracao: 60 },
@@ -41,7 +43,7 @@ const EXPERIENCIAS = [
     { id: 26, vinicola_id: 10, nome: 'Flight de moscatéis Dom Cândido', preco: 55, duracao: 45 },
 ];
 
-const HORARIOS = [
+let HORARIOS = [
     { id: 1, experiencia_id: 1, data: '2026-05-08', horario: '10:00', vagas: 12 },
     { id: 2, experiencia_id: 1, data: '2026-05-08', horario: '14:00', vagas: 10 },
     { id: 3, experiencia_id: 1, data: '2026-05-09', horario: '11:00', vagas: 8 },
