@@ -1,0 +1,75 @@
+ÉPICO: HOME / LANDING PAGE
+1. Hero Banner com CTA
+Página inicial com imagem do Vale dos Vinhedos, título, proposta de valor e botões "Planejar meu roteiro" e "Ver mapa do dia".
+2. Busca de vinícolas e experiências
+Campo de busca com filtro em tempo real por nome ou tipo de experiência.
+3. Sugestões do dia
+Seção com experiências curadas disponíveis no dia (degustação intimista, piquenique, etc).
+4. Vinícolas boutique em destaque
+Lista de vinícolas boutique clicáveis (Lídio Carraro, Torcello, etc).
+5. Menu de navegação principal
+Abas: Home, Criação de roteiro, Roteiro sugerido, Vinícola, Mapa/rota, Reservas. Indicação visual da aba ativa.
+
+ÉPICO: CRIAÇÃO DE ROTEIRO
+6. Formulário de dados da viagem
+Campos de dias de viagem, orçamento (R$) e número de pessoas com validação.
+7. Seleção de perfil de viagem
+Escolha única entre: casal, grupo de amigos, família adulta, viajante solo.
+8. Seleção de interesses
+Checkboxes com 14 opções (degustação clássica, premium, gastronomia, piquenique, tour caves, sommelier, pôr do sol, vindima, etc).
+9. Gerar roteiro personalizado
+Botão que processa os inputs e redireciona para o roteiro sugerido com algoritmo de otimização.
+
+ÉPICO: ROTEIRO SUGERIDO
+10. Resumo do roteiro gerado
+Cabeçalho com dias, pessoas, orçamento. Cards de tempo total, deslocamento e quantidade de experiências.
+11. Tags de experiências incluídas
+Badges resumindo as experiências do roteiro (harmonização, degustação premium, piquenique, etc).
+12. Cards de paradas por dia
+Cada parada mostra: vinícola, horário, disponibilidade, experiência sugerida, duração. Botões "Ver vinícola" e "Reservar".
+13. Disponibilidade em tempo real
+Badge de status por vinícola: vagas disponíveis (verde), quase cheio (amarelo), lotado (vermelho).
+
+ÉPICO: PÁGINA DA VINÍCOLA
+14. Perfil da vinícola
+Foto, nome, descrição, duração média e faixa de preço por pessoa.
+15. Lista de experiências disponíveis
+Experiências da vinícola (degustação de Merlots, harmonização, tour caves, etc).
+16. Horários disponíveis
+Botões de horário selecionáveis (10:30, 11:30, 14:00, 17:00).
+17. Reservar horário
+Botão de reserva habilitado após seleção de horário, com confirmação e registro no sistema.
+
+ÉPICO: MAPA / ROTA
+18. Timeline da rota
+Mapa simples com sequência vertical de paradas, horários e tempos de deslocamento entre cada uma.
+19. Alternância entre dias
+Tabs para alternar entre rota do dia 1 e dia 2.
+20. Visão resumida da rota
+Painel com tempo total entre locais, ponto de partida, melhor horário de saída e número de paradas.
+
+ÉPICO: RESERVAS
+21. Lista de reservas confirmadas
+Tela com reservas feitas ou mensagem vazia pedindo para gerar um roteiro primeiro.
+22. Valor total estimado
+Soma automática do valor das experiências reservadas.
+23. Editar roteiro / Adicionar experiência
+Botões para voltar à criação de roteiro ou buscar novas experiências.
+
+ÉPICO: INFRAESTRUTURA / BACKEND
+24. CRUD de vinícolas
+Cadastro completo: nome, descrição, foto, localização, duração, preço. Seed com vinícolas do Vale dos Vinhedos.
+25. CRUD de experiências
+Cadastro vinculado à vinícola: nome, tipo, duração, preço, tags de interesse.
+26. Gestão de horários e disponibilidade
+Slots por vinícola: data, horário, capacidade, vagas restantes. Status automático.
+27. Algoritmo de geração de roteiros
+Motor que recebe preferências e retorna roteiro otimizado por proximidade, tempo e disponibilidade.
+28. Sistema de reservas
+Registro de visitas agendadas com controle de vagas e prevenção de overbooking.
+
+ÉPICO: DIFERENCIAIS / UX
+29. Rodapé com diferenciais
+Ícones: integração com agendas, disponibilidade real, personalização por perfil, roteiro otimizado.
+30. Responsividade mobile
+Layout adaptado para celular em todas as telas, botões e fontes adequados para toque.
