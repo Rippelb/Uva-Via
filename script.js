@@ -160,25 +160,51 @@ function showToast(msg, type = 'success') {
     toastTimer = setTimeout(() => toast.classList.remove('is-visible'), 3200);
 }
 
-// =================== Navegacao mobile ===================
+// =================== Navegacao mobile (drawer lateral) ===================
 const navToggle = document.querySelector('.nav-toggle');
 const navMenu = document.getElementById('nav-menu');
+const navBackdrop = document.getElementById('nav-backdrop');
 const navLinks = document.querySelectorAll('.nav-link');
 
-navToggle?.addEventListener('click', () => {
-    const open = navMenu.classList.toggle('is-open');
-    navToggle.setAttribute('aria-expanded', String(open));
-    navToggle.classList.toggle('is-open', open);
+function openNav() {
+    navMenu.classList.add('is-open');
+    navBackdrop?.classList.add('is-open');
+    navToggle.classList.add('is-open');
+    navToggle.setAttribute('aria-expanded', 'true');
+    document.body.classList.add('nav-open');
+}
+function closeNav() {
+    navMenu.classList.remove('is-open');
+    navBackdrop?.classList.remove('is-open');
+    navToggle.classList.remove('is-open');
+    navToggle.setAttribute('aria-expanded', 'false');
+    document.body.classList.remove('nav-open');
+}
+function toggleNav() {
+    if (navMenu.classList.contains('is-open')) closeNav();
+    else openNav();
+}
+
+navToggle?.addEventListener('click', toggleNav);
+navBackdrop?.addEventListener('click', closeNav);
+
+// Escape fecha o drawer
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && navMenu.classList.contains('is-open')) closeNav();
 });
 
 navLinks.forEach(link => {
     link.addEventListener('click', () => {
         navLinks.forEach(l => l.classList.remove('active'));
         link.classList.add('active');
-        navMenu?.classList.remove('is-open');
-        navToggle?.classList.remove('is-open');
-        navToggle?.setAttribute('aria-expanded', 'false');
+        closeNav();
     });
+});
+
+// Fecha o drawer se redimensionar para desktop
+const desktopMQ = window.matchMedia('(min-width: 860px)');
+desktopMQ.addEventListener('change', (e) => {
+    if (e.matches) closeNav();
 });
 
 // Active link no scroll

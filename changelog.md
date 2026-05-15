@@ -5,9 +5,45 @@ e versionamento semântico [SemVer](https://semver.org/lang/pt-BR/).
 
 ---
 
-## [Não publicado] — 2026-05-15
+## [Não publicado] — 2026-05-15 (noite)
+
+### Corrigido
+- **Bug crítico**: atributo `hidden` era ignorado em elementos com `display: flex/grid`
+  (summary, slots-block, nav-menu, vinicola-section etc). Resolvido com regra global
+  `[hidden] { display: none !important; }`. Sintoma visível: o summary do form de reserva
+  aparecia com valores "—" mesmo antes de selecionar experiência.
 
 ### Adicionado
+- **Drawer lateral animado** no mobile: slide-in da direita com gradient bordô profundo,
+  backdrop com blur, stagger animation nos itens, scroll lock no body.
+- **Ícones nos itens do menu** (visíveis só no drawer mobile, escondidos no desktop).
+- **Hero animada**:
+  - Camada de gradientes radiais orbitando lentamente (`heroOrbit` 18s loop).
+  - 4 ícones decorativos flutuando (`fa-wine-glass`, `fa-wine-bottle`, `fa-leaf`).
+  - Shimmer sutil no título via `background-clip: text`.
+  - Vinheta radial e brand-mark com micro-tilt periódico.
+- **Transições suaves entre seções** via gradient backgrounds (fade da cor anterior nos
+  primeiros ~100-120px de cada seção).
+- **Verde/oliva nos destaques estratégicos**:
+  - "Valor total estimado" agora em gradient oliva (era bordô).
+  - "Próxima visita" com header em gradient oliva e linha pulsante no topo.
+  - Tab ativa do mapa com bordô + bullet oliva pulsante.
+  - Marker do mapa com anel oliva sutil.
+  - Budget gauge com shimmer animado sobre o preenchimento.
+
+### Mudado
+- `overflow: hidden` + `position: relative` em todas as sections (contém decorações).
+- `min-width: 0` em `form-grid`, `form-field`, `summary-row` etc para evitar overflow horizontal.
+- `overflow-wrap: anywhere` em valores longos do summary.
+- `font-size: clamp()` no valor total estimado (escala em telas muito pequenas).
+- Breakpoint adicional ≤380px com paddings ainda mais compactos.
+
+### Removido
+- Decoração CSS `mapa-deslocamento::before` que usava emoji car → trocada por `<i class="fa-car-side">`.
+
+---
+
+## [0.3.0] — 2026-05-15 (tarde) (commit 20e998e)
 - **Font Awesome 6.5** substituindo todos os emojis da interface (paleta consistente bordô/oliva).
 - **Validação client-side completa** em todos os formulários:
   - Data mínima = hoje (planejamento de viagem e cadastro de horários).
