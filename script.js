@@ -1,62 +1,70 @@
-// ---------- Dados (espelham o seed do banco) ----------
-// Estes arrays sao usados como fallback inicial. O api-client.js substitui
-// o conteudo via splice() apos buscar do backend (api/*.php).
+/* =============================================================
+   Uva & Via - Front-end (vanilla)
+   - Dados embutidos como fallback (substituidos pelo api-client)
+   - SPA com secoes ancoradas, navegacao mobile-first
+   - Algoritmo de roteiro, mapa/rota timeline, perfil de vinicola
+   ============================================================= */
+
+// =================== DADOS (fallback) ===================
+// O api-client.js substitui esses arrays via splice() quando a API responde.
+// Mantemos campos extras para a UI funcionar mesmo offline.
+
 let VINICOLAS = [
-    { id: 1, nome: 'Vinícola Pizzato', cidade: 'Bento Gonçalves' },
-    { id: 2, nome: 'Vinícola Torcello', cidade: 'Monte Belo do Sul' },
-    { id: 3, nome: 'Vinícola Larentis', cidade: 'Monte Belo do Sul' },
-    { id: 4, nome: 'Lídio Carraro', cidade: 'Bento Gonçalves' },
-    { id: 5, nome: 'Miolo Wine Group', cidade: 'Bento Gonçalves' },
-    { id: 6, nome: 'Casa Valduga', cidade: 'Bento Gonçalves' },
-    { id: 7, nome: 'Cave Geisse', cidade: 'Pinto Bandeira' },
-    { id: 8, nome: 'Vinícola Salton', cidade: 'Bento Gonçalves' },
-    { id: 9, nome: 'Don Giovanni', cidade: 'Bento Gonçalves' },
-    { id: 10, nome: 'Dom Cândido', cidade: 'Garibaldi' },
+    { id: 1, nome: 'Vinícola Pizzato',  cidade: 'Bento Gonçalves',     tipo: 'boutique', tone: 'a', latitude: -29.226, longitude: -51.535, descricao: 'Pioneira em Merlot no Brasil, produção autoral em pequenas safras.', duracao_media_min: 75, preco_min: 60,  preco_max: 320 },
+    { id: 2, nome: 'Vinícola Torcello', cidade: 'Monte Belo do Sul',   tipo: 'boutique', tone: 'b', latitude: -29.156, longitude: -51.626, descricao: 'Espumantes premiados entre vinhedos com vista privilegiada.', duracao_media_min: 70, preco_min: 90,  preco_max: 180 },
+    { id: 3, nome: 'Vinícola Larentis', cidade: 'Monte Belo do Sul',   tipo: 'boutique', tone: 'c', latitude: -29.163, longitude: -51.635, descricao: 'Família italiana com tradição em vinhos de guarda e vindima participativa.', duracao_media_min: 90, preco_min: 40,  preco_max: 220 },
+    { id: 4, nome: 'Lídio Carraro',     cidade: 'Bento Gonçalves',     tipo: 'boutique', tone: 'd', latitude: -29.249, longitude: -51.553, descricao: 'Boutique de vinhos ícone, sem usar barricas de carvalho.', duracao_media_min: 80, preco_min: 70,  preco_max: 380 },
+    { id: 5, nome: 'Miolo Wine Group',  cidade: 'Bento Gonçalves',     tipo: 'grande',   tone: 'a', latitude: -29.255, longitude: -51.518, descricao: 'Maior vinícola brasileira, tour completo e gastronomia harmonizada.', duracao_media_min: 110, preco_min: 80, preco_max: 450 },
+    { id: 6, nome: 'Casa Valduga',      cidade: 'Bento Gonçalves',     tipo: 'grande',   tone: 'd', latitude: -29.234, longitude: -51.501, descricao: 'Tradição com pousada, restaurante Maria e jantares assinados.', duracao_media_min: 120, preco_min: 70, preco_max: 420 },
+    { id: 7, nome: 'Cave Geisse',       cidade: 'Pinto Bandeira',      tipo: 'boutique', tone: 'e', latitude: -29.103, longitude: -51.426, descricao: 'Espumantes méthode champenoise envelhecidos em caves na rocha.', duracao_media_min: 85, preco_min: 120, preco_max: 250 },
+    { id: 8, nome: 'Vinícola Salton',   cidade: 'Bento Gonçalves',     tipo: 'grande',   tone: 'a', latitude: -29.182, longitude: -51.518, descricao: 'Centenária, com museu e tour histórico do vinho gaúcho.', duracao_media_min: 75, preco_min: 45,  preco_max: 90 },
+    { id: 9, nome: 'Don Giovanni',      cidade: 'Bento Gonçalves',     tipo: 'boutique', tone: 'b', latitude: -29.207, longitude: -51.541, descricao: 'Castelo italiano com almoço toscano entre os vinhedos.', duracao_media_min: 95, preco_min: 70,  preco_max: 260 },
+    { id: 10, nome: 'Dom Cândido',      cidade: 'Garibaldi',           tipo: 'boutique', tone: 'c', latitude: -29.255, longitude: -51.532, descricao: 'Especializada em moscatéis e vinhos de mesa, com cave subterrânea.', duracao_media_min: 55, preco_min: 45,  preco_max: 55 },
 ];
 
 let EXPERIENCIAS = [
-    { id: 1, vinicola_id: 1, nome: 'Degustação de Merlots Pizzato', preco: 120, duracao: 75 },
-    { id: 2, vinicola_id: 1, nome: 'Masterclass DNA 99', preco: 320, duracao: 120 },
-    { id: 3, vinicola_id: 1, nome: 'Tour pelas caves Pizzato', preco: 60, duracao: 60 },
-    { id: 4, vinicola_id: 2, nome: 'Degustação de espumantes Torcello', preco: 90, duracao: 60 },
-    { id: 5, vinicola_id: 2, nome: 'Piquenique entre vinhedos Torcello', preco: 180, duracao: 120 },
-    { id: 6, vinicola_id: 3, nome: 'Degustação do Tributo Larentis', preco: 150, duracao: 90 },
-    { id: 7, vinicola_id: 3, nome: 'Tour história da família Larentis', preco: 40, duracao: 60 },
-    { id: 8, vinicola_id: 3, nome: 'Vindima Larentis', preco: 220, duracao: 180 },
-    { id: 9, vinicola_id: 4, nome: 'Degustação Agnus e Quorum', preco: 130, duracao: 60 },
-    { id: 10, vinicola_id: 4, nome: 'Vertical Dádivas', preco: 380, duracao: 120 },
-    { id: 11, vinicola_id: 4, nome: 'Tour Lídio Carraro', preco: 70, duracao: 75 },
-    { id: 12, vinicola_id: 5, nome: 'Tour Miolo completo', preco: 80, duracao: 90 },
-    { id: 13, vinicola_id: 5, nome: 'Experiência Lote 43', preco: 280, duracao: 90 },
-    { id: 14, vinicola_id: 5, nome: 'Almoço harmonizado Miolo', preco: 450, duracao: 150 },
-    { id: 15, vinicola_id: 6, nome: 'Tour Casa Valduga', preco: 70, duracao: 75 },
-    { id: 16, vinicola_id: 6, nome: 'Jantar Maria Valduga', preco: 420, duracao: 180 },
-    { id: 17, vinicola_id: 6, nome: 'Pôr do sol Valduga', preco: 120, duracao: 90 },
-    { id: 18, vinicola_id: 7, nome: 'Caves na rocha Geisse', preco: 120, duracao: 75 },
-    { id: 19, vinicola_id: 7, nome: 'Piquenique Geisse', preco: 250, duracao: 120 },
-    { id: 20, vinicola_id: 7, nome: 'Degustação terroir Geisse', preco: 180, duracao: 60 },
-    { id: 21, vinicola_id: 8, nome: 'Tour Salton histórico', preco: 45, duracao: 75 },
-    { id: 22, vinicola_id: 8, nome: 'Degustação Intenso Salton', preco: 90, duracao: 60 },
-    { id: 23, vinicola_id: 9, nome: 'Degustação clássica Don Giovanni', preco: 70, duracao: 60 },
-    { id: 24, vinicola_id: 9, nome: 'Almoço toscano Don Giovanni', preco: 260, duracao: 120 },
-    { id: 25, vinicola_id: 10, nome: 'Cave subterrânea Dom Cândido', preco: 45, duracao: 60 },
-    { id: 26, vinicola_id: 10, nome: 'Flight de moscatéis Dom Cândido', preco: 55, duracao: 45 },
+    { id: 1,  vinicola_id: 1,  nome: 'Degustação de Merlots Pizzato',           preco: 120, duracao: 75,  tags: ['degustacao-classica', 'boutique', 'familiar'] },
+    { id: 2,  vinicola_id: 1,  nome: 'Masterclass DNA 99',                       preco: 320, duracao: 120, tags: ['degustacao-premium', 'sommelier', 'raros', 'completa'] },
+    { id: 3,  vinicola_id: 1,  nome: 'Tour pelas caves Pizzato',                 preco: 60,  duracao: 60,  tags: ['visita-tecnica', 'rapida'] },
+    { id: 4,  vinicola_id: 2,  nome: 'Degustação de espumantes Torcello',        preco: 90,  duracao: 60,  tags: ['degustacao-classica', 'rapida'] },
+    { id: 5,  vinicola_id: 2,  nome: 'Piquenique entre vinhedos Torcello',       preco: 180, duracao: 120, tags: ['piquenique', 'por-do-sol', 'completa', 'arquitetura'] },
+    { id: 6,  vinicola_id: 3,  nome: 'Degustação do Tributo Larentis',           preco: 150, duracao: 90,  tags: ['degustacao-premium', 'familiar'] },
+    { id: 7,  vinicola_id: 3,  nome: 'Tour história da família Larentis',        preco: 40,  duracao: 60,  tags: ['familiar', 'visita-tecnica', 'rapida'] },
+    { id: 8,  vinicola_id: 3,  nome: 'Vindima Larentis',                         preco: 220, duracao: 180, tags: ['vindima', 'completa', 'familiar'] },
+    { id: 9,  vinicola_id: 4,  nome: 'Degustação Agnus e Quorum',                preco: 130, duracao: 60,  tags: ['degustacao-premium', 'boutique', 'rapida'] },
+    { id: 10, vinicola_id: 4,  nome: 'Vertical Dádivas',                         preco: 380, duracao: 120, tags: ['degustacao-premium', 'raros', 'sommelier', 'completa'] },
+    { id: 11, vinicola_id: 4,  nome: 'Tour Lídio Carraro',                       preco: 70,  duracao: 75,  tags: ['visita-tecnica', 'boutique'] },
+    { id: 12, vinicola_id: 5,  nome: 'Tour Miolo completo',                      preco: 80,  duracao: 90,  tags: ['visita-tecnica', 'arquitetura'] },
+    { id: 13, vinicola_id: 5,  nome: 'Experiência Lote 43',                      preco: 280, duracao: 90,  tags: ['degustacao-premium', 'raros', 'sommelier'] },
+    { id: 14, vinicola_id: 5,  nome: 'Almoço harmonizado Miolo',                 preco: 450, duracao: 150, tags: ['harmonizado', 'completa'] },
+    { id: 15, vinicola_id: 6,  nome: 'Tour Casa Valduga',                        preco: 70,  duracao: 75,  tags: ['visita-tecnica'] },
+    { id: 16, vinicola_id: 6,  nome: 'Jantar Maria Valduga',                     preco: 420, duracao: 180, tags: ['harmonizado', 'sommelier', 'completa'] },
+    { id: 17, vinicola_id: 6,  nome: 'Pôr do sol Valduga',                       preco: 120, duracao: 90,  tags: ['por-do-sol', 'arquitetura'] },
+    { id: 18, vinicola_id: 7,  nome: 'Caves na rocha Geisse',                    preco: 120, duracao: 75,  tags: ['visita-tecnica', 'arquitetura', 'boutique'] },
+    { id: 19, vinicola_id: 7,  nome: 'Piquenique Geisse',                        preco: 250, duracao: 120, tags: ['piquenique', 'por-do-sol', 'completa'] },
+    { id: 20, vinicola_id: 7,  nome: 'Degustação terroir Geisse',                preco: 180, duracao: 60,  tags: ['degustacao-premium', 'boutique', 'rapida'] },
+    { id: 21, vinicola_id: 8,  nome: 'Tour Salton histórico',                    preco: 45,  duracao: 75,  tags: ['visita-tecnica', 'arquitetura', 'familiar'] },
+    { id: 22, vinicola_id: 8,  nome: 'Degustação Intenso Salton',                preco: 90,  duracao: 60,  tags: ['degustacao-classica', 'rapida'] },
+    { id: 23, vinicola_id: 9,  nome: 'Degustação clássica Don Giovanni',         preco: 70,  duracao: 60,  tags: ['degustacao-classica', 'familiar', 'rapida'] },
+    { id: 24, vinicola_id: 9,  nome: 'Almoço toscano Don Giovanni',              preco: 260, duracao: 120, tags: ['harmonizado', 'completa', 'arquitetura'] },
+    { id: 25, vinicola_id: 10, nome: 'Cave subterrânea Dom Cândido',             preco: 45,  duracao: 60,  tags: ['visita-tecnica', 'familiar', 'rapida'] },
+    { id: 26, vinicola_id: 10, nome: 'Flight de moscatéis Dom Cândido',          preco: 55,  duracao: 45,  tags: ['degustacao-classica', 'rapida'] },
 ];
 
 let HORARIOS = [
-    { id: 1, experiencia_id: 1, data: '2026-05-08', horario: '10:00', vagas: 12 },
-    { id: 2, experiencia_id: 1, data: '2026-05-08', horario: '14:00', vagas: 10 },
-    { id: 3, experiencia_id: 1, data: '2026-05-09', horario: '11:00', vagas: 8 },
-    { id: 4, experiencia_id: 2, data: '2026-05-09', horario: '15:00', vagas: 8 },
-    { id: 5, experiencia_id: 3, data: '2026-05-10', horario: '09:30', vagas: 15 },
-    { id: 6, experiencia_id: 4, data: '2026-05-08', horario: '10:00', vagas: 4 },
-    { id: 7, experiencia_id: 4, data: '2026-05-08', horario: '16:00', vagas: 12 },
-    { id: 8, experiencia_id: 5, data: '2026-05-09', horario: '16:00', vagas: 10 },
-    { id: 9, experiencia_id: 6, data: '2026-05-09', horario: '11:00', vagas: 12 },
-    { id: 10, experiencia_id: 7, data: '2026-05-10', horario: '14:00', vagas: 15 },
-    { id: 11, experiencia_id: 8, data: '2026-05-10', horario: '09:00', vagas: 15 },
-    { id: 12, experiencia_id: 9, data: '2026-05-08', horario: '10:00', vagas: 10 },
-    { id: 13, experiencia_id: 10, data: '2026-05-09', horario: '14:00', vagas: 6 },
+    { id: 1,  experiencia_id: 1,  data: '2026-05-08', horario: '10:00', vagas: 12 },
+    { id: 2,  experiencia_id: 1,  data: '2026-05-08', horario: '14:00', vagas: 10 },
+    { id: 3,  experiencia_id: 1,  data: '2026-05-09', horario: '11:00', vagas: 8 },
+    { id: 4,  experiencia_id: 2,  data: '2026-05-09', horario: '15:00', vagas: 8 },
+    { id: 5,  experiencia_id: 3,  data: '2026-05-10', horario: '09:30', vagas: 15 },
+    { id: 6,  experiencia_id: 4,  data: '2026-05-08', horario: '10:00', vagas: 4 },
+    { id: 7,  experiencia_id: 4,  data: '2026-05-08', horario: '16:00', vagas: 12 },
+    { id: 8,  experiencia_id: 5,  data: '2026-05-09', horario: '16:00', vagas: 10 },
+    { id: 9,  experiencia_id: 6,  data: '2026-05-09', horario: '11:00', vagas: 12 },
+    { id: 10, experiencia_id: 7,  data: '2026-05-10', horario: '14:00', vagas: 15 },
+    { id: 11, experiencia_id: 8,  data: '2026-05-10', horario: '09:00', vagas: 15 },
+    { id: 12, experiencia_id: 9,  data: '2026-05-08', horario: '10:00', vagas: 10 },
+    { id: 13, experiencia_id: 10, data: '2026-05-09', horario: '14:00', vagas: 6  },
     { id: 14, experiencia_id: 11, data: '2026-05-08', horario: '15:30', vagas: 10 },
     { id: 15, experiencia_id: 12, data: '2026-05-08', horario: '10:00', vagas: 30 },
     { id: 16, experiencia_id: 13, data: '2026-05-09', horario: '11:00', vagas: 20 },
@@ -65,7 +73,7 @@ let HORARIOS = [
     { id: 19, experiencia_id: 16, data: '2026-05-10', horario: '20:00', vagas: 12 },
     { id: 20, experiencia_id: 17, data: '2026-05-09', horario: '17:30', vagas: 15 },
     { id: 21, experiencia_id: 18, data: '2026-05-10', horario: '10:00', vagas: 15 },
-    { id: 22, experiencia_id: 19, data: '2026-05-10', horario: '12:00', vagas: 8 },
+    { id: 22, experiencia_id: 19, data: '2026-05-10', horario: '12:00', vagas: 8  },
     { id: 23, experiencia_id: 20, data: '2026-05-08', horario: '11:00', vagas: 12 },
     { id: 24, experiencia_id: 21, data: '2026-05-08', horario: '10:00', vagas: 40 },
     { id: 25, experiencia_id: 22, data: '2026-05-09', horario: '15:00', vagas: 18 },
@@ -75,41 +83,97 @@ let HORARIOS = [
     { id: 29, experiencia_id: 26, data: '2026-05-09', horario: '11:30', vagas: 20 },
 ];
 
-// ---------- Navegação ----------
-const toggle = document.querySelector('.nav-toggle');
-const menu = document.getElementById('nav-menu');
-toggle.addEventListener('click', () => {
-    const open = menu.classList.toggle('is-open');
-    toggle.setAttribute('aria-expanded', String(open));
-    toggle.classList.toggle('is-open', open);
+// =================== Utils ===================
+const fmtBRL = (n) => (n || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+const fmtData = (iso) => {
+    if (!iso) return '';
+    const [y, m, d] = iso.split('-');
+    return `${d}/${m}/${y}`;
+};
+const fmtDataCurta = (iso) => {
+    if (!iso) return '';
+    const [, m, d] = iso.split('-');
+    return `${d}/${m}`;
+};
+const addDays = (isoDate, days) => {
+    const d = new Date(isoDate + 'T00:00:00');
+    if (isNaN(d.getTime())) return '';
+    d.setDate(d.getDate() + days);
+    return d.toISOString().slice(0, 10);
+};
+const minutosParaHHMM = (mins) => {
+    const h = Math.floor(mins / 60);
+    const m = mins % 60;
+    if (h === 0) return `${m}min`;
+    if (m === 0) return `${h}h`;
+    return `${h}h${m.toString().padStart(2, '0')}`;
+};
+// Distancia aproximada (km) por haversine.
+const distanciaKm = (a, b) => {
+    if (!a || !b) return 0;
+    const toRad = (g) => g * Math.PI / 180;
+    const R = 6371;
+    const dLat = toRad(b.latitude - a.latitude);
+    const dLng = toRad(b.longitude - a.longitude);
+    const lat1 = toRad(a.latitude);
+    const lat2 = toRad(b.latitude);
+    const h = Math.sin(dLat/2)**2 + Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLng/2)**2;
+    return 2 * R * Math.asin(Math.sqrt(h));
+};
+const tempoDeslocamentoMin = (vinA, vinB) => {
+    if (!vinA || !vinB || vinA.id === vinB.id) return 0;
+    const km = distanciaKm(vinA, vinB);
+    const min = Math.max(5, Math.round((km / 45) * 60));
+    return min;
+};
+
+// =================== Toast ===================
+const toast = document.getElementById('toast');
+let toastTimer;
+function showToast(msg, type = 'success') {
+    if (!toast) return;
+    toast.textContent = msg;
+    toast.className = 'toast is-visible ' + type;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove('is-visible'), 3200);
+}
+
+// =================== Navegacao mobile ===================
+const navToggle = document.querySelector('.nav-toggle');
+const navMenu = document.getElementById('nav-menu');
+const navLinks = document.querySelectorAll('.nav-link');
+
+navToggle?.addEventListener('click', () => {
+    const open = navMenu.classList.toggle('is-open');
+    navToggle.setAttribute('aria-expanded', String(open));
+    navToggle.classList.toggle('is-open', open);
 });
 
-document.querySelectorAll('.nav-link').forEach(link => {
+navLinks.forEach(link => {
     link.addEventListener('click', () => {
-        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+        navLinks.forEach(l => l.classList.remove('active'));
         link.classList.add('active');
-        menu.classList.remove('is-open');
-        toggle.classList.remove('is-open');
-        toggle.setAttribute('aria-expanded', 'false');
+        navMenu?.classList.remove('is-open');
+        navToggle?.classList.remove('is-open');
+        navToggle?.setAttribute('aria-expanded', 'false');
     });
 });
 
-// Active link conforme scroll
-const sections = ['home', 'planejar', 'reservar', 'minhas-reservas', 'diferenciais']
+// Active link no scroll
+const spySections = ['home', 'planejar', 'roteiro', 'vinicola', 'mapa',
+                     'experiencias', 'reservar', 'minhas-reservas']
     .map(id => document.getElementById(id))
     .filter(Boolean);
-const navLinks = document.querySelectorAll('.nav-link');
+
 const spy = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
         if (entry.isIntersecting) {
             const id = entry.target.id;
-            navLinks.forEach(l => {
-                l.classList.toggle('active', l.getAttribute('href') === '#' + id);
-            });
+            navLinks.forEach(l => l.classList.toggle('active', l.getAttribute('href') === '#' + id));
         }
     });
 }, { rootMargin: '-45% 0px -45% 0px' });
-sections.forEach(s => spy.observe(s));
+spySections.forEach(s => spy.observe(s));
 
 // Reveal on scroll
 const reveal = new IntersectionObserver((entries) => {
@@ -122,36 +186,352 @@ const reveal = new IntersectionObserver((entries) => {
 }, { threshold: 0.12 });
 document.querySelectorAll('[data-reveal]').forEach(el => reveal.observe(el));
 
-// ---------- Toast ----------
-const toast = document.getElementById('toast');
-let toastTimer;
-function showToast(msg, type = 'success') {
-    toast.textContent = msg;
-    toast.className = 'toast is-visible ' + type;
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => toast.classList.remove('is-visible'), 3200);
+// =================== Hero search global ===================
+const heroSearchInput = document.getElementById('hero-search-input');
+const heroSearchResults = document.getElementById('hero-search-results');
+const heroSearchForm = document.getElementById('hero-search-form');
+
+function runGlobalSearch(term) {
+    const q = term.trim().toLowerCase();
+    if (q.length < 2) {
+        heroSearchResults.hidden = true;
+        heroSearchResults.innerHTML = '';
+        return;
+    }
+    const hitsVin = VINICOLAS.filter(v =>
+        v.nome.toLowerCase().includes(q) || (v.cidade || '').toLowerCase().includes(q)
+    ).slice(0, 4);
+    const hitsExp = EXPERIENCIAS.filter(e =>
+        e.nome.toLowerCase().includes(q)
+    ).slice(0, 5);
+
+    if (hitsVin.length === 0 && hitsExp.length === 0) {
+        heroSearchResults.innerHTML = `<li class="res-empty"><span class="res-title">Nada encontrado</span><span class="res-meta">Tente outro termo</span></li>`;
+        heroSearchResults.hidden = false;
+        return;
+    }
+    const html = [];
+    hitsVin.forEach(v => {
+        html.push(`<li data-type="vin" data-id="${v.id}">
+            <span class="res-title">🍇 ${v.nome}</span>
+            <span class="res-meta">${v.cidade} · ${v.tipo === 'boutique' ? 'Boutique' : 'Vinícola'}</span>
+        </li>`);
+    });
+    hitsExp.forEach(e => {
+        const vin = VINICOLAS.find(v => v.id === e.vinicola_id);
+        html.push(`<li data-type="exp" data-id="${e.id}">
+            <span class="res-title">🍷 ${e.nome}</span>
+            <span class="res-meta">${vin ? vin.nome : ''} · ${fmtBRL(e.preco)}</span>
+        </li>`);
+    });
+    heroSearchResults.innerHTML = html.join('');
+    heroSearchResults.hidden = false;
+
+    heroSearchResults.querySelectorAll('li[data-type]').forEach(li => {
+        li.addEventListener('mousedown', (ev) => {
+            ev.preventDefault();
+            const type = li.dataset.type;
+            const id = Number(li.dataset.id);
+            heroSearchResults.hidden = true;
+            heroSearchInput.value = '';
+            if (type === 'vin') {
+                openVinicola(id);
+            } else if (type === 'exp') {
+                const exp = EXPERIENCIAS.find(e => e.id === id);
+                if (exp) openVinicola(exp.vinicola_id, exp.id);
+            }
+        });
+    });
 }
 
-// ---------- Form de planejamento + gerador de roteiro ----------
+let heroSearchTimer;
+heroSearchInput?.addEventListener('input', (ev) => {
+    clearTimeout(heroSearchTimer);
+    heroSearchTimer = setTimeout(() => runGlobalSearch(ev.target.value), 150);
+});
+heroSearchInput?.addEventListener('focus', () => {
+    if (heroSearchInput.value.trim().length >= 2) runGlobalSearch(heroSearchInput.value);
+});
+heroSearchInput?.addEventListener('blur', () => {
+    setTimeout(() => { heroSearchResults.hidden = true; }, 180);
+});
+heroSearchForm?.addEventListener('submit', (ev) => {
+    ev.preventDefault();
+    const q = heroSearchInput.value.trim();
+    if (!q) return;
+    document.getElementById('exp-search').value = q;
+    renderExperiencias();
+    document.getElementById('experiencias').scrollIntoView({ behavior: 'smooth' });
+});
+
+// =================== Sugestoes do dia ===================
+function getDisponibilidadeStatus(vagas, capacidade) {
+    const cap = capacidade || vagas;
+    if (vagas === 0) return { label: 'Lotado', cls: 'cheio' };
+    if (cap > 0 && vagas / cap <= 0.3) return { label: 'Quase cheio', cls: 'quase' };
+    return { label: 'Vagas disponíveis', cls: 'livre' };
+}
+function countHorariosDisponiveis(expId) {
+    return getAllHorarios()
+        .filter(h => h.experiencia_id === expId && h.vagas > 0)
+        .reduce((sum, h) => sum + h.vagas, 0);
+}
+function getProximoHorario(expId) {
+    return getAllHorarios()
+        .filter(h => h.experiencia_id === expId && h.vagas > 0)
+        .sort((a, b) => (a.data + a.horario).localeCompare(b.data + b.horario))[0];
+}
+
+function renderSugestoes() {
+    const grid = document.getElementById('sugestoes-grid');
+    if (!grid) return;
+    // Curadoria: 1 piquenique, 1 degustacao premium, 1 visita tecnica/intimista
+    const curatedTags = ['piquenique', 'degustacao-premium', 'visita-tecnica',
+                          'harmonizado', 'por-do-sol', 'boutique'];
+    const usedVin = new Set();
+    const sugestoes = [];
+
+    for (const tag of curatedTags) {
+        const candidatos = EXPERIENCIAS
+            .filter(e => (e.tags || []).includes(tag))
+            .map(e => ({ e, prox: getProximoHorario(e.id) }))
+            .filter(x => x.prox)
+            .filter(x => !usedVin.has(x.e.vinicola_id));
+        if (candidatos.length) {
+            const pick = candidatos[0];
+            sugestoes.push({ exp: pick.e, hor: pick.prox, tag });
+            usedVin.add(pick.e.vinicola_id);
+        }
+        if (sugestoes.length >= 6) break;
+    }
+    if (sugestoes.length === 0) {
+        grid.innerHTML = `<p class="exp-empty">Sem sugestões disponíveis no momento.</p>`;
+        return;
+    }
+    const tagLabel = {
+        'piquenique':         'Piquenique',
+        'degustacao-premium': 'Degustação premium',
+        'visita-tecnica':     'Tour caves',
+        'harmonizado':        'Harmonizado',
+        'por-do-sol':         'Pôr do sol',
+        'boutique':           'Intimista',
+    };
+    grid.innerHTML = sugestoes.map(s => {
+        const vin = VINICOLAS.find(v => v.id === s.exp.vinicola_id);
+        const vagas = countHorariosDisponiveis(s.exp.id);
+        return `
+            <article class="sug-card">
+                <span class="sug-badge">${tagLabel[s.tag] || s.tag}</span>
+                <h3>${s.exp.nome}</h3>
+                <span class="sug-vin">${vin?.nome ?? ''} · ${vin?.cidade ?? ''}</span>
+                <div class="sug-meta">
+                    <span>⏱ <strong>${s.exp.duracao} min</strong></span>
+                    <span>💰 <strong>${fmtBRL(s.exp.preco)}</strong>/pessoa</span>
+                    <span>📅 ${fmtDataCurta(s.hor.data)} · ${s.hor.horario}</span>
+                    <span><span class="av-badge ${getDisponibilidadeStatus(vagas, 50).cls}">${vagas} vagas</span></span>
+                </div>
+                <button class="btn btn-primary" type="button" data-vin="${s.exp.vinicola_id}" data-exp="${s.exp.id}">
+                    Reservar
+                </button>
+            </article>
+        `;
+    }).join('');
+
+    grid.querySelectorAll('button[data-vin]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            openVinicola(Number(btn.dataset.vin), Number(btn.dataset.exp));
+        });
+    });
+}
+
+// =================== Vinicolas boutique em destaque ===================
+function renderBoutique() {
+    const grid = document.getElementById('boutique-grid');
+    if (!grid) return;
+    const boutiques = VINICOLAS.filter(v => v.tipo === 'boutique').slice(0, 6);
+    if (boutiques.length === 0) {
+        grid.innerHTML = `<p class="exp-empty">Nenhuma vinícola boutique cadastrada.</p>`;
+        return;
+    }
+    grid.innerHTML = boutiques.map(v => {
+        const expCount = EXPERIENCIAS.filter(e => e.vinicola_id === v.id).length;
+        const initial = (v.nome || '?').replace(/^Vin[íi]cola\s+/i, '').charAt(0).toUpperCase();
+        const preco = v.preco_min && v.preco_max
+            ? `${fmtBRL(v.preco_min)}–${fmtBRL(v.preco_max)}`
+            : '—';
+        return `
+            <button class="bout-card" type="button" data-vin="${v.id}" aria-label="Abrir ${v.nome}">
+                <div class="bout-cover tone-${v.tone || 'a'}" aria-hidden="true">${initial}</div>
+                <div class="bout-body">
+                    <span class="bout-eyebrow">Boutique · ${v.cidade}</span>
+                    <h3>${v.nome.replace(/^Vin[íi]cola\s+/i, '')}</h3>
+                    <p>${v.descricao || 'Experiência intimista entre os vinhedos.'}</p>
+                    <div class="bout-meta">
+                        <span><strong>${expCount}</strong> experiências</span>
+                        <span><strong>${v.duracao_media_min || 75}</strong> min médios</span>
+                        <span>${preco}/pessoa</span>
+                    </div>
+                    <span class="btn btn-ghost">Ver perfil</span>
+                </div>
+            </button>
+        `;
+    }).join('');
+
+    grid.querySelectorAll('button[data-vin]').forEach(btn => {
+        btn.addEventListener('click', () => openVinicola(Number(btn.dataset.vin)));
+    });
+}
+
+// =================== Perfil da Vinicola ===================
+function openVinicola(vinId, focusExpId) {
+    const vin = VINICOLAS.find(v => v.id === vinId);
+    if (!vin) return;
+    renderVinicolaPerfil(vin, focusExpId);
+    const section = document.getElementById('vinicola');
+    section.hidden = false;
+    document.querySelector('[data-vinicola-link]')?.removeAttribute('hidden');
+    section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function renderVinicolaPerfil(vin, focusExpId) {
+    const container = document.getElementById('vinicola-content');
+    const initial = (vin.nome || '?').replace(/^Vin[íi]cola\s+/i, '').charAt(0).toUpperCase();
+    const exps = EXPERIENCIAS.filter(e => e.vinicola_id === vin.id);
+
+    container.innerHTML = `
+        <article class="vin-profile">
+            <header class="vin-cover tone-${vin.tone || 'a'}" style="font-size:5rem">
+                <div class="vin-cover-inner">
+                    <span class="vin-cidade">${vin.cidade}${vin.tipo === 'boutique' ? ' · Boutique' : ''}</span>
+                    <h2>${vin.nome}</h2>
+                </div>
+            </header>
+            <div class="vin-body">
+                <p class="vin-desc">${vin.descricao || 'Vinícola do Vale dos Vinhedos.'}</p>
+
+                <div class="vin-meta">
+                    <div class="vin-meta-item">
+                        <span>Duração média</span>
+                        <strong>${vin.duracao_media_min || 75} min</strong>
+                    </div>
+                    <div class="vin-meta-item">
+                        <span>Faixa de preço/pessoa</span>
+                        <strong>${vin.preco_min && vin.preco_max ? fmtBRL(vin.preco_min) + ' – ' + fmtBRL(vin.preco_max) : '—'}</strong>
+                    </div>
+                    <div class="vin-meta-item">
+                        <span>Experiências disponíveis</span>
+                        <strong>${exps.length}</strong>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="vin-section-title">Experiências</h3>
+                    <ul class="vin-exp-list" id="vin-exp-list">
+                        ${exps.map(e => {
+                            const vagas = countHorariosDisponiveis(e.id);
+                            const status = getDisponibilidadeStatus(vagas, 50);
+                            const horarios = getAllHorarios()
+                                .filter(h => h.experiencia_id === e.id && h.vagas > 0)
+                                .sort((a, b) => (a.data + a.horario).localeCompare(b.data + b.horario))
+                                .slice(0, 6);
+                            return `
+                                <li class="vin-exp-card" data-exp="${e.id}">
+                                    <h4>${e.nome}</h4>
+                                    <div class="vin-exp-meta">
+                                        <span>⏱ <strong>${e.duracao} min</strong></span>
+                                        <span>💰 <strong>${fmtBRL(e.preco)}</strong>/pessoa</span>
+                                        <span><span class="av-badge ${status.cls}">${status.label}</span></span>
+                                    </div>
+                                    <div class="vin-horarios">
+                                        ${horarios.length > 0
+                                            ? horarios.map(h => `<button type="button" class="vin-horario" data-hor="${h.id}">${h.horario}<br><small style="font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;opacity:.7">${fmtDataCurta(h.data)}</small></button>`).join('')
+                                            : '<small style="opacity:.55;font-style:italic">Sem horários disponíveis</small>'
+                                        }
+                                    </div>
+                                    <div class="vin-reservar-actions">
+                                        <button type="button" class="btn btn-primary vin-go-reservar" data-vin="${vin.id}" data-exp="${e.id}">Reservar esta experiência</button>
+                                    </div>
+                                </li>
+                            `;
+                        }).join('')}
+                    </ul>
+                </div>
+            </div>
+        </article>
+    `;
+
+    // Bind: horario buttons
+    container.querySelectorAll('.vin-horario').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const horId = Number(btn.dataset.hor);
+            const hor = getAllHorarios().find(h => h.id === horId);
+            const expId = Number(btn.closest('[data-exp]').dataset.exp);
+            if (!hor) return;
+            // Preenche o formulario de reserva e rola
+            document.getElementById('b-vinicola').value = vin.id;
+            refreshExperiencias();
+            document.getElementById('b-experiencia').value = expId;
+            refreshSlots();
+            selectedHorarioId = hor.id;
+            refreshSlots({ preserveSelection: true });
+            document.getElementById('reservar').scrollIntoView({ behavior: 'smooth' });
+            showToast(`Horário ${hor.horario} selecionado.`);
+        });
+    });
+    // Bind: reservar experiencia
+    container.querySelectorAll('.vin-go-reservar').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.getElementById('b-vinicola').value = btn.dataset.vin;
+            refreshExperiencias();
+            document.getElementById('b-experiencia').value = btn.dataset.exp;
+            refreshSlots();
+            document.getElementById('reservar').scrollIntoView({ behavior: 'smooth' });
+        });
+    });
+
+    if (focusExpId) {
+        const el = container.querySelector(`[data-exp="${focusExpId}"]`);
+        if (el) {
+            el.style.outline = '2px solid var(--vinho)';
+            el.style.outlineOffset = '4px';
+            setTimeout(() => { el.style.outline = ''; }, 1800);
+        }
+    }
+}
+
+// =================== Form de planejamento + gerador de roteiro ===================
 const INTEREST_KEYWORDS = {
-    'degustacao-premium': ['premium', 'masterclass', 'vertical', 'lote 43', 'dádivas', 'dadivas', 'dna 99', 'icone'],
-    'harmonizado':        ['harmonizad', 'almoço', 'almoco', 'jantar'],
-    'boutique':           ['pizzato', 'torcello', 'larentis', 'don giovanni', 'dom cândido', 'dom candido'],
-    'por-do-sol':         ['pôr do sol', 'por do sol', 'sol valduga'],
-    'visita-tecnica':     ['tour', 'cave', 'caves', 'história', 'historia'],
-    'gastronomia':        ['almoço', 'almoco', 'jantar', 'gastronomia', 'piquenique'],
-    'vindima':            ['vindima'],
-    'espumantes':         ['espumante', 'geisse', 'moscatéis', 'moscateis'],
-    'masterclass':        ['masterclass', 'vertical'],
+    'degustacao-classica': ['degustaç', 'flight', 'intenso', 'clássica'],
+    'degustacao-premium':  ['premium', 'masterclass', 'vertical', 'lote 43', 'dádivas', 'dadivas', 'dna 99', 'ícone', 'icone', 'agnus'],
+    'harmonizado':         ['harmoniz', 'almoço', 'almoco', 'jantar'],
+    'piquenique':          ['piquenique'],
+    'visita-tecnica':      ['tour', 'cave', 'caves', 'história', 'historia', 'subterrânea', 'subterranea'],
+    'boutique':            ['pizzato', 'torcello', 'larentis', 'don giovanni', 'dom cândido', 'dom candido', 'geisse', 'lídio', 'lidio'],
+    'raros':               ['raros', 'lote 43', 'dádivas', 'dadivas', 'vertical', 'dna 99'],
+    'sommelier':           ['masterclass', 'sommelier', 'vertical', 'jantar', 'lote 43'],
+    'por-do-sol':          ['pôr do sol', 'por do sol', 'sol valduga', 'piquenique geisse'],
+    'vindima':             ['vindima'],
+    'familiar':            ['cristofoli', 'larentis', 'salton', 'pizzato', 'família', 'familia'],
+    'arquitetura':         ['caves na rocha', 'castelo', 'toscano', 'arquitetura', 'piquenique'],
+    'rapida':              [],
+    'completa':            [],
 };
 
-function addDays(isoDate, days) {
-    const d = new Date(isoDate + 'T00:00:00');
-    if (isNaN(d.getTime())) return '';
-    d.setDate(d.getDate() + days);
-    const dd = String(d.getDate()).padStart(2, '0');
-    const mm = String(d.getMonth() + 1).padStart(2, '0');
-    return `${dd}/${mm}`;
+const STORAGE_PLAN = 'uvaevia.plano.atual';
+function savePlan(plano) {
+    try { localStorage.setItem(STORAGE_PLAN, JSON.stringify(plano)); }
+    catch (e) { /* ignore */ }
+}
+function loadPlan() {
+    try { return JSON.parse(localStorage.getItem(STORAGE_PLAN)) || null; }
+    catch { return null; }
+}
+function clearPlan() {
+    localStorage.removeItem(STORAGE_PLAN);
+}
+
+function getAllHorarios() {
+    return [...HORARIOS, ...customHorarios];
 }
 
 function generateRoteiro(input) {
@@ -161,14 +541,25 @@ function generateRoteiro(input) {
 
     const scored = EXPERIENCIAS.map(e => {
         const vin = VINICOLAS.find(v => v.id === e.vinicola_id);
-        const txt = (e.nome + ' ' + (vin ? vin.nome : '')).toLowerCase();
+        const txt = (e.nome + ' ' + (vin ? vin.nome + ' ' + (vin.cidade || '') : '')).toLowerCase();
+        const expTags = e.tags || [];
         let score = 0;
         input.interests.forEach(tag => {
+            // Match por tag direto
+            if (expTags.includes(tag)) score += 6;
+            // Match por keyword (legado)
             const kws = INTEREST_KEYWORDS[tag] || [];
-            if (kws.some(k => txt.includes(k))) score += 5;
+            if (kws.some(k => txt.includes(k))) score += 3;
         });
+        // Match por perfil
+        if (input.profile === 'familia' && expTags.includes('familiar')) score += 2;
+        if (input.profile === 'solo'    && expTags.includes('rapida'))   score += 2;
+        if (input.profile === 'amigos'  && (expTags.includes('completa') || expTags.includes('harmonizado'))) score += 2;
+        if (input.profile === 'casal'   && (expTags.includes('por-do-sol') || expTags.includes('boutique')))  score += 2;
+
         const vagas = countHorariosDisponiveis(e.id);
         if (vagas > 0) score += 1;
+        if (vagas > 5) score += 1;
         if (e.preco <= budgetPerExp) score += 2;
         return { exp: e, vin, score, vagas };
     });
@@ -188,22 +579,83 @@ function generateRoteiro(input) {
         if (!chosen.includes(item)) chosen.push(item);
     }
 
+    // Distribuicao por dia + horarios sugeridos
     const startTimes = ['10:00', '12:30', '15:00', '17:30'];
     const dias = [];
     for (let i = 0; i < input.days; i++) {
-        const dia = chosen.slice(i * expsPerDay, (i + 1) * expsPerDay).map((item, idx) => ({
-            ...item,
-            horario_sugerido: startTimes[idx] || '17:30',
-        }));
+        const fatia = chosen.slice(i * expsPerDay, (i + 1) * expsPerDay);
+        const dia = fatia.map((item, idx) => {
+            const status = getDisponibilidadeStatus(item.vagas, 50);
+            return {
+                exp: item.exp,
+                vin: item.vin,
+                vagas: item.vagas,
+                disponibilidade: status,
+                horario_sugerido: startTimes[idx] || '17:30',
+            };
+        });
         if (dia.length > 0) dias.push(dia);
     }
 
+    // Tempo total estimado = soma das duracoes + deslocamentos
+    let tempoTotal = 0;
+    let tempoDesloc = 0;
+    dias.forEach(dia => {
+        let prev = null;
+        dia.forEach(stop => {
+            tempoTotal += stop.exp.duracao;
+            if (prev) {
+                const desloc = tempoDeslocamentoMin(prev.vin, stop.vin);
+                stop.deslocamentoMin = desloc;
+                tempoTotal += desloc;
+                tempoDesloc += desloc;
+            } else {
+                stop.deslocamentoMin = 0;
+            }
+            prev = stop;
+        });
+    });
+
     const total = chosen.reduce((sum, it) => sum + it.exp.preco * input.pessoas, 0);
-    return { dias, total, chosen, ...input };
+
+    // Tags unicas presentes nas experiencias escolhidas
+    const tagsPresentes = [...new Set(chosen.flatMap(it => it.exp.tags || []))];
+
+    return {
+        dias,
+        total,
+        chosen: chosen.map(c => ({ exp: c.exp, vin: c.vin, vagas: c.vagas })),
+        tempoTotal,
+        tempoDesloc,
+        tagsPresentes,
+        ...input,
+    };
 }
 
+// =================== Renderiza Roteiro Sugerido ===================
+const TAG_LABEL = {
+    'degustacao-classica': 'Degustação clássica',
+    'degustacao-premium':  'Degustação premium',
+    'harmonizado':         'Gastronomia harmonizada',
+    'piquenique':          'Piquenique',
+    'visita-tecnica':      'Tour pelas caves',
+    'boutique':            'Boutique',
+    'raros':               'Vinhos raros',
+    'sommelier':           'Com sommelier',
+    'por-do-sol':          'Pôr do sol',
+    'vindima':             'Vindima',
+    'familiar':            'Familiar',
+    'arquitetura':         'Arquitetura',
+    'rapida':              'Experiência rápida',
+    'completa':            'Experiência completa',
+};
+
 function renderRoteiro(plano) {
-    const el = document.getElementById('roteiro-output');
+    const section = document.getElementById('roteiro');
+    section.hidden = false;
+    document.querySelector('[data-roteiro-link]')?.removeAttribute('hidden');
+    document.querySelector('[data-mapa-link]')?.removeAttribute('hidden');
+
     const overBudget = plano.total > plano.budget && plano.budget > 0;
     const budgetPct = plano.budget > 0
         ? Math.min(100, Math.round((plano.total / plano.budget) * 100))
@@ -212,59 +664,82 @@ function renderRoteiro(plano) {
         casal: 'casal', solo: 'viajante solo', amigos: 'grupo de amigos', familia: 'família adulta'
     }[plano.profile] || 'viajante';
 
-    el.hidden = false;
-    el.innerHTML = `
-        <header class="roteiro-header">
-            <span class="planner-eyebrow">Seu roteiro está pronto</span>
-            <h3>${plano.days} ${plano.days === 1 ? 'dia' : 'dias'} no Vale dos Vinhedos</h3>
-            <p>${plano.chosen.length} experiências curadas para ${profileLabel} (${plano.pessoas} ${plano.pessoas === 1 ? 'pessoa' : 'pessoas'}) · ritmo ${plano.pace}.</p>
-        </header>
+    document.getElementById('roteiro-subtitle').textContent =
+        `${plano.chosen.length} experiências para ${profileLabel} (${plano.pessoas} ${plano.pessoas === 1 ? 'pessoa' : 'pessoas'}) · ritmo ${plano.pace}.`;
 
-        <div class="roteiro-meta">
-            <div class="meta-stat"><span>Custo total</span><strong>${fmtBRL(plano.total)}</strong></div>
-            <div class="meta-stat"><span>Por pessoa</span><strong>${fmtBRL(plano.pessoas > 0 ? plano.total / plano.pessoas : 0)}</strong></div>
-            <div class="meta-stat"><span>Orçamento</span><strong>${fmtBRL(plano.budget)}</strong></div>
-        </div>
-
-        <div class="budget-gauge ${overBudget ? 'over' : ''}">
-            <span class="bar"><span style="width:${budgetPct}%"></span></span>
-            <p>${overBudget
-                ? `⚠️ ${Math.round((plano.total / plano.budget) * 100 - 100)}% acima do orçamento`
-                : `✓ Dentro do orçamento (${budgetPct}% utilizado)`}</p>
-        </div>
-
-        <div class="roteiro-days">
-            ${plano.dias.map((dia, i) => `
-                <article class="roteiro-day">
-                    <h4>Dia ${i + 1}${plano.startDate ? ' · ' + addDays(plano.startDate, i) : ''}</h4>
-                    <ol>
-                        ${dia.map(item => `
-                            <li class="roteiro-item">
-                                <span class="time">${item.horario_sugerido}</span>
-                                <div>
-                                    <strong>${item.exp.nome}</strong>
-                                    <span class="place">${item.vin.nome} · ${item.vin.cidade}</span>
-                                </div>
-                                <span class="price">${fmtBRL(item.exp.preco * plano.pessoas)}</span>
-                            </li>
-                        `).join('')}
-                    </ol>
-                </article>
-            `).join('')}
-        </div>
-
-        <div class="roteiro-actions">
-            <button type="button" class="btn btn-ghost" id="roteiro-clear">Descartar</button>
-            <a href="#experiencias" class="btn btn-primary">Reservar experiências</a>
-        </div>
+    document.getElementById('roteiro-meta').innerHTML = `
+        <div class="meta-stat"><span>Dias</span><strong>${plano.days}</strong></div>
+        <div class="meta-stat"><span>Paradas</span><strong>${plano.chosen.length}</strong></div>
+        <div class="meta-stat"><span>Tempo total</span><strong>${minutosParaHHMM(plano.tempoTotal)}</strong></div>
+        <div class="meta-stat"><span>Deslocamento</span><strong>${minutosParaHHMM(plano.tempoDesloc)}</strong></div>
+        <div class="meta-stat"><span>Custo total</span><strong>${fmtBRL(plano.total)}</strong></div>
     `;
 
-    el.querySelector('#roteiro-clear').addEventListener('click', () => {
-        el.hidden = true;
-        el.innerHTML = '';
+    // Tags
+    document.getElementById('roteiro-tags').innerHTML = plano.tagsPresentes
+        .filter(t => TAG_LABEL[t])
+        .slice(0, 10)
+        .map(t => `<span class="roteiro-tag">${TAG_LABEL[t]}</span>`)
+        .join('');
+
+    // Budget gauge
+    document.getElementById('roteiro-budget').className = 'budget-gauge' + (overBudget ? ' over' : '');
+    document.getElementById('roteiro-budget').innerHTML = `
+        <span class="bar"><span style="width:${budgetPct}%"></span></span>
+        <p>${overBudget
+            ? `⚠️ ${Math.round((plano.total / plano.budget) * 100 - 100)}% acima do orçamento`
+            : (plano.budget > 0 ? `✓ Dentro do orçamento (${budgetPct}% utilizado)` : 'Orçamento não informado')}</p>
+    `;
+
+    // Dias
+    document.getElementById('roteiro-days').innerHTML = plano.dias.map((dia, i) => `
+        <article class="roteiro-day">
+            <h4>Dia ${i + 1}${plano.startDate ? ' · ' + fmtDataCurta(addDays(plano.startDate, i)) : ''}</h4>
+            <ol>
+                ${dia.map(stop => `
+                    <li class="roteiro-stop">
+                        <div class="stop-when">
+                            <span class="stop-time">${stop.horario_sugerido}</span>
+                            <span class="stop-duracao">${stop.exp.duracao} min</span>
+                        </div>
+                        <div class="stop-main">
+                            <strong>${stop.exp.nome}</strong>
+                            <span class="stop-place">
+                                ${stop.vin.nome} · ${stop.vin.cidade || ''}
+                                <span class="av-badge ${stop.disponibilidade.cls}">${stop.disponibilidade.label}</span>
+                            </span>
+                        </div>
+                        <div class="stop-actions">
+                            <span class="stop-price">${fmtBRL(stop.exp.preco * plano.pessoas)}</span>
+                            <button type="button" class="btn btn-ghost" data-action="ver-vinicola" data-vin="${stop.vin.id}">Ver vinícola</button>
+                            <button type="button" class="btn btn-primary" data-action="reservar" data-vin="${stop.vin.id}" data-exp="${stop.exp.id}">Reservar</button>
+                        </div>
+                    </li>
+                `).join('')}
+            </ol>
+        </article>
+    `).join('');
+
+    // Bind acoes
+    section.querySelectorAll('[data-action="ver-vinicola"]').forEach(btn => {
+        btn.addEventListener('click', () => openVinicola(Number(btn.dataset.vin)));
+    });
+    section.querySelectorAll('[data-action="reservar"]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const vinId = Number(btn.dataset.vin);
+            const expId = Number(btn.dataset.exp);
+            document.getElementById('b-vinicola').value = vinId;
+            refreshExperiencias();
+            document.getElementById('b-experiencia').value = expId;
+            refreshSlots();
+            document.getElementById('reservar').scrollIntoView({ behavior: 'smooth' });
+        });
     });
 
-    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    savePlan(plano);
+    renderMapa(plano);
+
+    section.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 document.getElementById('travel-form').addEventListener('submit', (e) => {
@@ -272,20 +747,106 @@ document.getElementById('travel-form').addEventListener('submit', (e) => {
     const fd = new FormData(e.target);
     const input = {
         startDate: fd.get('start-date') || '',
-        days: Math.max(1, Number(fd.get('days')) || 1),
-        pessoas: Math.max(1, Number(fd.get('people')) || 1),
-        budget: Math.max(0, Number(fd.get('budget')) || 0),
-        profile: fd.get('profile') || '',
-        pace: fd.get('pace') || 'equilibrado',
-        notes: fd.get('notes') || '',
+        days:      Math.max(1, Number(fd.get('days')) || 1),
+        pessoas:   Math.max(1, Number(fd.get('people')) || 1),
+        budget:    Math.max(0, Number(fd.get('budget')) || 0),
+        profile:   fd.get('profile') || '',
+        pace:      fd.get('pace') || 'equilibrado',
+        notes:     fd.get('notes') || '',
         interests: [...e.target.querySelectorAll('input[name="interests"]:checked')].map(i => i.value),
     };
+    if (!input.profile) {
+        showToast('Selecione o perfil da viagem.', 'error');
+        return;
+    }
     const plano = generateRoteiro(input);
     renderRoteiro(plano);
     showToast('Roteiro gerado com base nas suas preferências!');
 });
 
-// ---------- Booking ----------
+document.getElementById('roteiro-edit')?.addEventListener('click', () => {
+    document.getElementById('planejar').scrollIntoView({ behavior: 'smooth' });
+});
+
+// =================== Mapa / Rota ===================
+let mapaActiveDay = 0;
+
+function renderMapa(plano) {
+    const empty = document.getElementById('mapa-empty');
+    const content = document.getElementById('mapa-content');
+    if (!plano || !plano.dias || plano.dias.length === 0) {
+        empty.hidden = false;
+        content.hidden = true;
+        return;
+    }
+    empty.hidden = true;
+    content.hidden = false;
+    if (mapaActiveDay >= plano.dias.length) mapaActiveDay = 0;
+
+    // Resumo
+    const totalParadas = plano.chosen.length;
+    const partida = plano.dias[0]?.[0]?.vin?.cidade || 'Vale dos Vinhedos';
+    const horarioPartida = plano.dias[0]?.[0]?.horario_sugerido || '—';
+    document.getElementById('mapa-resumo').innerHTML = `
+        <div class="mapa-resumo-item">
+            <span>Tempo total</span>
+            <strong>${minutosParaHHMM(plano.tempoTotal)}</strong>
+        </div>
+        <div class="mapa-resumo-item">
+            <span>Deslocamento</span>
+            <strong>${minutosParaHHMM(plano.tempoDesloc)}</strong>
+        </div>
+        <div class="mapa-resumo-item">
+            <span>Paradas</span>
+            <strong>${totalParadas}</strong>
+        </div>
+        <div class="mapa-resumo-item">
+            <span>Saída sugerida</span>
+            <strong>${horarioPartida}<br><small style="font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;opacity:.7;font-style:normal;font-family:var(--font-sans);font-weight:600">${partida}</small></strong>
+        </div>
+    `;
+
+    // Tabs
+    const tabsEl = document.getElementById('mapa-tabs');
+    tabsEl.innerHTML = plano.dias.map((_, i) => `
+        <button type="button" class="mapa-tab ${i === mapaActiveDay ? 'is-active' : ''}" role="tab"
+                data-day="${i}" aria-selected="${i === mapaActiveDay}">
+            Dia ${i + 1}${plano.startDate ? ' · ' + fmtDataCurta(addDays(plano.startDate, i)) : ''}
+        </button>
+    `).join('');
+    tabsEl.querySelectorAll('button').forEach(b => {
+        b.addEventListener('click', () => {
+            mapaActiveDay = Number(b.dataset.day);
+            renderMapa(plano);
+        });
+    });
+
+    // Timeline do dia ativo
+    const dia = plano.dias[mapaActiveDay] || plano.dias[0];
+    const timeline = document.getElementById('mapa-timeline');
+    timeline.innerHTML = dia.map((stop, idx) => {
+        const desloc = stop.deslocamentoMin > 0
+            ? `<div class="mapa-deslocamento">${minutosParaHHMM(stop.deslocamentoMin)} de deslocamento até ${stop.vin.nome}</div>`
+            : '';
+        return `
+            ${idx > 0 ? desloc : ''}
+            <div class="mapa-stop">
+                <div class="mapa-marker">${idx + 1}</div>
+                <div class="mapa-stop-body">
+                    <div class="mapa-stop-when">
+                        <span class="mapa-stop-time">${stop.horario_sugerido}</span>
+                        <span class="mapa-stop-duracao">${stop.exp.duracao} min · ${minutosParaHHMM(stop.exp.duracao)}</span>
+                        <span class="av-badge ${stop.disponibilidade.cls}">${stop.disponibilidade.label}</span>
+                    </div>
+                    <span class="mapa-stop-vin">${stop.vin.nome} · ${stop.vin.cidade || ''}</span>
+                    <span class="mapa-stop-exp">${stop.exp.nome}</span>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+// =================== Booking ===================
 const selVinicola = document.getElementById('b-vinicola');
 const selExperiencia = document.getElementById('b-experiencia');
 const inpPessoas = document.getElementById('b-pessoas');
@@ -299,7 +860,6 @@ const sumCalc = document.getElementById('sum-calc');
 const sumTotal = document.getElementById('sum-total');
 const btnReservar = document.getElementById('btn-reservar');
 
-// Popular vinícolas
 VINICOLAS.forEach(v => {
     const opt = document.createElement('option');
     opt.value = v.id;
@@ -307,10 +867,10 @@ VINICOLAS.forEach(v => {
     selVinicola.appendChild(opt);
 });
 
-// Snapshot da capacidade original de cada horário do catálogo
+// Snapshot capacidade
 HORARIOS.forEach(h => { h.capacidade = h.vagas; });
 
-// ---------- Horários custom (criados via Gestão) ----------
+// Horarios custom (criados via Gestao)
 const STORAGE_HORARIOS = 'uvaevia.horarios.custom';
 function loadCustomHorarios() {
     try { return JSON.parse(localStorage.getItem(STORAGE_HORARIOS)) || []; }
@@ -321,23 +881,12 @@ function saveCustomHorarios(arr) {
 }
 let customHorarios = loadCustomHorarios();
 
-function getAllHorarios() {
-    return [...HORARIOS, ...customHorarios];
-}
-
 let selectedHorarioId = null;
-
-const fmtBRL = (n) => n.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-const fmtData = (iso) => {
-    const [y, m, d] = iso.split('-');
-    return `${d}/${m}/${y}`;
-};
 
 function getExperiencia() {
     const id = Number(selExperiencia.value);
     return EXPERIENCIAS.find(e => e.id === id);
 }
-
 function getHorario() {
     return getAllHorarios().find(h => h.id === selectedHorarioId);
 }
@@ -349,7 +898,6 @@ function refreshExperiencias() {
     slotsBlock.hidden = true;
     summary.hidden = true;
     btnReservar.disabled = true;
-
     if (!vid) {
         selExperiencia.disabled = true;
         selExperiencia.appendChild(new Option('Escolha uma vinícola primeiro', ''));
@@ -368,7 +916,6 @@ function vagasBadge(vagas, capacidade) {
     if (pct <= 0.3) return `<span class="vagas-badge low">Últimas ${vagas}</span>`;
     return `<span class="vagas-badge">${vagas} disponíveis</span>`;
 }
-
 function updateSlotsTimestamp() {
     const el = document.getElementById('slots-updated-time');
     if (!el) return;
@@ -383,7 +930,6 @@ function refreshSlots(opts = {}) {
     document.querySelectorAll('.slot').forEach(s => {
         previousVagas[s.dataset.id] = Number(s.dataset.vagas);
     });
-
     if (!opts.preserveSelection) selectedHorarioId = null;
     slotsEl.innerHTML = '';
     if (!exp) {
@@ -456,10 +1002,11 @@ selExperiencia.addEventListener('change', refreshSlots);
 inpPessoas.addEventListener('input', refreshSummary);
 inpNome.addEventListener('input', refreshSummary);
 
-// ---------- Reservas confirmadas ----------
+// =================== Reservas confirmadas ===================
 const STORAGE_KEY = 'uvaevia.reservas';
 const listEl = document.getElementById('reservations-list');
 const emptyEl = document.getElementById('reservations-empty');
+const actionsEl = document.getElementById('reservations-actions');
 
 function loadReservas() {
     try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; }
@@ -482,19 +1029,19 @@ function diasAte(isoData) {
 }
 
 function renderReservas() {
-    const reservas = loadReservas().sort((a, b) => {
-        return (a.data + a.horario).localeCompare(b.data + b.horario);
-    });
+    const reservas = loadReservas().sort((a, b) => (a.data + a.horario).localeCompare(b.data + b.horario));
     if (reservas.length === 0) {
         emptyEl.hidden = false;
         listEl.hidden = true;
         statsEl.hidden = true;
+        actionsEl.hidden = true;
         listEl.innerHTML = '';
         return;
     }
     emptyEl.hidden = true;
     listEl.hidden = false;
     statsEl.hidden = false;
+    actionsEl.hidden = false;
 
     const futuras = reservas.filter(r => diasAte(r.data) >= 0);
     const proxima = futuras[0];
@@ -576,7 +1123,6 @@ document.getElementById('booking-form').addEventListener('submit', (e) => {
     reservas.push(reserva);
     saveReservas(reservas);
 
-    // Diminui as vagas (em memória para seed, persistente para custom)
     const seedH = HORARIOS.find(x => x.id === hor.id);
     if (seedH) seedH.vagas = Math.max(0, seedH.vagas - pessoas);
     const customH = customHorarios.find(x => x.id === hor.id);
@@ -590,20 +1136,19 @@ document.getElementById('booking-form').addEventListener('submit', (e) => {
 
     showToast(`Reserva confirmada em ${vin.nome}!`);
     renderReservas();
+    renderSugestoes();
+    renderExperiencias();
 
-    // reset parcial
     selectedHorarioId = null;
     refreshSlots();
     inpNome.value = '';
     refreshSummary();
 
-    // rola para a lista
     document.getElementById('minhas-reservas').scrollIntoView({ behavior: 'smooth' });
     renderManageTable();
-    renderExperiencias();
 });
 
-// ---------- Catálogo de Experiências ----------
+// =================== Catalogo de Experiencias ===================
 const expSearch = document.getElementById('exp-search');
 const expVinicolaSel = document.getElementById('exp-vinicola');
 const expSort = document.getElementById('exp-sort');
@@ -611,15 +1156,7 @@ const expGrid = document.getElementById('exp-grid');
 const expEmpty = document.getElementById('exp-empty');
 const expCount = document.getElementById('exp-count');
 
-VINICOLAS.forEach(v => {
-    expVinicolaSel.appendChild(new Option(v.nome, v.id));
-});
-
-function countHorariosDisponiveis(expId) {
-    return getAllHorarios()
-        .filter(h => h.experiencia_id === expId && h.vagas > 0)
-        .reduce((sum, h) => sum + h.vagas, 0);
-}
+VINICOLAS.forEach(v => expVinicolaSel.appendChild(new Option(v.nome, v.id)));
 
 function renderExperiencias() {
     const term = expSearch.value.trim().toLowerCase();
@@ -627,14 +1164,20 @@ function renderExperiencias() {
     const sort = expSort.value;
 
     let lista = EXPERIENCIAS.slice();
-    if (term) lista = lista.filter(e => e.nome.toLowerCase().includes(term));
+    if (term) {
+        lista = lista.filter(e => {
+            const vin = VINICOLAS.find(v => v.id === e.vinicola_id);
+            const haystack = (e.nome + ' ' + (vin?.nome || '') + ' ' + (vin?.cidade || '')).toLowerCase();
+            return haystack.includes(term);
+        });
+    }
     if (vid) lista = lista.filter(e => e.vinicola_id === vid);
 
     const sorters = {
-        'nome': (a, b) => a.nome.localeCompare(b.nome),
-        'preco-asc': (a, b) => a.preco - b.preco,
+        'nome':       (a, b) => a.nome.localeCompare(b.nome),
+        'preco-asc':  (a, b) => a.preco - b.preco,
         'preco-desc': (a, b) => b.preco - a.preco,
-        'duracao': (a, b) => a.duracao - b.duracao,
+        'duracao':    (a, b) => a.duracao - b.duracao,
     };
     lista.sort(sorters[sort] || sorters.nome);
 
@@ -645,38 +1188,46 @@ function renderExperiencias() {
     lista.forEach(e => {
         const vin = VINICOLAS.find(v => v.id === e.vinicola_id);
         const vagas = countHorariosDisponiveis(e.id);
+        const status = getDisponibilidadeStatus(vagas, 50);
         const card = document.createElement('article');
         card.className = 'exp-card';
         card.innerHTML = `
-            <span class="exp-vinicola">${vin.nome} · ${vin.cidade}</span>
+            <span class="exp-vinicola">${vin?.nome ?? '—'} · ${vin?.cidade ?? ''}</span>
             <h3>${e.nome}</h3>
             <div class="exp-meta">
                 <span>⏱ <strong>${e.duracao} min</strong></span>
                 <span>💰 <strong>${fmtBRL(e.preco)}</strong>/pessoa</span>
-                <span>${vagas > 0 ? `🟢 ${vagas} vagas` : '🔒 sem vagas'}</span>
+                <span><span class="av-badge ${status.cls}">${vagas > 0 ? vagas + ' vagas' : 'Lotado'}</span></span>
             </div>
-            <button class="btn btn-primary" type="button" data-vinicola="${e.vinicola_id}" data-experiencia="${e.id}" ${vagas === 0 ? 'disabled' : ''}>
-                ${vagas === 0 ? 'Indisponível' : 'Reservar'}
-            </button>
+            <div class="exp-card-actions">
+                <button class="btn btn-ghost" type="button" data-action="ver" data-vin="${vin?.id}">Ver vinícola</button>
+                <button class="btn btn-primary" type="button" data-action="reservar" data-vin="${vin?.id}" data-exp="${e.id}" ${vagas === 0 ? 'disabled' : ''}>
+                    ${vagas === 0 ? 'Indisponível' : 'Reservar'}
+                </button>
+            </div>
         `;
-        const btn = card.querySelector('button');
-        btn.addEventListener('click', () => {
-            if (btn.disabled) return;
-            selVinicola.value = btn.dataset.vinicola;
+        card.querySelector('[data-action="ver"]').addEventListener('click', () => {
+            if (vin) openVinicola(vin.id);
+        });
+        const btnRes = card.querySelector('[data-action="reservar"]');
+        btnRes.addEventListener('click', () => {
+            if (btnRes.disabled) return;
+            selVinicola.value = vin.id;
             refreshExperiencias();
-            selExperiencia.value = btn.dataset.experiencia;
+            selExperiencia.value = e.id;
             refreshSlots();
             document.getElementById('reservar').scrollIntoView({ behavior: 'smooth' });
         });
         expGrid.appendChild(card);
     });
 }
+window.renderExperiencias = renderExperiencias;
 
 expSearch.addEventListener('input', renderExperiencias);
 expVinicolaSel.addEventListener('change', renderExperiencias);
 expSort.addEventListener('change', renderExperiencias);
 
-// ---------- Gestão de horários ----------
+// =================== Gestao de horarios ===================
 const mVinicola = document.getElementById('m-vinicola');
 const mExperiencia = document.getElementById('m-experiencia');
 const mData = document.getElementById('m-data');
@@ -687,9 +1238,7 @@ const statTotal = document.getElementById('stat-total');
 const statVagas = document.getElementById('stat-vagas');
 const statOcupacao = document.getElementById('stat-ocupacao');
 
-VINICOLAS.forEach(v => {
-    mVinicola.appendChild(new Option(v.nome, v.id));
-});
+VINICOLAS.forEach(v => mVinicola.appendChild(new Option(v.nome, v.id)));
 
 mVinicola.addEventListener('change', () => {
     mExperiencia.innerHTML = '';
@@ -707,9 +1256,7 @@ mVinicola.addEventListener('change', () => {
 });
 
 function renderManageTable() {
-    const todos = getAllHorarios().slice().sort((a, b) => {
-        return (a.data + a.horario).localeCompare(b.data + b.horario);
-    });
+    const todos = getAllHorarios().slice().sort((a, b) => (a.data + a.horario).localeCompare(b.data + b.horario));
 
     if (todos.length === 0) {
         manageTable.innerHTML = '<p class="manage-empty">Nenhum horário cadastrado.</p>';
@@ -767,6 +1314,7 @@ function renderManageTable() {
             saveCustomHorarios(customHorarios);
             renderManageTable();
             renderExperiencias();
+            renderSugestoes();
             showToast('Horário removido.');
         });
     });
@@ -778,6 +1326,9 @@ function renderManageTable() {
         : 0;
     statOcupacao.textContent = ocup + '%';
 }
+window.renderManageTable = renderManageTable;
+window.renderSugestoes = renderSugestoes;
+window.renderBoutique = renderBoutique;
 
 document.getElementById('manage-form').addEventListener('submit', (e) => {
     e.preventDefault();
@@ -791,15 +1342,10 @@ document.getElementById('manage-form').addEventListener('submit', (e) => {
         showToast('Preencha todos os campos da gestão.', 'error');
         return;
     }
-
-    const novoId = 1000 + Date.now() % 100000; // id alto para não colidir com seed
+    const novoId = 1000 + Date.now() % 100000;
     const novo = {
-        id: novoId,
-        experiencia_id: expId,
-        data,
-        horario,
-        capacidade,
-        vagas: capacidade,
+        id: novoId, experiencia_id: expId, data, horario,
+        capacidade, vagas: capacidade,
     };
     customHorarios.push(novo);
     saveCustomHorarios(customHorarios);
@@ -811,25 +1357,39 @@ document.getElementById('manage-form').addEventListener('submit', (e) => {
     mCapacidade.value = 12;
     renderManageTable();
     renderExperiencias();
+    renderSugestoes();
     if (selExperiencia.value && Number(selExperiencia.value) === expId) refreshSlots();
 });
 
-// ---------- Sync entre abas (disponibilidade em tempo real) ----------
+// =================== Sync entre abas ===================
 window.addEventListener('storage', (e) => {
     if (e.key === STORAGE_HORARIOS) {
         customHorarios = loadCustomHorarios();
         if (selVinicola.value) refreshSlots({ preserveSelection: true });
         renderExperiencias();
         renderManageTable();
+        renderSugestoes();
         showToast('Disponibilidade atualizada em outra aba.');
     }
     if (e.key === STORAGE_KEY) {
         renderReservas();
     }
+    if (e.key === STORAGE_PLAN) {
+        const p = loadPlan();
+        if (p) renderMapa(p);
+    }
 });
 
-// ---------- Init ----------
+// =================== Init ===================
 document.getElementById('year').textContent = new Date().getFullYear();
 renderReservas();
 renderExperiencias();
 renderManageTable();
+renderSugestoes();
+renderBoutique();
+
+const planoSalvo = loadPlan();
+if (planoSalvo) {
+    renderMapa(planoSalvo);
+    document.querySelector('[data-mapa-link]')?.removeAttribute('hidden');
+}

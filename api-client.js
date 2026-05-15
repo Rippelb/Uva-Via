@@ -43,22 +43,33 @@ const UvaViaApi = {
 window.UvaViaApi = UvaViaApi;
 
 // Mapeia API -> shape esperado pelo frontend legado.
+// Preserva campos da curadoria local (tipo, tone, lat/long) quando o backend
+// nao os fornece, fazendo lookup por id no array embutido.
 function mapVinicola(v) {
+    const fallback = (typeof VINICOLAS !== 'undefined')
+        ? VINICOLAS.find(x => Number(x.id) === Number(v.id))
+        : null;
     return {
         id: Number(v.id),
         nome: v.nome,
         cidade: v.cidade,
-        descricao: v.descricao,
+        descricao: v.descricao || fallback?.descricao,
         foto_url: v.foto_url,
-        latitude: v.latitude != null ? Number(v.latitude) : null,
-        longitude: v.longitude != null ? Number(v.longitude) : null,
-        duracao_media_min: v.duracao_media_min != null ? Number(v.duracao_media_min) : null,
-        preco_min: v.preco_min != null ? Number(v.preco_min) : null,
-        preco_max: v.preco_max != null ? Number(v.preco_max) : null,
+        tipo: v.tipo || fallback?.tipo || 'grande',
+        tone: v.tone || fallback?.tone || 'a',
+        latitude:  v.latitude  != null ? Number(v.latitude)  : (fallback?.latitude  ?? null),
+        longitude: v.longitude != null ? Number(v.longitude) : (fallback?.longitude ?? null),
+        duracao_media_min: v.duracao_media_min != null ? Number(v.duracao_media_min) : (fallback?.duracao_media_min ?? null),
+        preco_min: v.preco_min != null ? Number(v.preco_min) : (fallback?.preco_min ?? null),
+        preco_max: v.preco_max != null ? Number(v.preco_max) : (fallback?.preco_max ?? null),
     };
 }
 
 function mapExperiencia(e) {
+    // API retorna tags como [{id, nome}]; mantemos slugs locais para o algoritmo de scoring
+    const fallback = (typeof EXPERIENCIAS !== 'undefined')
+        ? EXPERIENCIAS.find(x => Number(x.id) === Number(e.id))
+        : null;
     return {
         id: Number(e.id),
         vinicola_id: Number(e.vinicola_id),
@@ -68,7 +79,7 @@ function mapExperiencia(e) {
         preco: Number(e.preco_por_pessoa),
         duracao: Number(e.duracao_minutos),
         categoria: e.categoria,
-        tags: Array.isArray(e.tags) ? e.tags : [],
+        tags: fallback?.tags || (Array.isArray(e.tags) ? e.tags.map(t => typeof t === 'string' ? t : t?.nome).filter(Boolean) : []),
     };
 }
 
@@ -123,9 +134,11 @@ async function bootstrap() {
         repopularSelect(mVinicola, VINICOLAS, 'id',
             v => v.nome, 'Selecione…');
 
-        // Re-renderiza catalogo e gestao usando os dados frescos.
+        // Re-renderiza catalogo, gestao e secoes da home usando os dados frescos.
         if (typeof window.renderExperiencias === 'function') window.renderExperiencias();
         if (typeof window.renderManageTable === 'function') window.renderManageTable();
+        if (typeof window.renderSugestoes === 'function')    window.renderSugestoes();
+        if (typeof window.renderBoutique === 'function')     window.renderBoutique();
 
         console.info(`[Uva&Via] API carregada: ${VINICOLAS.length} vinicolas, ${EXPERIENCIAS.length} experiencias, ${HORARIOS.length} horarios.`);
     } catch (err) {

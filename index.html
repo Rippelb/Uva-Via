@@ -1,42 +1,74 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#4a0d1f">
+    <meta name="description" content="Uva & Via — Concierge digital para enoturismo no Vale dos Vinhedos. Roteiros personalizados, disponibilidade em tempo real e reservas centralizadas.">
     <title>Uva & Via — Concierge do Vale dos Vinhedos</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <a href="#home" class="skip-link">Pular para o conteúdo</a>
+
     <header class="nav">
         <div class="nav-inner">
-            <a href="#home" class="nav-brand">Uva &amp; Via</a>
-            <button class="nav-toggle" aria-label="Abrir menu" aria-expanded="false" aria-controls="nav-menu">
+            <a href="#home" class="nav-brand" aria-label="Uva e Via — voltar para o início">
+                <span class="brand-mark" aria-hidden="true">🍇</span>
+                <span class="brand-text">Uva <em>&amp;</em> Via</span>
+            </a>
+            <button class="nav-toggle" aria-label="Abrir menu de navegação" aria-expanded="false" aria-controls="nav-menu">
                 <span></span><span></span><span></span>
             </button>
-            <nav id="nav-menu" class="nav-menu">
+            <nav id="nav-menu" class="nav-menu" aria-label="Principal">
                 <a href="#home" class="nav-link active">Início</a>
                 <a href="#planejar" class="nav-link">Planejar</a>
+                <a href="#roteiro" class="nav-link" data-roteiro-link hidden>Roteiro</a>
+                <a href="#vinicola" class="nav-link" data-vinicola-link hidden>Vinícola</a>
+                <a href="#mapa" class="nav-link" data-mapa-link hidden>Mapa</a>
                 <a href="#experiencias" class="nav-link">Experiências</a>
                 <a href="#reservar" class="nav-link">Reservar</a>
-                <a href="#minhas-reservas" class="nav-link">Minhas reservas</a>
-                <a href="#gestao" class="nav-link">Gestão</a>
+                <a href="#minhas-reservas" class="nav-link">Reservas</a>
             </nav>
         </div>
     </header>
 
+    <!-- =================== HERO =================== -->
     <section id="home" class="hero">
         <div class="hero-content">
             <span class="hero-eyebrow">Vale dos Vinhedos · Serra Gaúcha</span>
-            <h1 class="hero-title">Uva &amp; Via</h1>
-            <p class="hero-subtitle">Vinhos selecionados que contam histórias em cada taça</p>
+            <h1 class="hero-title">Monte seu roteiro<br><em>ideal</em> em minutos</h1>
+            <p class="hero-subtitle">
+                Concierge digital que cruza suas preferências com disponibilidade real das vinícolas
+                — você só se preocupa em brindar.
+            </p>
             <div class="hero-actions">
-                <a href="#planejar" class="btn btn-primary btn-lg">Planejar viagem</a>
-                <a href="#reservar" class="btn btn-outline btn-lg">Reservar horário</a>
+                <a href="#planejar" class="btn btn-primary btn-lg">Planejar meu roteiro</a>
+                <a href="#mapa" class="btn btn-outline btn-lg" id="cta-mapa">Ver mapa do dia</a>
             </div>
+
+            <form class="hero-search" role="search" aria-label="Busca rápida" id="hero-search-form">
+                <label class="visually-hidden" for="hero-search-input">Buscar vinícola ou experiência</label>
+                <span class="hero-search-icon" aria-hidden="true">🔍</span>
+                <input
+                    type="search"
+                    id="hero-search-input"
+                    name="q"
+                    placeholder="Buscar vinícola ou experiência…"
+                    autocomplete="off"
+                    inputmode="search"
+                >
+                <button type="submit" class="hero-search-btn">Buscar</button>
+                <ul class="hero-search-results" id="hero-search-results" hidden role="listbox"></ul>
+            </form>
+
             <div class="hero-stats" data-reveal>
                 <div class="stat"><strong>10</strong><span>vinícolas parceiras</span></div>
                 <div class="stat"><strong>26</strong><span>experiências curadas</span></div>
-                <div class="stat"><strong>4.9</strong><span>nota média dos visitantes</span></div>
+                <div class="stat"><strong>4.9</strong><span>nota média</span></div>
             </div>
         </div>
         <div class="hero-scroll" aria-hidden="true">
@@ -44,6 +76,35 @@
         </div>
     </section>
 
+    <!-- =================== SUGESTÕES DO DIA =================== -->
+    <section id="sugestoes" class="sugestoes" aria-labelledby="sugestoes-title">
+        <div class="sugestoes-inner">
+            <header class="planner-header" data-reveal>
+                <span class="planner-eyebrow">Para hoje</span>
+                <h2 id="sugestoes-title" class="planner-title">Sugestões do dia</h2>
+                <p class="planner-subtitle">
+                    Experiências curadas com vagas abertas para as próximas datas — escolha e reserve agora.
+                </p>
+            </header>
+            <div class="sugestoes-grid" id="sugestoes-grid"></div>
+        </div>
+    </section>
+
+    <!-- =================== BOUTIQUE EM DESTAQUE =================== -->
+    <section id="boutique" class="boutique" aria-labelledby="boutique-title">
+        <div class="boutique-inner">
+            <header class="planner-header" data-reveal>
+                <span class="planner-eyebrow">Curadoria</span>
+                <h2 id="boutique-title" class="planner-title">Vinícolas boutique em destaque</h2>
+                <p class="planner-subtitle">
+                    Cantinas familiares com produção limitada e experiência intimista, escolhidas a dedo.
+                </p>
+            </header>
+            <div class="boutique-grid" id="boutique-grid"></div>
+        </div>
+    </section>
+
+    <!-- =================== PLANEJAR =================== -->
     <section id="planejar" class="planner">
         <div class="planner-inner">
             <header class="planner-header" data-reveal>
@@ -63,17 +124,17 @@
 
                     <div class="form-field">
                         <label for="days">Dias de viagem</label>
-                        <input type="number" id="days" name="days" min="1" max="14" value="2" required>
+                        <input type="number" id="days" name="days" min="1" max="14" value="2" required inputmode="numeric">
                     </div>
 
                     <div class="form-field">
                         <label for="people">Número de pessoas</label>
-                        <input type="number" id="people" name="people" min="1" max="20" value="2" required>
+                        <input type="number" id="people" name="people" min="1" max="20" value="2" required inputmode="numeric">
                     </div>
 
                     <div class="form-field">
                         <label for="budget">Orçamento total (R$)</label>
-                        <input type="number" id="budget" name="budget" min="0" step="50" placeholder="Ex.: 1500" required>
+                        <input type="number" id="budget" name="budget" min="0" step="50" placeholder="Ex.: 1500" required inputmode="numeric">
                     </div>
 
                     <div class="form-field">
@@ -90,9 +151,9 @@
                     <div class="form-field">
                         <label for="pace">Ritmo do passeio</label>
                         <select id="pace" name="pace" required>
-                            <option value="tranquilo">Tranquilo</option>
-                            <option value="equilibrado" selected>Equilibrado</option>
-                            <option value="explorador">Explorador</option>
+                            <option value="tranquilo">Tranquilo · 2/dia</option>
+                            <option value="equilibrado" selected>Equilibrado · 3/dia</option>
+                            <option value="explorador">Explorador · 4/dia</option>
                         </select>
                     </div>
                 </div>
@@ -101,42 +162,20 @@
                     <legend>Interesses</legend>
                     <p class="fieldset-help">Escolha os temas que mais combinam com sua viagem — usamos isso para priorizar experiências.</p>
                     <div class="chips" id="interest-chips">
-                        <label class="chip">
-                            <input type="checkbox" name="interests" value="degustacao-premium">
-                            <span>Degustação premium</span>
-                        </label>
-                        <label class="chip">
-                            <input type="checkbox" name="interests" value="harmonizado">
-                            <span>Harmonizado</span>
-                        </label>
-                        <label class="chip">
-                            <input type="checkbox" name="interests" value="boutique">
-                            <span>Boutique</span>
-                        </label>
-                        <label class="chip">
-                            <input type="checkbox" name="interests" value="por-do-sol">
-                            <span>Pôr do sol</span>
-                        </label>
-                        <label class="chip">
-                            <input type="checkbox" name="interests" value="visita-tecnica">
-                            <span>Visita técnica</span>
-                        </label>
-                        <label class="chip">
-                            <input type="checkbox" name="interests" value="gastronomia">
-                            <span>Gastronomia local</span>
-                        </label>
-                        <label class="chip">
-                            <input type="checkbox" name="interests" value="vindima">
-                            <span>Vindima</span>
-                        </label>
-                        <label class="chip">
-                            <input type="checkbox" name="interests" value="espumantes">
-                            <span>Espumantes</span>
-                        </label>
-                        <label class="chip">
-                            <input type="checkbox" name="interests" value="masterclass">
-                            <span>Masterclass</span>
-                        </label>
+                        <label class="chip"><input type="checkbox" name="interests" value="degustacao-classica"><span>Degustação clássica</span></label>
+                        <label class="chip"><input type="checkbox" name="interests" value="degustacao-premium"><span>Degustação premium</span></label>
+                        <label class="chip"><input type="checkbox" name="interests" value="harmonizado"><span>Gastronomia harmonizada</span></label>
+                        <label class="chip"><input type="checkbox" name="interests" value="piquenique"><span>Piquenique</span></label>
+                        <label class="chip"><input type="checkbox" name="interests" value="visita-tecnica"><span>Tour pelas caves</span></label>
+                        <label class="chip"><input type="checkbox" name="interests" value="boutique"><span>Boutique wines</span></label>
+                        <label class="chip"><input type="checkbox" name="interests" value="raros"><span>Vinhos raros</span></label>
+                        <label class="chip"><input type="checkbox" name="interests" value="sommelier"><span>Com sommelier</span></label>
+                        <label class="chip"><input type="checkbox" name="interests" value="por-do-sol"><span>Pôr do sol</span></label>
+                        <label class="chip"><input type="checkbox" name="interests" value="vindima"><span>Vindima</span></label>
+                        <label class="chip"><input type="checkbox" name="interests" value="familiar"><span>Vinícolas familiares</span></label>
+                        <label class="chip"><input type="checkbox" name="interests" value="arquitetura"><span>Arquitetura/paisagem</span></label>
+                        <label class="chip"><input type="checkbox" name="interests" value="rapida"><span>Experiência rápida</span></label>
+                        <label class="chip"><input type="checkbox" name="interests" value="completa"><span>Experiência completa</span></label>
                     </div>
                 </fieldset>
 
@@ -147,14 +186,71 @@
 
                 <div class="form-actions">
                     <button type="reset" class="btn btn-ghost">Limpar</button>
-                    <button type="submit" class="btn btn-primary">Gerar roteiro</button>
+                    <button type="submit" class="btn btn-primary">Gerar roteiro personalizado</button>
                 </div>
             </form>
-
-            <article id="roteiro-output" class="roteiro" hidden></article>
         </div>
     </section>
 
+    <!-- =================== ROTEIRO SUGERIDO =================== -->
+    <section id="roteiro" class="roteiro-section" hidden aria-labelledby="roteiro-title">
+        <div class="roteiro-inner">
+            <header class="planner-header" data-reveal>
+                <span class="planner-eyebrow">Seu roteiro está pronto</span>
+                <h2 id="roteiro-title" class="planner-title">Roteiro sugerido</h2>
+                <p class="planner-subtitle" id="roteiro-subtitle">
+                    Otimizado por proximidade, disponibilidade e seus interesses.
+                </p>
+            </header>
+
+            <div class="roteiro-meta" id="roteiro-meta"></div>
+            <div class="roteiro-tags" id="roteiro-tags" aria-label="Experiências incluídas"></div>
+            <div class="budget-gauge" id="roteiro-budget"></div>
+
+            <div class="roteiro-days" id="roteiro-days"></div>
+
+            <div class="roteiro-actions">
+                <button type="button" class="btn btn-ghost" id="roteiro-edit">Editar roteiro</button>
+                <a href="#mapa" class="btn btn-ghost">Ver no mapa</a>
+                <a href="#minhas-reservas" class="btn btn-primary">Confirmar reservas</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- =================== VINÍCOLA (perfil) =================== -->
+    <section id="vinicola" class="vinicola-section" hidden aria-labelledby="vinicola-title">
+        <div class="vinicola-inner" id="vinicola-content">
+            <p class="vinicola-empty">Selecione uma vinícola para ver o perfil completo.</p>
+        </div>
+    </section>
+
+    <!-- =================== MAPA / ROTA =================== -->
+    <section id="mapa" class="mapa-section" aria-labelledby="mapa-title">
+        <div class="mapa-inner">
+            <header class="planner-header" data-reveal>
+                <span class="planner-eyebrow">Rota otimizada</span>
+                <h2 id="mapa-title" class="planner-title">Mapa do seu roteiro</h2>
+                <p class="planner-subtitle">
+                    Sequência das paradas, tempos de deslocamento e horários sugeridos por dia.
+                </p>
+            </header>
+
+            <div class="mapa-empty" id="mapa-empty">
+                <div class="empty-illustration" aria-hidden="true">🗺️</div>
+                <p>Você ainda não tem um roteiro gerado. <a href="#planejar">Comece pelo planejamento</a> para ver o mapa.</p>
+            </div>
+
+            <div class="mapa-content" id="mapa-content" hidden>
+                <div class="mapa-resumo" id="mapa-resumo" aria-label="Visão resumida da rota"></div>
+
+                <div class="mapa-tabs" role="tablist" id="mapa-tabs" aria-label="Dias do roteiro"></div>
+
+                <div class="mapa-timeline" id="mapa-timeline" role="tabpanel"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- =================== EXPERIÊNCIAS =================== -->
     <section id="experiencias" class="experiences">
         <div class="experiences-inner">
             <header class="planner-header" data-reveal>
@@ -168,7 +264,7 @@
             <div class="exp-filters" data-reveal>
                 <div class="filter-field">
                     <label for="exp-search">Buscar</label>
-                    <input type="search" id="exp-search" placeholder="Nome da experiência…">
+                    <input type="search" id="exp-search" placeholder="Nome da experiência ou vinícola…" inputmode="search">
                 </div>
                 <div class="filter-field">
                     <label for="exp-vinicola">Vinícola</label>
@@ -195,6 +291,7 @@
         </div>
     </section>
 
+    <!-- =================== RESERVAR =================== -->
     <section id="reservar" class="booking">
         <div class="booking-inner">
             <header class="planner-header" data-reveal>
@@ -223,12 +320,12 @@
 
                     <div class="form-field">
                         <label for="b-pessoas">Número de pessoas</label>
-                        <input type="number" id="b-pessoas" min="1" max="20" value="2" required>
+                        <input type="number" id="b-pessoas" min="1" max="20" value="2" required inputmode="numeric">
                     </div>
 
                     <div class="form-field">
                         <label for="b-nome">Nome do responsável</label>
-                        <input type="text" id="b-nome" placeholder="Como devemos chamar?" required>
+                        <input type="text" id="b-nome" placeholder="Como devemos chamar?" required autocomplete="name">
                     </div>
                 </div>
 
@@ -236,7 +333,7 @@
                     <div class="slots-head">
                         <span class="slots-label">Horários disponíveis</span>
                         <span class="slots-updated" id="slots-updated">
-                            <span class="live-dot"></span> Atualizado em <time id="slots-updated-time">agora</time>
+                            <span class="live-dot" aria-hidden="true"></span> Atualizado em <time id="slots-updated-time">agora</time>
                         </span>
                     </div>
                     <div class="slots" id="slots"></div>
@@ -270,6 +367,7 @@
         </div>
     </section>
 
+    <!-- =================== MINHAS RESERVAS =================== -->
     <section id="minhas-reservas" class="reservations">
         <div class="reservations-inner">
             <header class="planner-header" data-reveal>
@@ -289,21 +387,28 @@
                     <span>Próxima visita</span>
                     <strong id="rstat-proxima">—</strong>
                 </div>
-                <div class="rstat">
-                    <span>Total investido</span>
+                <div class="rstat rstat--highlight">
+                    <span>Valor total estimado</span>
                     <strong id="rstat-valor">R$ 0,00</strong>
                 </div>
             </div>
 
+            <div class="reservations-actions" id="reservations-actions" hidden>
+                <a href="#planejar" class="btn btn-ghost">Editar roteiro</a>
+                <a href="#experiencias" class="btn btn-primary">Adicionar experiência</a>
+            </div>
+
             <div class="reservations-empty" id="reservations-empty">
-                <div class="empty-illustration">🍇</div>
-                <p>Você ainda não tem reservas. Que tal começar pelo <a href="#reservar">agendamento</a>?</p>
+                <div class="empty-illustration" aria-hidden="true">🍇</div>
+                <p>Você ainda não tem reservas. <a href="#planejar">Gere um roteiro primeiro</a> ou
+                <a href="#reservar">reserve um horário</a> direto.</p>
             </div>
 
             <ul class="reservations-list" id="reservations-list" hidden></ul>
         </div>
     </section>
 
+    <!-- =================== DIFERENCIAIS =================== -->
     <section id="diferenciais" class="differentials">
         <div class="differentials-inner">
             <header class="planner-header" data-reveal>
@@ -312,29 +417,30 @@
             </header>
             <div class="diff-grid">
                 <article class="diff-card" data-reveal>
-                    <div class="diff-icon">🍷</div>
-                    <h3>Curadoria local</h3>
-                    <p>Vinícolas selecionadas a dedo — das familiares centenárias às boutiques premiadas.</p>
-                </article>
-                <article class="diff-card" data-reveal>
-                    <div class="diff-icon">⏱️</div>
-                    <h3>Tempo otimizado</h3>
-                    <p>Roteiros calculam deslocamento entre cantinas para você aproveitar cada minuto.</p>
-                </article>
-                <article class="diff-card" data-reveal>
-                    <div class="diff-icon">💳</div>
-                    <h3>Custo transparente</h3>
-                    <p>Valor total estimado em tempo real, sem surpresas no fim da viagem.</p>
-                </article>
-                <article class="diff-card" data-reveal>
-                    <div class="diff-icon">📅</div>
-                    <h3>Agenda integrada</h3>
+                    <div class="diff-icon" aria-hidden="true">📅</div>
+                    <h3>Integração com agendas</h3>
                     <p>Confirmação de horários direto com as vinícolas, com lembretes antes da visita.</p>
+                </article>
+                <article class="diff-card" data-reveal>
+                    <div class="diff-icon" aria-hidden="true">🟢</div>
+                    <h3>Disponibilidade real</h3>
+                    <p>Vagas atualizadas em tempo real — nunca mais chegar e descobrir que está lotado.</p>
+                </article>
+                <article class="diff-card" data-reveal>
+                    <div class="diff-icon" aria-hidden="true">🎯</div>
+                    <h3>Personalização por perfil</h3>
+                    <p>Roteiros pensados para casal, família, amigos ou solo — com o ritmo que você quiser.</p>
+                </article>
+                <article class="diff-card" data-reveal>
+                    <div class="diff-icon" aria-hidden="true">⏱️</div>
+                    <h3>Roteiro otimizado</h3>
+                    <p>Algoritmo calcula proximidade e deslocamento para você aproveitar cada minuto.</p>
                 </article>
             </div>
         </div>
     </section>
 
+    <!-- =================== GESTÃO =================== -->
     <section id="gestao" class="manage">
         <div class="manage-inner">
             <header class="planner-header" data-reveal>
@@ -373,7 +479,7 @@
 
                     <div class="form-field">
                         <label for="m-capacidade">Capacidade máxima</label>
-                        <input type="number" id="m-capacidade" min="1" max="200" value="12" required>
+                        <input type="number" id="m-capacidade" min="1" max="200" value="12" required inputmode="numeric">
                     </div>
                 </div>
 
@@ -408,6 +514,7 @@
                 <h4>Explorar</h4>
                 <a href="#planejar">Planejar viagem</a>
                 <a href="#experiencias">Experiências</a>
+                <a href="#mapa">Mapa do roteiro</a>
                 <a href="#reservar">Reservar horário</a>
                 <a href="#minhas-reservas">Minhas reservas</a>
                 <a href="#gestao">Gestão</a>
