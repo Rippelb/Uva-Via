@@ -122,23 +122,17 @@ async function bootstrap() {
         EXPERIENCIAS.splice(0, EXPERIENCIAS.length, ...experiencias.map(mapExperiencia));
         HORARIOS.splice(0, HORARIOS.length, ...horarios.map(mapHorario));
 
-        // Re-popula os <select> ligados aos dados.
-        const selVinicola = document.getElementById('b-vinicola');
-        const expVinicolaSel = document.getElementById('exp-vinicola');
-        const mVinicola = document.getElementById('m-vinicola');
-
-        repopularSelect(selVinicola, VINICOLAS, 'id',
-            v => `${v.nome} — ${v.cidade}`, 'Selecione uma vinícola…');
-        repopularSelect(expVinicolaSel, VINICOLAS, 'id',
-            v => v.nome, 'Todas as vinícolas');
-        repopularSelect(mVinicola, VINICOLAS, 'id',
-            v => v.nome, 'Selecione…');
+        // populateVinicolaSelects() cobre todos os selects (b-vinicola, exp-vinicola, m-vinicola)
+        if (typeof window.populateVinicolaSelects === 'function') {
+            window.populateVinicolaSelects();
+        }
 
         // Re-renderiza catalogo, gestao e secoes da home usando os dados frescos.
-        if (typeof window.renderExperiencias === 'function') window.renderExperiencias();
-        if (typeof window.renderManageTable === 'function') window.renderManageTable();
-        if (typeof window.renderSugestoes === 'function')    window.renderSugestoes();
-        if (typeof window.renderBoutique === 'function')     window.renderBoutique();
+        if (typeof window.renderExperiencias === 'function')   window.renderExperiencias();
+        if (typeof window.renderManageTable === 'function')    window.renderManageTable();
+        if (typeof window.renderManageVinList === 'function')  window.renderManageVinList();
+        if (typeof window.renderSugestoes === 'function')      window.renderSugestoes();
+        if (typeof window.renderBoutique === 'function')       window.renderBoutique();
 
         console.info(`[Uva&Via] API carregada: ${VINICOLAS.length} vinicolas, ${EXPERIENCIAS.length} experiencias, ${HORARIOS.length} horarios.`);
     } catch (err) {

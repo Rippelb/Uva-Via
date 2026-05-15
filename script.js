@@ -51,6 +51,10 @@ let EXPERIENCIAS = [
     { id: 26, vinicola_id: 10, nome: 'Flight de moscatéis Dom Cândido',          preco: 55,  duracao: 45,  tags: ['degustacao-classica', 'rapida'] },
 ];
 
+// Vinicolas customizadas (criadas via Gestao, persistidas em localStorage).
+// Declarado com var para hoisting — getAllVinicolas() pode ser chamada antes do load.
+var customVinicolas = [];
+
 let HORARIOS = [
     { id: 1,  experiencia_id: 1,  data: '2026-05-08', horario: '10:00', vagas: 12 },
     { id: 2,  experiencia_id: 1,  data: '2026-05-08', horario: '14:00', vagas: 10 },
@@ -95,6 +99,24 @@ const fmtDataCurta = (iso) => {
     const [, m, d] = iso.split('-');
     return `${d}/${m}`;
 };
+const getTodayISO = () => {
+    const d = new Date();
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${y}-${m}-${day}`;
+};
+const isPastDate = (iso) => {
+    if (!iso) return false;
+    return iso < getTodayISO();
+};
+function setFieldError(input, msg) {
+    if (!input) return;
+    input.classList.toggle('is-invalid', !!msg);
+    const errEl = document.getElementById(input.id + '-error');
+    if (errEl) errEl.textContent = msg || '';
+}
+function clearFieldError(input) { setFieldError(input, ''); }
 const addDays = (isoDate, days) => {
     const d = new Date(isoDate + 'T00:00:00');
     if (isNaN(d.getTime())) return '';
@@ -213,14 +235,14 @@ function runGlobalSearch(term) {
     const html = [];
     hitsVin.forEach(v => {
         html.push(`<li data-type="vin" data-id="${v.id}">
-            <span class="res-title">🍇 ${v.nome}</span>
+            <span class="res-title"><i class="fa-solid fa-wine-bottle" aria-hidden="true"></i> ${v.nome}</span>
             <span class="res-meta">${v.cidade} · ${v.tipo === 'boutique' ? 'Boutique' : 'Vinícola'}</span>
         </li>`);
     });
     hitsExp.forEach(e => {
-        const vin = VINICOLAS.find(v => v.id === e.vinicola_id);
+        const vin = getAllVinicolas().find(v => v.id === e.vinicola_id);
         html.push(`<li data-type="exp" data-id="${e.id}">
-            <span class="res-title">🍷 ${e.nome}</span>
+            <span class="res-title"><i class="fa-solid fa-wine-glass" aria-hidden="true"></i> ${e.nome}</span>
             <span class="res-meta">${vin ? vin.nome : ''} · ${fmtBRL(e.preco)}</span>
         </li>`);
     });
@@ -317,7 +339,7 @@ function renderSugestoes() {
         'boutique':           'Intimista',
     };
     grid.innerHTML = sugestoes.map(s => {
-        const vin = VINICOLAS.find(v => v.id === s.exp.vinicola_id);
+        const vin = getAllVinicolas().find(v => v.id === s.exp.vinicola_id);
         const vagas = countHorariosDisponiveis(s.exp.id);
         return `
             <article class="sug-card">
@@ -325,9 +347,9 @@ function renderSugestoes() {
                 <h3>${s.exp.nome}</h3>
                 <span class="sug-vin">${vin?.nome ?? ''} · ${vin?.cidade ?? ''}</span>
                 <div class="sug-meta">
-                    <span>⏱ <strong>${s.exp.duracao} min</strong></span>
-                    <span>💰 <strong>${fmtBRL(s.exp.preco)}</strong>/pessoa</span>
-                    <span>📅 ${fmtDataCurta(s.hor.data)} · ${s.hor.horario}</span>
+                    <span><i class="fa-regular fa-clock" aria-hidden="true"></i> <strong>${s.exp.duracao} min</strong></span>
+                    <span><i class="fa-solid fa-tag" aria-hidden="true"></i> <strong>${fmtBRL(s.exp.preco)}</strong>/pessoa</span>
+                    <span><i class="fa-regular fa-calendar" aria-hidden="true"></i> ${fmtDataCurta(s.hor.data)} · ${s.hor.horario}</span>
                     <span><span class="av-badge ${getDisponibilidadeStatus(vagas, 50).cls}">${vagas} vagas</span></span>
                 </div>
                 <button class="btn btn-primary" type="button" data-vin="${s.exp.vinicola_id}" data-exp="${s.exp.id}">
@@ -348,7 +370,7 @@ function renderSugestoes() {
 function renderBoutique() {
     const grid = document.getElementById('boutique-grid');
     if (!grid) return;
-    const boutiques = VINICOLAS.filter(v => v.tipo === 'boutique').slice(0, 6);
+    const boutiques = getAllVinicolas().filter(v => v.tipo === 'boutique').slice(0, 6);
     if (boutiques.length === 0) {
         grid.innerHTML = `<p class="exp-empty">Nenhuma vinícola boutique cadastrada.</p>`;
         return;
@@ -367,9 +389,9 @@ function renderBoutique() {
                     <h3>${v.nome.replace(/^Vin[íi]cola\s+/i, '')}</h3>
                     <p>${v.descricao || 'Experiência intimista entre os vinhedos.'}</p>
                     <div class="bout-meta">
-                        <span><strong>${expCount}</strong> experiências</span>
-                        <span><strong>${v.duracao_media_min || 75}</strong> min médios</span>
-                        <span>${preco}/pessoa</span>
+                        <span><i class="fa-solid fa-wine-glass" aria-hidden="true"></i> <strong>${expCount}</strong> experiências</span>
+                        <span><i class="fa-regular fa-clock" aria-hidden="true"></i> <strong>${v.duracao_media_min || 75}</strong> min</span>
+                        <span><i class="fa-solid fa-tag" aria-hidden="true"></i> ${preco}</span>
                     </div>
                     <span class="btn btn-ghost">Ver perfil</span>
                 </div>
@@ -384,7 +406,7 @@ function renderBoutique() {
 
 // =================== Perfil da Vinicola ===================
 function openVinicola(vinId, focusExpId) {
-    const vin = VINICOLAS.find(v => v.id === vinId);
+    const vin = getAllVinicolas().find(v => v.id === vinId);
     if (!vin) return;
     renderVinicolaPerfil(vin, focusExpId);
     const section = document.getElementById('vinicola');
@@ -395,7 +417,6 @@ function openVinicola(vinId, focusExpId) {
 
 function renderVinicolaPerfil(vin, focusExpId) {
     const container = document.getElementById('vinicola-content');
-    const initial = (vin.nome || '?').replace(/^Vin[íi]cola\s+/i, '').charAt(0).toUpperCase();
     const exps = EXPERIENCIAS.filter(e => e.vinicola_id === vin.id);
 
     container.innerHTML = `
@@ -438,8 +459,8 @@ function renderVinicolaPerfil(vin, focusExpId) {
                                 <li class="vin-exp-card" data-exp="${e.id}">
                                     <h4>${e.nome}</h4>
                                     <div class="vin-exp-meta">
-                                        <span>⏱ <strong>${e.duracao} min</strong></span>
-                                        <span>💰 <strong>${fmtBRL(e.preco)}</strong>/pessoa</span>
+                                        <span><i class="fa-regular fa-clock" aria-hidden="true"></i> <strong>${e.duracao} min</strong></span>
+                                        <span><i class="fa-solid fa-tag" aria-hidden="true"></i> <strong>${fmtBRL(e.preco)}</strong>/pessoa</span>
                                         <span><span class="av-badge ${status.cls}">${status.label}</span></span>
                                     </div>
                                     <div class="vin-horarios">
@@ -532,6 +553,9 @@ function clearPlan() {
 
 function getAllHorarios() {
     return [...HORARIOS, ...customHorarios];
+}
+function getAllVinicolas() {
+    return [...VINICOLAS, ...customVinicolas];
 }
 
 function generateRoteiro(input) {
@@ -687,8 +711,8 @@ function renderRoteiro(plano) {
     document.getElementById('roteiro-budget').innerHTML = `
         <span class="bar"><span style="width:${budgetPct}%"></span></span>
         <p>${overBudget
-            ? `⚠️ ${Math.round((plano.total / plano.budget) * 100 - 100)}% acima do orçamento`
-            : (plano.budget > 0 ? `✓ Dentro do orçamento (${budgetPct}% utilizado)` : 'Orçamento não informado')}</p>
+            ? `<i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i> ${Math.round((plano.total / plano.budget) * 100 - 100)}% acima do orçamento`
+            : (plano.budget > 0 ? `<i class="fa-solid fa-circle-check" aria-hidden="true"></i> Dentro do orçamento (${budgetPct}% utilizado)` : 'Orçamento não informado')}</p>
     `;
 
     // Dias
@@ -745,23 +769,53 @@ function renderRoteiro(plano) {
 document.getElementById('travel-form').addEventListener('submit', (e) => {
     e.preventDefault();
     const fd = new FormData(e.target);
+    const startDate = fd.get('start-date') || '';
+    const days      = Math.max(1, Number(fd.get('days')) || 1);
+    const pessoas   = Math.max(1, Number(fd.get('people')) || 1);
+    const budget    = Math.max(0, Number(fd.get('budget')) || 0);
+    const profile   = fd.get('profile') || '';
+
+    // Validacao
+    const startDateInput = document.getElementById('start-date');
+    const profileInput = document.getElementById('profile');
+    let invalid = false;
+
+    if (!startDate) {
+        setFieldError(startDateInput, 'Informe a data de início da viagem.');
+        invalid = true;
+    } else if (isPastDate(startDate)) {
+        setFieldError(startDateInput, 'A data de início não pode estar no passado.');
+        invalid = true;
+    } else {
+        clearFieldError(startDateInput);
+    }
+    if (!profile) {
+        setFieldError(profileInput, 'Selecione o perfil da viagem.');
+        invalid = true;
+    } else {
+        clearFieldError(profileInput);
+    }
+    if (invalid) {
+        showToast('Revise os campos destacados antes de gerar o roteiro.', 'error');
+        return;
+    }
+
     const input = {
-        startDate: fd.get('start-date') || '',
-        days:      Math.max(1, Number(fd.get('days')) || 1),
-        pessoas:   Math.max(1, Number(fd.get('people')) || 1),
-        budget:    Math.max(0, Number(fd.get('budget')) || 0),
-        profile:   fd.get('profile') || '',
+        startDate, days, pessoas, budget, profile,
         pace:      fd.get('pace') || 'equilibrado',
         notes:     fd.get('notes') || '',
         interests: [...e.target.querySelectorAll('input[name="interests"]:checked')].map(i => i.value),
     };
-    if (!input.profile) {
-        showToast('Selecione o perfil da viagem.', 'error');
-        return;
-    }
     const plano = generateRoteiro(input);
     renderRoteiro(plano);
     showToast('Roteiro gerado com base nas suas preferências!');
+});
+
+// Limpa erros em tempo real
+['start-date', 'profile', 'days', 'people', 'budget'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('input', () => clearFieldError(el));
+    if (el && el.tagName === 'SELECT') el.addEventListener('change', () => clearFieldError(el));
 });
 
 document.getElementById('roteiro-edit')?.addEventListener('click', () => {
@@ -826,7 +880,7 @@ function renderMapa(plano) {
     const timeline = document.getElementById('mapa-timeline');
     timeline.innerHTML = dia.map((stop, idx) => {
         const desloc = stop.deslocamentoMin > 0
-            ? `<div class="mapa-deslocamento">${minutosParaHHMM(stop.deslocamentoMin)} de deslocamento até ${stop.vin.nome}</div>`
+            ? `<div class="mapa-deslocamento"><i class="fa-solid fa-car-side" aria-hidden="true"></i> ${minutosParaHHMM(stop.deslocamentoMin)} de deslocamento até ${stop.vin.nome}</div>`
             : '';
         return `
             ${idx > 0 ? desloc : ''}
@@ -860,15 +914,26 @@ const sumCalc = document.getElementById('sum-calc');
 const sumTotal = document.getElementById('sum-total');
 const btnReservar = document.getElementById('btn-reservar');
 
-VINICOLAS.forEach(v => {
-    const opt = document.createElement('option');
-    opt.value = v.id;
-    opt.textContent = `${v.nome} — ${v.cidade}`;
-    selVinicola.appendChild(opt);
-});
-
 // Snapshot capacidade
 HORARIOS.forEach(h => { h.capacidade = h.vagas; });
+
+// Re-mapeia datas do seed para serem sempre futuras (demo nunca expira).
+(function remapSeedDates() {
+    const distinctDates = [...new Set(HORARIOS.map(h => h.data))].sort();
+    if (distinctDates.length === 0) return;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const map = {};
+    distinctDates.forEach((d, i) => {
+        const target = new Date(today);
+        target.setDate(target.getDate() + 3 + i); // hoje+3, +4, +5...
+        const iso = target.toISOString().slice(0, 10);
+        map[d] = iso;
+    });
+    HORARIOS.forEach(h => {
+        if (map[h.data]) h.data = map[h.data];
+    });
+})();
 
 // Horarios custom (criados via Gestao)
 const STORAGE_HORARIOS = 'uvaevia.horarios.custom';
@@ -1156,7 +1221,7 @@ const expGrid = document.getElementById('exp-grid');
 const expEmpty = document.getElementById('exp-empty');
 const expCount = document.getElementById('exp-count');
 
-VINICOLAS.forEach(v => expVinicolaSel.appendChild(new Option(v.nome, v.id)));
+// VINICOLAS são populadas em populateVinicolaSelects() durante o Init
 
 function renderExperiencias() {
     const term = expSearch.value.trim().toLowerCase();
@@ -1186,7 +1251,7 @@ function renderExperiencias() {
     expEmpty.hidden = lista.length > 0;
 
     lista.forEach(e => {
-        const vin = VINICOLAS.find(v => v.id === e.vinicola_id);
+        const vin = getAllVinicolas().find(v => v.id === e.vinicola_id);
         const vagas = countHorariosDisponiveis(e.id);
         const status = getDisponibilidadeStatus(vagas, 50);
         const card = document.createElement('article');
@@ -1195,8 +1260,8 @@ function renderExperiencias() {
             <span class="exp-vinicola">${vin?.nome ?? '—'} · ${vin?.cidade ?? ''}</span>
             <h3>${e.nome}</h3>
             <div class="exp-meta">
-                <span>⏱ <strong>${e.duracao} min</strong></span>
-                <span>💰 <strong>${fmtBRL(e.preco)}</strong>/pessoa</span>
+                <span><i class="fa-regular fa-clock" aria-hidden="true"></i> <strong>${e.duracao} min</strong></span>
+                <span><i class="fa-solid fa-tag" aria-hidden="true"></i> <strong>${fmtBRL(e.preco)}</strong>/pessoa</span>
                 <span><span class="av-badge ${status.cls}">${vagas > 0 ? vagas + ' vagas' : 'Lotado'}</span></span>
             </div>
             <div class="exp-card-actions">
@@ -1227,18 +1292,55 @@ expSearch.addEventListener('input', renderExperiencias);
 expVinicolaSel.addEventListener('change', renderExperiencias);
 expSort.addEventListener('change', renderExperiencias);
 
-// =================== Gestao de horarios ===================
+// =================== Gestao: subtabs (Horarios | Vinicolas) ===================
+document.querySelectorAll('.manage-subtab').forEach(btn => {
+    btn.addEventListener('click', () => {
+        const target = btn.dataset.subtab;
+        document.querySelectorAll('.manage-subtab').forEach(b => {
+            const on = b.dataset.subtab === target;
+            b.classList.toggle('is-active', on);
+            b.setAttribute('aria-selected', String(on));
+        });
+        document.querySelectorAll('[data-subtab-panel]').forEach(panel => {
+            panel.hidden = panel.dataset.subtabPanel !== target;
+        });
+    });
+});
+
+// =================== Gestao: helpers de selects de vinicola ===================
+function populateVinicolaSelects() {
+    const all = getAllVinicolas();
+    const builders = [
+        { el: document.getElementById('b-vinicola'),     label: v => `${v.nome} — ${v.cidade}`, placeholder: 'Selecione uma vinícola…' },
+        { el: document.getElementById('exp-vinicola'),   label: v => v.nome,                    placeholder: 'Todas as vinícolas' },
+        { el: document.getElementById('m-vinicola'),     label: v => v.nome,                    placeholder: 'Selecione…' },
+    ];
+    builders.forEach(({ el, label, placeholder }) => {
+        if (!el) return;
+        const prev = el.value;
+        el.innerHTML = '';
+        if (placeholder) el.appendChild(new Option(placeholder, ''));
+        all.forEach(v => el.appendChild(new Option(label(v), v.id)));
+        if (prev && all.some(v => String(v.id) === prev)) el.value = prev;
+    });
+}
+
+// =================== Gestao: Horarios ===================
 const mVinicola = document.getElementById('m-vinicola');
 const mExperiencia = document.getElementById('m-experiencia');
 const mData = document.getElementById('m-data');
+const mDataFim = document.getElementById('m-data-fim');
 const mHorario = document.getElementById('m-horario');
+const mHoraInicio = document.getElementById('m-hora-inicio');
+const mHoraFim = document.getElementById('m-hora-fim');
+const mIntervalo = document.getElementById('m-intervalo');
 const mCapacidade = document.getElementById('m-capacidade');
 const manageTable = document.getElementById('manage-table');
+const managePreview = document.getElementById('manage-preview');
+const manageSubmitLabel = document.getElementById('manage-submit-label');
 const statTotal = document.getElementById('stat-total');
 const statVagas = document.getElementById('stat-vagas');
 const statOcupacao = document.getElementById('stat-ocupacao');
-
-VINICOLAS.forEach(v => mVinicola.appendChild(new Option(v.nome, v.id)));
 
 mVinicola.addEventListener('change', () => {
     mExperiencia.innerHTML = '';
@@ -1253,6 +1355,89 @@ mVinicola.addEventListener('change', () => {
     EXPERIENCIAS.filter(e => e.vinicola_id === vid).forEach(e => {
         mExperiencia.appendChild(new Option(e.nome, e.id));
     });
+});
+
+// Modo: single | range
+function getManageMode() {
+    return document.querySelector('input[name="manage-mode"]:checked')?.value || 'single';
+}
+function applyManageMode() {
+    const mode = getManageMode();
+    document.querySelectorAll('[data-mode]').forEach(el => {
+        const show = el.dataset.mode === mode;
+        el.hidden = !show;
+        // Disable hidden inputs so required nao bloqueia submit
+        el.querySelectorAll('input, select').forEach(i => {
+            i.disabled = !show;
+            if (!show) i.removeAttribute('required');
+            else if (i.id !== 'm-data-fim') i.setAttribute('required', '');
+        });
+    });
+    if (manageSubmitLabel) {
+        manageSubmitLabel.textContent = mode === 'range' ? 'Adicionar faixa' : 'Adicionar horário';
+    }
+    updateManagePreview();
+}
+document.querySelectorAll('input[name="manage-mode"]').forEach(r => {
+    r.addEventListener('change', applyManageMode);
+});
+
+function timeToMin(t) {
+    const [h, m] = t.split(':').map(Number);
+    return h * 60 + m;
+}
+function minToTime(min) {
+    const h = Math.floor(min / 60);
+    const m = min % 60;
+    return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
+}
+function generateSlotsForMode() {
+    const mode = getManageMode();
+    if (mode === 'single') {
+        if (!mData.value || !mHorario.value) return [];
+        return [{ data: mData.value, horario: mHorario.value }];
+    }
+    // range
+    const dStart = mData.value;
+    const dEnd = mDataFim.value || mData.value;
+    const hI = timeToMin(mHoraInicio.value || '10:00');
+    const hF = timeToMin(mHoraFim.value || '17:00');
+    const step = Number(mIntervalo.value) || 60;
+    if (!dStart) return [];
+    if (hF < hI) return [];
+
+    const slots = [];
+    let cursor = dStart;
+    let safety = 0;
+    while (cursor <= dEnd && safety++ < 60) {
+        for (let t = hI; t <= hF; t += step) {
+            slots.push({ data: cursor, horario: minToTime(t) });
+        }
+        cursor = addDays(cursor, 1);
+    }
+    return slots;
+}
+function updateManagePreview() {
+    if (!managePreview) return;
+    const slots = generateSlotsForMode();
+    const mode = getManageMode();
+    if (mode === 'range' && slots.length > 0) {
+        const cap = Number(mCapacidade.value) || 0;
+        managePreview.hidden = false;
+        managePreview.innerHTML = `
+            <strong>${slots.length}</strong> ${slots.length === 1 ? 'horário será criado' : 'horários serão criados'}
+            · capacidade total: <strong>${slots.length * cap}</strong> vagas.
+            <br>Primeiro: ${fmtData(slots[0].data)} às ${slots[0].horario}
+            · Último: ${fmtData(slots[slots.length-1].data)} às ${slots[slots.length-1].horario}.
+        `;
+    } else {
+        managePreview.hidden = true;
+    }
+}
+['m-data','m-data-fim','m-hora-inicio','m-hora-fim','m-intervalo','m-capacidade'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('input', updateManagePreview);
+    if (el && el.tagName === 'SELECT') el.addEventListener('change', updateManagePreview);
 });
 
 function renderManageTable() {
@@ -1334,32 +1519,231 @@ document.getElementById('manage-form').addEventListener('submit', (e) => {
     e.preventDefault();
     const expId = Number(mExperiencia.value);
     const exp = EXPERIENCIAS.find(x => x.id === expId);
-    const data = mData.value;
-    const horario = mHorario.value;
     const capacidade = Math.max(1, Number(mCapacidade.value) || 0);
+    const mode = getManageMode();
 
-    if (!exp || !data || !horario || !capacidade) {
-        showToast('Preencha todos os campos da gestão.', 'error');
+    // Validacao
+    let invalid = false;
+    if (!exp) {
+        showToast('Selecione a vinícola e a experiência.', 'error');
+        invalid = true;
+    }
+    if (capacidade < 1) {
+        setFieldError(mCapacidade, 'Capacidade deve ser pelo menos 1.');
+        invalid = true;
+    } else {
+        clearFieldError(mCapacidade);
+    }
+    if (!mData.value) {
+        setFieldError(mData, 'Informe a data.');
+        invalid = true;
+    } else if (isPastDate(mData.value)) {
+        setFieldError(mData, 'Não é possível cadastrar horários em datas passadas.');
+        invalid = true;
+    } else {
+        clearFieldError(mData);
+    }
+    if (mode === 'range') {
+        const dEnd = mDataFim.value;
+        if (dEnd && dEnd < mData.value) {
+            showToast('A data final deve ser igual ou posterior à inicial.', 'error');
+            invalid = true;
+        }
+        const hI = timeToMin(mHoraInicio.value || '00:00');
+        const hF = timeToMin(mHoraFim.value || '00:00');
+        if (hF < hI) {
+            showToast('Hora final deve ser maior que a inicial.', 'error');
+            invalid = true;
+        }
+    }
+    if (invalid) return;
+
+    const slots = generateSlotsForMode();
+    if (slots.length === 0) {
+        showToast('Não há horários para criar com esses parâmetros.', 'error');
         return;
     }
-    const novoId = 1000 + Date.now() % 100000;
-    const novo = {
-        id: novoId, experiencia_id: expId, data, horario,
-        capacidade, vagas: capacidade,
-    };
-    customHorarios.push(novo);
+    let baseId = 1000 + (Date.now() % 100000);
+    slots.forEach((s, i) => {
+        customHorarios.push({
+            id: baseId + i,
+            experiencia_id: expId,
+            data: s.data,
+            horario: s.horario,
+            capacidade,
+            vagas: capacidade,
+        });
+    });
     saveCustomHorarios(customHorarios);
 
-    showToast(`Horário criado: ${fmtData(data)} às ${horario}.`);
+    if (slots.length === 1) {
+        showToast(`Horário criado: ${fmtData(slots[0].data)} às ${slots[0].horario}.`);
+    } else {
+        showToast(`${slots.length} horários criados com sucesso.`);
+    }
+
     e.target.reset();
     mExperiencia.disabled = true;
     mExperiencia.innerHTML = '<option value="">Escolha uma vinícola primeiro</option>';
     mCapacidade.value = 12;
+    if (mHoraInicio) mHoraInicio.value = '10:00';
+    if (mHoraFim) mHoraFim.value = '17:00';
+    document.querySelector('input[name="manage-mode"][value="single"]').checked = true;
+    applyManageMode();
+    setMinDateInputs();
     renderManageTable();
     renderExperiencias();
     renderSugestoes();
     if (selExperiencia.value && Number(selExperiencia.value) === expId) refreshSlots();
 });
+
+// =================== Gestao: Vinicolas (CRUD) ===================
+const STORAGE_VINICOLAS = 'uvaevia.vinicolas.custom';
+function loadCustomVinicolas() {
+    try { return JSON.parse(localStorage.getItem(STORAGE_VINICOLAS)) || []; }
+    catch { return []; }
+}
+function saveCustomVinicolas(arr) {
+    localStorage.setItem(STORAGE_VINICOLAS, JSON.stringify(arr));
+}
+customVinicolas = loadCustomVinicolas();
+
+const vinicolaForm = document.getElementById('vinicola-form');
+const vNome = document.getElementById('v-nome');
+const vCidade = document.getElementById('v-cidade');
+const vTipo = document.getElementById('v-tipo');
+const vTone = document.getElementById('v-tone');
+const vDuracao = document.getElementById('v-duracao');
+const vPrecoMin = document.getElementById('v-preco-min');
+const vPrecoMax = document.getElementById('v-preco-max');
+const vDescricao = document.getElementById('v-descricao');
+
+vinicolaForm?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    let invalid = false;
+
+    const nome = vNome.value.trim();
+    const cidade = vCidade.value.trim();
+    const precoMin = Number(vPrecoMin.value) || 0;
+    const precoMax = Number(vPrecoMax.value) || 0;
+    const duracao = Number(vDuracao.value) || 0;
+
+    if (nome.length < 3) {
+        setFieldError(vNome, 'Nome muito curto.');
+        invalid = true;
+    } else if (getAllVinicolas().some(v => v.nome.toLowerCase() === nome.toLowerCase())) {
+        setFieldError(vNome, 'Já existe uma vinícola com esse nome.');
+        invalid = true;
+    } else {
+        clearFieldError(vNome);
+    }
+    if (precoMin < 0 || precoMax < 0) {
+        setFieldError(vPrecoMax, 'Preços devem ser positivos.');
+        invalid = true;
+    } else if (precoMax < precoMin) {
+        setFieldError(vPrecoMax, 'O preço máximo precisa ser maior ou igual ao mínimo.');
+        invalid = true;
+    } else {
+        clearFieldError(vPrecoMax);
+    }
+    if (duracao < 15) {
+        setFieldError(vDuracao, 'Duração mínima de 15 minutos.');
+        invalid = true;
+    } else {
+        clearFieldError(vDuracao);
+    }
+    if (invalid) {
+        showToast('Revise os campos destacados.', 'error');
+        return;
+    }
+
+    const novo = {
+        id: 1000 + (Date.now() % 100000),
+        nome,
+        cidade,
+        tipo: vTipo.value || 'boutique',
+        tone: vTone.value || 'a',
+        descricao: vDescricao.value.trim() || 'Experiência exclusiva entre os vinhedos.',
+        duracao_media_min: duracao,
+        preco_min: precoMin,
+        preco_max: precoMax,
+        latitude: null,
+        longitude: null,
+    };
+    customVinicolas.push(novo);
+    saveCustomVinicolas(customVinicolas);
+    populateVinicolaSelects();
+    renderManageVinList();
+    renderBoutique();
+    renderExperiencias();
+    e.target.reset();
+    showToast(`Vinícola "${nome}" cadastrada!`);
+});
+
+// Limpa erros em tempo real do form de vinicola
+['v-nome', 'v-cidade', 'v-duracao', 'v-preco-min', 'v-preco-max'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('input', () => clearFieldError(el));
+});
+
+function renderManageVinList() {
+    const list = document.getElementById('manage-vin-list');
+    const totalEl = document.getElementById('v-stat-total');
+    const boutEl = document.getElementById('v-stat-boutique');
+    if (!list) return;
+
+    const all = getAllVinicolas();
+    totalEl.textContent = all.length;
+    boutEl.textContent = all.filter(v => v.tipo === 'boutique').length;
+
+    if (all.length === 0) {
+        list.innerHTML = '<p class="manage-empty">Nenhuma vinícola cadastrada.</p>';
+        return;
+    }
+    list.innerHTML = all.map(v => {
+        const isCustom = customVinicolas.some(c => c.id === v.id);
+        const initial = (v.nome || '?').replace(/^Vin[íi]cola\s+/i, '').charAt(0).toUpperCase();
+        const expCount = EXPERIENCIAS.filter(e => e.vinicola_id === v.id).length;
+        return `
+            <div class="manage-vin-row ${isCustom ? 'is-custom' : 'is-builtin'}" data-id="${v.id}">
+                <div class="vin-row-cover tone-${v.tone || 'a'}">${initial}</div>
+                <div class="vin-row-info">
+                    <h4>${v.nome}</h4>
+                    <span class="vin-row-city">${v.cidade}</span>
+                </div>
+                <div class="vin-row-meta">
+                    <span><i class="fa-regular fa-clock" aria-hidden="true"></i> <strong>${v.duracao_media_min || 75}</strong> min</span>
+                    <span><i class="fa-solid fa-wine-glass" aria-hidden="true"></i> <strong>${expCount}</strong> exp.</span>
+                    <span><i class="fa-solid fa-tag" aria-hidden="true"></i> ${fmtBRL(v.preco_min || 0)}–${fmtBRL(v.preco_max || 0)}</span>
+                </div>
+                <span class="vin-row-badge ${isCustom ? 'custom' : ''}">${isCustom ? 'Custom' : (v.tipo === 'boutique' ? 'Boutique' : 'Catálogo')}</span>
+                <div class="vin-row-actions">
+                    <button type="button" class="btn btn-ghost" data-action="ver" data-id="${v.id}" style="padding:.5rem .85rem;font-size:.72rem;min-height:36px">Ver</button>
+                    <button type="button" class="manage-delete" data-action="del" data-id="${v.id}" ${isCustom ? '' : 'disabled title="Vinícolas do catálogo não podem ser removidas"'}>Excluir</button>
+                </div>
+            </div>
+        `;
+    }).join('');
+
+    list.querySelectorAll('[data-action="ver"]').forEach(btn => {
+        btn.addEventListener('click', () => openVinicola(Number(btn.dataset.id)));
+    });
+    list.querySelectorAll('[data-action="del"]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            if (btn.disabled) return;
+            const id = Number(btn.dataset.id);
+            customVinicolas = customVinicolas.filter(v => v.id !== id);
+            saveCustomVinicolas(customVinicolas);
+            populateVinicolaSelects();
+            renderManageVinList();
+            renderBoutique();
+            renderExperiencias();
+            showToast('Vinícola removida.');
+        });
+    });
+}
+window.renderManageVinList = renderManageVinList;
+window.populateVinicolaSelects = populateVinicolaSelects;
 
 // =================== Sync entre abas ===================
 window.addEventListener('storage', (e) => {
@@ -1371,6 +1755,13 @@ window.addEventListener('storage', (e) => {
         renderSugestoes();
         showToast('Disponibilidade atualizada em outra aba.');
     }
+    if (e.key === STORAGE_VINICOLAS) {
+        customVinicolas = loadCustomVinicolas();
+        populateVinicolaSelects();
+        renderManageVinList();
+        renderBoutique();
+        renderExperiencias();
+    }
     if (e.key === STORAGE_KEY) {
         renderReservas();
     }
@@ -1381,10 +1772,22 @@ window.addEventListener('storage', (e) => {
 });
 
 // =================== Init ===================
+function setMinDateInputs() {
+    const today = getTodayISO();
+    ['start-date', 'm-data', 'm-data-fim'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.min = today;
+    });
+}
+
 document.getElementById('year').textContent = new Date().getFullYear();
+populateVinicolaSelects();
+setMinDateInputs();
+applyManageMode();
 renderReservas();
 renderExperiencias();
 renderManageTable();
+renderManageVinList();
 renderSugestoes();
 renderBoutique();
 
@@ -1393,3 +1796,6 @@ if (planoSalvo) {
     renderMapa(planoSalvo);
     document.querySelector('[data-mapa-link]')?.removeAttribute('hidden');
 }
+
+// Re-aplica min={today} a cada meia hora caso o usuario deixe a aba aberta
+setInterval(setMinDateInputs, 30 * 60 * 1000);

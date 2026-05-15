@@ -53,7 +53,12 @@ html {
     scroll-behavior: smooth;
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
+    /* Esconde scrollbar mantendo scroll funcional */
+    scrollbar-width: none;          /* Firefox */
+    -ms-overflow-style: none;       /* IE/old Edge */
 }
+html::-webkit-scrollbar,
+body::-webkit-scrollbar { display: none; } /* Chromium/Safari */
 
 body {
     font-family: var(--font-sans);
@@ -63,7 +68,15 @@ body {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     overflow-x: hidden;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
 }
+
+/* Scrollbar custom para containers internos (mapa-tabs ja tem) */
+.scrollable-inner::-webkit-scrollbar { width: 6px; height: 6px; }
+.scrollable-inner::-webkit-scrollbar-track { background: transparent; }
+.scrollable-inner::-webkit-scrollbar-thumb { background: var(--bege-escuro); border-radius: 999px; }
+.scrollable-inner::-webkit-scrollbar-thumb:hover { background: var(--vinho-claro); }
 
 img { max-width: 100%; height: auto; display: block; }
 button, input, select, textarea { font: inherit; color: inherit; }
@@ -577,13 +590,34 @@ button, input, select, textarea { font: inherit; color: inherit; }
     -webkit-appearance: none;
     appearance: none;
 }
-.form-field select {
-    background-image: linear-gradient(45deg, transparent 50%, var(--vinho) 50%),
-                      linear-gradient(135deg, var(--vinho) 50%, transparent 50%);
-    background-position: calc(100% - 18px) 50%, calc(100% - 13px) 50%;
-    background-size: 5px 5px;
+.form-field select,
+.filter-field select {
+    /* Custom caret on-palette (SVG chevron em bordo) */
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%234a0d1f' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'/%3e%3c/svg%3e");
+    background-position: right 1rem center;
+    background-size: 14px 14px;
     background-repeat: no-repeat;
-    padding-right: 2.25rem;
+    padding-right: 2.5rem;
+    cursor: pointer;
+}
+.form-field select:disabled,
+.filter-field select:disabled {
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23a8a3a3' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'/%3e%3c/svg%3e");
+    opacity: .7;
+    cursor: not-allowed;
+}
+/* Options stylable em Firefox/WebKit mais recentes */
+.form-field select option,
+.filter-field select option {
+    background-color: var(--branco);
+    color: var(--texto);
+    padding: 8px;
+}
+.form-field select option:checked,
+.form-field select option:hover,
+.filter-field select option:checked {
+    background-color: var(--bege);
+    color: var(--vinho);
 }
 .form-field input:hover, .form-field select:hover, .form-field textarea:hover { border-color: var(--vinho-claro); }
 .form-field input:focus, .form-field select:focus, .form-field textarea:focus,
@@ -1588,12 +1622,10 @@ button, input, select, textarea { font: inherit; color: inherit; }
     font-size: .82rem;
     font-style: italic;
 }
-.mapa-deslocamento::before {
-    content: "→";
-    font-style: normal;
-    font-size: 1.1rem;
+.mapa-deslocamento i {
     color: var(--oliva);
-    font-weight: 700;
+    font-size: 1rem;
+    font-style: normal;
 }
 
 /* ============================================================
@@ -2190,6 +2222,276 @@ button, input, select, textarea { font: inherit; color: inherit; }
     font-size: .82rem;
     opacity: .7;
     letter-spacing: .04em;
+}
+
+/* ============================================================
+   ICONS helpers
+   ============================================================ */
+.btn-icon {
+    margin-right: .5rem;
+    font-size: .9em;
+}
+.brand-mark i {
+    color: var(--bege);
+    font-size: 1rem;
+}
+.hero-search-icon i {
+    font-size: 1rem;
+}
+.diff-icon i,
+.empty-illustration i {
+    color: var(--vinho);
+}
+.empty-illustration i {
+    font-size: 2.6rem;
+}
+.sug-meta i,
+.exp-meta i,
+.bout-meta i,
+.vin-exp-meta i,
+.mapa-deslocamento i {
+    color: var(--vinho);
+    margin-right: .25rem;
+}
+.mapa-deslocamento i { color: var(--oliva); }
+
+/* ============================================================
+   MANAGE: subtabs (Horarios | Vinicolas)
+   ============================================================ */
+.manage-subtabs {
+    display: flex;
+    gap: .5rem;
+    margin-bottom: var(--space-5);
+    flex-wrap: wrap;
+    border-bottom: 1px solid var(--borda);
+    padding-bottom: 0;
+}
+.manage-subtab {
+    background: transparent;
+    border: 0;
+    color: var(--texto);
+    opacity: .6;
+    font-family: inherit;
+    font-size: .85rem;
+    text-transform: uppercase;
+    letter-spacing: .12em;
+    cursor: pointer;
+    padding: .75rem 1.1rem;
+    min-height: var(--touch);
+    font-weight: 600;
+    border-bottom: 2px solid transparent;
+    transition: color var(--t-fast), border-color var(--t-fast), opacity var(--t-fast);
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+}
+.manage-subtab i { font-size: .95em; }
+.manage-subtab:hover { color: var(--vinho); opacity: 1; }
+.manage-subtab.is-active {
+    color: var(--vinho);
+    opacity: 1;
+    border-bottom-color: var(--vinho);
+}
+
+.manage-tab-panel { animation: fadeUp .4s ease both; }
+
+/* ============================================================
+   MANAGE FORM HEAD + helpers
+   ============================================================ */
+.manage-form-head {
+    margin-bottom: var(--space-4);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+@media (min-width: 720px) {
+    .manage-form-head { flex-direction: row; align-items: center; justify-content: space-between; }
+}
+.manage-form-title {
+    font-family: var(--font-serif);
+    font-style: italic;
+    color: var(--vinho);
+    font-size: 1.35rem;
+    font-weight: 400;
+    display: inline-flex;
+    align-items: center;
+    gap: .55rem;
+    line-height: 1.2;
+}
+.manage-form-title i { font-size: 1rem; color: var(--oliva); }
+.manage-form-subtitle {
+    color: var(--texto);
+    opacity: .65;
+    font-size: .9rem;
+    line-height: 1.5;
+    margin-top: .25rem;
+}
+
+.manage-mode-toggle {
+    display: inline-flex;
+    background: var(--bege);
+    border: 1px solid var(--borda);
+    border-radius: 999px;
+    padding: 3px;
+    flex-wrap: wrap;
+}
+.manage-mode-toggle .mode-option { cursor: pointer; }
+.manage-mode-toggle input { position: absolute; opacity: 0; pointer-events: none; }
+.manage-mode-toggle .mode-option > span {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    padding: .55rem 1.05rem;
+    border-radius: 999px;
+    font-size: .78rem;
+    text-transform: uppercase;
+    letter-spacing: .1em;
+    color: var(--texto);
+    opacity: .65;
+    font-weight: 600;
+    transition: background-color var(--t-fast), color var(--t-fast), opacity var(--t-fast);
+}
+.manage-mode-toggle .mode-option > span i { font-size: .85em; }
+.manage-mode-toggle .mode-option:hover > span { opacity: 1; color: var(--vinho); }
+.manage-mode-toggle input:checked + span {
+    background-color: var(--vinho);
+    color: var(--bege);
+    opacity: 1;
+    box-shadow: 0 2px 8px var(--vinho-glow);
+}
+
+/* ============================================================
+   FORM HELP + ERROR
+   ============================================================ */
+.form-help {
+    font-size: .76rem;
+    color: var(--texto);
+    opacity: .6;
+    margin-top: .25rem;
+    line-height: 1.4;
+    font-style: italic;
+}
+.form-error {
+    font-size: .78rem;
+    color: var(--status-cheio);
+    margin-top: .2rem;
+    min-height: 1.1em;
+    display: block;
+    font-weight: 500;
+}
+.form-field input.is-invalid,
+.form-field select.is-invalid,
+.form-field textarea.is-invalid {
+    border-color: var(--status-cheio);
+    box-shadow: 0 0 0 3px rgba(168, 50, 71, 0.12);
+}
+
+.manage-preview {
+    background-color: var(--bege);
+    border: 1px dashed var(--bege-escuro);
+    border-radius: 8px;
+    padding: var(--space-3) var(--space-4);
+    margin-top: var(--space-3);
+    color: var(--texto);
+    font-size: .9rem;
+    line-height: 1.5;
+}
+.manage-preview strong { color: var(--vinho); font-weight: 600; }
+
+/* ============================================================
+   VINICOLA LIST (admin)
+   ============================================================ */
+.manage-vin-list {
+    display: flex;
+    flex-direction: column;
+}
+.manage-vin-row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-3);
+    padding: var(--space-4) var(--space-5);
+    border-bottom: 1px solid var(--borda);
+    transition: background-color var(--t-fast);
+}
+@media (min-width: 720px) {
+    .manage-vin-row {
+        grid-template-columns: 56px 1.5fr 1fr auto auto;
+        align-items: center;
+        gap: var(--space-4);
+    }
+}
+.manage-vin-row:last-child { border-bottom: 0; }
+.manage-vin-row:hover { background-color: var(--bege); }
+.manage-vin-row.is-custom { border-left: 3px solid var(--oliva); }
+.manage-vin-row.is-builtin { border-left: 3px solid transparent; }
+
+.vin-row-cover {
+    width: 56px;
+    height: 56px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, var(--vinho), var(--vinho-claro));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--bege);
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: 1.4rem;
+    box-shadow: var(--shadow-sm);
+}
+.vin-row-cover.tone-a { background: linear-gradient(135deg, #4a0d1f, #8b2e3f); }
+.vin-row-cover.tone-b { background: linear-gradient(135deg, #6b1e2f, #c98e3e); }
+.vin-row-cover.tone-c { background: linear-gradient(135deg, #4a0d1f, #6b7a3a); }
+.vin-row-cover.tone-d { background: linear-gradient(135deg, #2c1a1f, #6b1e2f); }
+.vin-row-cover.tone-e { background: linear-gradient(135deg, #6b7a3a, #8a9a52); }
+
+.vin-row-info h4 {
+    color: var(--vinho);
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 1.1rem;
+    line-height: 1.25;
+    margin-bottom: .25rem;
+}
+.vin-row-info .vin-row-city {
+    font-size: .78rem;
+    color: var(--oliva);
+    text-transform: uppercase;
+    letter-spacing: .12em;
+    font-weight: 600;
+}
+.vin-row-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .35rem .75rem;
+    font-size: .82rem;
+    color: var(--texto);
+    opacity: .8;
+}
+.vin-row-meta strong { color: var(--vinho); font-weight: 600; }
+.vin-row-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: .35rem;
+    font-size: .68rem;
+    text-transform: uppercase;
+    letter-spacing: .14em;
+    padding: .3rem .65rem;
+    border-radius: 999px;
+    background-color: rgba(74, 13, 31, .08);
+    color: var(--vinho);
+    font-weight: 600;
+    align-self: flex-start;
+}
+.vin-row-badge.custom {
+    background-color: rgba(107, 122, 58, .14);
+    color: var(--oliva);
+}
+.vin-row-actions {
+    display: flex;
+    gap: .5rem;
+    align-items: center;
 }
 
 /* Print */

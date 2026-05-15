@@ -180,15 +180,82 @@ comentários de IA descrevendo o óbvio.
 
 ---
 
-## D-12. Ícones em emoji (não SVG/lib)
+## D-12. ~~Ícones em emoji~~ Font Awesome via CDN (revisado 2026-05-15)
 
-**Decisão:** Ícones de UI (🍇 🍷 ⏱ 💰 🗺️) usam emoji nativo.
+**Decisão original:** Ícones de UI em emoji nativo.
+**Decisão atual:** Font Awesome 6.5 via CDN (`cdnjs.cloudflare.com`).
+
+**Por quê mudou:**
+- Emojis variavam muito por SO (Windows ≠ iOS ≠ Android) — quebrava a consistência visual
+  numa UI que se vende como "premium".
+- Font Awesome dá controle de cor via CSS (`color: var(--vinho)`) — emojis não.
+- Tamanho perceptivo do FA Free CDN é aceitável (~80KB gzip, cacheado).
+- CDN com SRI hash garante integridade e velocidade global.
+
+**Quando reabrir:** Se medirmos impacto no CLS/LCP no mobile, migrar para um subset SVG
+inline com só os ~15 ícones que usamos. Não vale o esforço hoje.
+
+---
+
+## D-13. Custom Vinícolas em localStorage
+
+**Decisão:** Vinícolas adicionadas via admin ficam em `localStorage` (`uvaevia.vinicolas.custom`),
+não no backend.
 
 **Por quê:**
-- Zero peso adicional (sem ícone-font ou SVG sprite).
-- Funciona offline.
-- Combina com o tom "concierge artesanal" do produto.
+- Mesma razão do D-05 (reservas em localStorage): MVP sem auth, sem multi-tenant.
+- Permite testar o flow de cadastro sem PHP/MySQL ativos.
+- IDs custom usam range `1000+` (Date.now() % 100000) para não colidir com seed do banco.
 
-**Trade-off:** Emojis variam por SO (Windows ≠ iOS). Aceitamos a variação porque
-o significado se mantém. Quando precisarmos de uniformidade visual rígida
-(brand-guide formal), migrar para SVG inline.
+**Limitação consciente:** Custom vinícolas não podem ter experiências (a edição de experiências
+ainda não existe). Ver `backlog.md` v1.1.
+
+---
+
+## D-14. Validação client-side antes de tudo
+
+**Decisão:** Toda validação é client-side com mensagens inline (`<small class="form-error">`).
+
+**Por quê:**
+- Latência zero de feedback.
+- O backend valida de novo (cinto + suspensório), mas o usuário não chega lá com erro óbvio.
+- Acessibilidade: `aria-invalid` + mensagem associada via id permite leitor de tela ler.
+
+**Regras universais:**
+- Datas: `min={today}` aplicado dinamicamente, refrescado a cada 30 min.
+- Números: `min` declarado no HTML + verificação JS.
+- Nomes: comprimento mínimo + verificação contra duplicatas.
+
+---
+
+## D-15. Scrollbar global oculta
+
+**Decisão:** Esconder a scrollbar nativa em `html`/`body` mantendo o scroll funcional.
+
+**Por quê:**
+- Visual mais limpo, alinhado a apps premium de viagem (Airbnb, Mr & Mrs Smith não mostram scrollbar).
+- O usuário pediu explicitamente.
+
+**Trade-offs e mitigações:**
+- Affordance perdida (usuário pode não perceber que rola): mitigado pelo `hero-scroll` no fim do hero
+  e pelo `scroll-behavior: smooth` que dá feedback ao âncora.
+- Containers internos que precisam de barra (longas listas no admin) podem usar
+  `.scrollable-inner` (definido no CSS).
+
+---
+
+## D-16. Modo "faixa de horários" para escalar admin
+
+**Decisão:** O form de cadastro de horários tem dois modos: único e faixa.
+O modo faixa gera vários slots numa submissão (data início/fim × hora início/fim com intervalo).
+
+**Por quê:**
+- Cadastrar slot a slot é um trabalho braçal — uma vinícola que abre 6 horários/dia × 7 dias
+  precisaria de 42 submissões.
+- O modo faixa resolve com 1 form (preview ao vivo conta quantos slots vão ser criados).
+- Validações comuns (data passada, hora final menor que inicial, capacidade < 1) cobrem
+  os dois modos.
+
+**Trade-off:** Aumenta complexidade do form (mais campos visíveis). Mitigado pelo toggle
+visual no topo do form — quando "Único" está ativo, os campos do modo faixa ficam `hidden`
+e `disabled` (não bloqueiam o submit por `required`).

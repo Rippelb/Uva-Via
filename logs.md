@@ -3,10 +3,54 @@
 Registro cronológico das mudanças significativas no projeto.
 
 > Formato: `[YYYY-MM-DD] [autor]` Resumo da mudança.
+> Para changelog versionado em SemVer, ver [changelog.md](changelog.md).
 
 ---
 
-## 2026-05-15 — Sprint Mobile-first + Features novas
+## 2026-05-15 (tarde) — Polimento UX + Admin
+
+### Iconografia
+- Substituídos **todos os emojis** por Font Awesome 6.5 (CDN): brand, hero search, sugestões,
+  diferenciais, empty states, meta de cards, deslocamento no mapa.
+- Adicionada classe utilitária `.btn-icon` para espaçamento em botões com ícone à esquerda.
+
+### Validação de inputs
+- Helper `setFieldError(input, msg)` / `clearFieldError(input)` + classe `.is-invalid`.
+- Campos com `<small class="form-error" id="X-error">` mostram mensagem inline.
+- Data início (planejamento) e data (horários admin) com `min={today}` aplicado no init e
+  refrescado a cada 30 min.
+- Validação contra datas passadas, números negativos, nomes duplicados de vinícolas.
+
+### Admin / Gestão repaginada
+- **Subtabs internas:** Horários | Vinícolas (cada uma com seu form e listagem).
+- **Modo "Faixa de horários"**: cadastra vários slots de uma vez (data início/fim × hora início/fim
+  com intervalo configurável). Preview ao vivo de quantos slots e capacidade total.
+- **CRUD de vinícolas** novo: nome, cidade, tipo, descrição, paleta do cover, duração e preço.
+  Persistência em `localStorage` (`uvaevia.vinicolas.custom`).
+- Tabela visual de vinícolas com cover gradient, badge custom/catálogo e botões ver/excluir.
+- Novo `getAllVinicolas()` unificando catálogo + custom em todas as listagens.
+- `populateVinicolaSelects()` repopula `b-vinicola`, `exp-vinicola`, `m-vinicola` consistentemente.
+
+### Scrollbar
+- Escondida globalmente (`html`/`body`) via `scrollbar-width: none` + `::-webkit-scrollbar`.
+- Scroll segue funcional; containers internos que precisam mostrar barra usam classe `.scrollable-inner`.
+
+### Selects
+- Caret custom em SVG bordô embutido no `background-image` (sem dependência externa).
+- Estado disabled com caret cinza, cursor `not-allowed`.
+- `option:checked` pintada em bege/bordô.
+- `padding-right: 2.5rem` para não cobrir o caret com o texto.
+
+### Datas do demo
+- Re-mapeamento automático das datas do seed para `hoje + 3,4,5,...` em runtime.
+  Demo nunca expira.
+
+### Docs
+- Criados `backlog.md` e `changelog.md`.
+
+---
+
+## 2026-05-15 (manhã) — Sprint Mobile-first + Features novas
 
 ### Refatoração mobile-first
 - Reescrita do `style.css` com abordagem **mobile-first** (base = mobile,

@@ -9,6 +9,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -17,7 +18,7 @@
     <header class="nav">
         <div class="nav-inner">
             <a href="#home" class="nav-brand" aria-label="Uva e Via — voltar para o início">
-                <span class="brand-mark" aria-hidden="true">🍇</span>
+                <span class="brand-mark" aria-hidden="true"><i class="fa-solid fa-wine-glass"></i></span>
                 <span class="brand-text">Uva <em>&amp;</em> Via</span>
             </a>
             <button class="nav-toggle" aria-label="Abrir menu de navegação" aria-expanded="false" aria-controls="nav-menu">
@@ -46,13 +47,19 @@
                 — você só se preocupa em brindar.
             </p>
             <div class="hero-actions">
-                <a href="#planejar" class="btn btn-primary btn-lg">Planejar meu roteiro</a>
-                <a href="#mapa" class="btn btn-outline btn-lg" id="cta-mapa">Ver mapa do dia</a>
+                <a href="#planejar" class="btn btn-primary btn-lg">
+                    <i class="fa-solid fa-wand-magic-sparkles btn-icon" aria-hidden="true"></i>
+                    Planejar meu roteiro
+                </a>
+                <a href="#mapa" class="btn btn-outline btn-lg" id="cta-mapa">
+                    <i class="fa-solid fa-map-location-dot btn-icon" aria-hidden="true"></i>
+                    Ver mapa do dia
+                </a>
             </div>
 
             <form class="hero-search" role="search" aria-label="Busca rápida" id="hero-search-form">
                 <label class="visually-hidden" for="hero-search-input">Buscar vinícola ou experiência</label>
-                <span class="hero-search-icon" aria-hidden="true">🔍</span>
+                <span class="hero-search-icon" aria-hidden="true"><i class="fa-solid fa-magnifying-glass"></i></span>
                 <input
                     type="search"
                     id="hero-search-input"
@@ -120,21 +127,25 @@
                     <div class="form-field">
                         <label for="start-date">Data de início</label>
                         <input type="date" id="start-date" name="start-date" required>
+                        <small class="form-error" id="start-date-error"></small>
                     </div>
 
                     <div class="form-field">
                         <label for="days">Dias de viagem</label>
                         <input type="number" id="days" name="days" min="1" max="14" value="2" required inputmode="numeric">
+                        <small class="form-error" id="days-error"></small>
                     </div>
 
                     <div class="form-field">
                         <label for="people">Número de pessoas</label>
                         <input type="number" id="people" name="people" min="1" max="20" value="2" required inputmode="numeric">
+                        <small class="form-error" id="people-error"></small>
                     </div>
 
                     <div class="form-field">
                         <label for="budget">Orçamento total (R$)</label>
                         <input type="number" id="budget" name="budget" min="0" step="50" placeholder="Ex.: 1500" required inputmode="numeric">
+                        <small class="form-error" id="budget-error"></small>
                     </div>
 
                     <div class="form-field">
@@ -146,6 +157,7 @@
                             <option value="amigos">Grupo de amigos</option>
                             <option value="familia">Família adulta</option>
                         </select>
+                        <small class="form-error" id="profile-error"></small>
                     </div>
 
                     <div class="form-field">
@@ -236,7 +248,7 @@
             </header>
 
             <div class="mapa-empty" id="mapa-empty">
-                <div class="empty-illustration" aria-hidden="true">🗺️</div>
+                <div class="empty-illustration" aria-hidden="true"><i class="fa-solid fa-map-location-dot"></i></div>
                 <p>Você ainda não tem um roteiro gerado. <a href="#planejar">Comece pelo planejamento</a> para ver o mapa.</p>
             </div>
 
@@ -399,7 +411,7 @@
             </div>
 
             <div class="reservations-empty" id="reservations-empty">
-                <div class="empty-illustration" aria-hidden="true">🍇</div>
+                <div class="empty-illustration" aria-hidden="true"><i class="fa-solid fa-calendar-check"></i></div>
                 <p>Você ainda não tem reservas. <a href="#planejar">Gere um roteiro primeiro</a> ou
                 <a href="#reservar">reserve um horário</a> direto.</p>
             </div>
@@ -417,22 +429,22 @@
             </header>
             <div class="diff-grid">
                 <article class="diff-card" data-reveal>
-                    <div class="diff-icon" aria-hidden="true">📅</div>
+                    <div class="diff-icon" aria-hidden="true"><i class="fa-regular fa-calendar-check"></i></div>
                     <h3>Integração com agendas</h3>
                     <p>Confirmação de horários direto com as vinícolas, com lembretes antes da visita.</p>
                 </article>
                 <article class="diff-card" data-reveal>
-                    <div class="diff-icon" aria-hidden="true">🟢</div>
+                    <div class="diff-icon" aria-hidden="true"><i class="fa-solid fa-circle-check"></i></div>
                     <h3>Disponibilidade real</h3>
                     <p>Vagas atualizadas em tempo real — nunca mais chegar e descobrir que está lotado.</p>
                 </article>
                 <article class="diff-card" data-reveal>
-                    <div class="diff-icon" aria-hidden="true">🎯</div>
+                    <div class="diff-icon" aria-hidden="true"><i class="fa-solid fa-bullseye"></i></div>
                     <h3>Personalização por perfil</h3>
                     <p>Roteiros pensados para casal, família, amigos ou solo — com o ritmo que você quiser.</p>
                 </article>
                 <article class="diff-card" data-reveal>
-                    <div class="diff-icon" aria-hidden="true">⏱️</div>
+                    <div class="diff-icon" aria-hidden="true"><i class="fa-solid fa-route"></i></div>
                     <h3>Roteiro otimizado</h3>
                     <p>Algoritmo calcula proximidade e deslocamento para você aproveitar cada minuto.</p>
                 </article>
@@ -445,59 +457,211 @@
         <div class="manage-inner">
             <header class="planner-header" data-reveal>
                 <span class="planner-eyebrow">Painel da vinícola</span>
-                <h2 class="planner-title">Gestão de horários e disponibilidade</h2>
+                <h2 class="planner-title">Gestão</h2>
                 <p class="planner-subtitle">
-                    Cadastre novos horários, acompanhe as vagas restantes e remova slots que não estão mais ativos.
+                    Cadastre novas vinícolas, gerencie horários e acompanhe a ocupação em tempo real.
                 </p>
             </header>
 
-            <form id="manage-form" class="manage-form" data-reveal>
-                <div class="form-grid">
-                    <div class="form-field">
-                        <label for="m-vinicola">Vinícola</label>
-                        <select id="m-vinicola" required>
-                            <option value="">Selecione…</option>
-                        </select>
+            <!-- Tabs internas: vinicolas | horarios -->
+            <div class="manage-subtabs" role="tablist" aria-label="Áreas de gestão">
+                <button type="button" class="manage-subtab is-active" role="tab" aria-selected="true" data-subtab="horarios">
+                    <i class="fa-regular fa-clock" aria-hidden="true"></i> Horários
+                </button>
+                <button type="button" class="manage-subtab" role="tab" aria-selected="false" data-subtab="vinicolas">
+                    <i class="fa-solid fa-wine-bottle" aria-hidden="true"></i> Vinícolas
+                </button>
+            </div>
+
+            <!-- ============ TAB: HORÁRIOS ============ -->
+            <div class="manage-tab-panel" data-subtab-panel="horarios">
+                <form id="manage-form" class="manage-form" data-reveal>
+                    <header class="manage-form-head">
+                        <h3 class="manage-form-title">
+                            <i class="fa-solid fa-calendar-plus" aria-hidden="true"></i>
+                            Adicionar horários
+                        </h3>
+                        <div class="manage-mode-toggle" role="radiogroup" aria-label="Modo de adição">
+                            <label class="mode-option">
+                                <input type="radio" name="manage-mode" value="single" checked>
+                                <span><i class="fa-solid fa-clock" aria-hidden="true"></i> Único</span>
+                            </label>
+                            <label class="mode-option">
+                                <input type="radio" name="manage-mode" value="range">
+                                <span><i class="fa-solid fa-layer-group" aria-hidden="true"></i> Faixa de horários</span>
+                            </label>
+                        </div>
+                    </header>
+
+                    <div class="form-grid">
+                        <div class="form-field">
+                            <label for="m-vinicola">Vinícola</label>
+                            <select id="m-vinicola" required>
+                                <option value="">Selecione…</option>
+                            </select>
+                        </div>
+
+                        <div class="form-field">
+                            <label for="m-experiencia">Experiência</label>
+                            <select id="m-experiencia" required disabled>
+                                <option value="">Escolha uma vinícola primeiro</option>
+                            </select>
+                        </div>
+
+                        <div class="form-field">
+                            <label for="m-data">Data (início)</label>
+                            <input type="date" id="m-data" required>
+                            <small class="form-error" id="m-data-error"></small>
+                        </div>
+
+                        <div class="form-field" data-mode="range" hidden>
+                            <label for="m-data-fim">Data (fim)</label>
+                            <input type="date" id="m-data-fim">
+                            <small class="form-help">Mesmo intervalo de horários será criado em cada dia.</small>
+                        </div>
+
+                        <div class="form-field" data-mode="single">
+                            <label for="m-horario">Horário</label>
+                            <input type="time" id="m-horario" required>
+                        </div>
+
+                        <div class="form-field" data-mode="range" hidden>
+                            <label for="m-hora-inicio">Hora inicial</label>
+                            <input type="time" id="m-hora-inicio" value="10:00">
+                        </div>
+
+                        <div class="form-field" data-mode="range" hidden>
+                            <label for="m-hora-fim">Hora final</label>
+                            <input type="time" id="m-hora-fim" value="17:00">
+                        </div>
+
+                        <div class="form-field" data-mode="range" hidden>
+                            <label for="m-intervalo">Intervalo entre slots</label>
+                            <select id="m-intervalo">
+                                <option value="30">30 minutos</option>
+                                <option value="60" selected>1 hora</option>
+                                <option value="90">1h30</option>
+                                <option value="120">2 horas</option>
+                                <option value="180">3 horas</option>
+                            </select>
+                        </div>
+
+                        <div class="form-field">
+                            <label for="m-capacidade">Capacidade por slot</label>
+                            <input type="number" id="m-capacidade" min="1" max="200" value="12" required inputmode="numeric">
+                            <small class="form-error" id="m-capacidade-error"></small>
+                        </div>
                     </div>
 
-                    <div class="form-field">
-                        <label for="m-experiencia">Experiência</label>
-                        <select id="m-experiencia" required disabled>
-                            <option value="">Escolha uma vinícola primeiro</option>
-                        </select>
-                    </div>
+                    <div class="manage-preview" id="manage-preview" hidden></div>
 
-                    <div class="form-field">
-                        <label for="m-data">Data</label>
-                        <input type="date" id="m-data" required>
+                    <div class="form-actions">
+                        <button type="reset" class="btn btn-ghost">Limpar</button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fa-solid fa-plus btn-icon" aria-hidden="true"></i>
+                            <span id="manage-submit-label">Adicionar horário</span>
+                        </button>
                     </div>
+                </form>
 
-                    <div class="form-field">
-                        <label for="m-horario">Horário</label>
-                        <input type="time" id="m-horario" required>
+                <div class="manage-table-wrap" data-reveal>
+                    <div class="manage-table-head">
+                        <h3><i class="fa-regular fa-rectangle-list" aria-hidden="true"></i> Horários cadastrados</h3>
+                        <div class="manage-stats">
+                            <span><strong id="stat-total">0</strong> horários</span>
+                            <span><strong id="stat-vagas">0</strong> vagas livres</span>
+                            <span><strong id="stat-ocupacao">0%</strong> ocupação</span>
+                        </div>
                     </div>
-
-                    <div class="form-field">
-                        <label for="m-capacidade">Capacidade máxima</label>
-                        <input type="number" id="m-capacidade" min="1" max="200" value="12" required inputmode="numeric">
-                    </div>
+                    <div class="manage-table" id="manage-table"></div>
                 </div>
+            </div>
 
-                <div class="form-actions">
-                    <button type="submit" class="btn btn-primary">Adicionar horário</button>
-                </div>
-            </form>
+            <!-- ============ TAB: VINÍCOLAS ============ -->
+            <div class="manage-tab-panel" data-subtab-panel="vinicolas" hidden>
+                <form id="vinicola-form" class="manage-form" data-reveal>
+                    <header class="manage-form-head">
+                        <h3 class="manage-form-title">
+                            <i class="fa-solid fa-wine-bottle" aria-hidden="true"></i>
+                            Adicionar vinícola
+                        </h3>
+                        <p class="manage-form-subtitle">
+                            Os dados aqui ficam disponíveis no app e podem ser editados depois.
+                        </p>
+                    </header>
 
-            <div class="manage-table-wrap" data-reveal>
-                <div class="manage-table-head">
-                    <h3>Horários cadastrados</h3>
-                    <div class="manage-stats">
-                        <span><strong id="stat-total">0</strong> horários</span>
-                        <span><strong id="stat-vagas">0</strong> vagas livres</span>
-                        <span><strong id="stat-ocupacao">0%</strong> ocupação</span>
+                    <div class="form-grid">
+                        <div class="form-field">
+                            <label for="v-nome">Nome</label>
+                            <input type="text" id="v-nome" required maxlength="80" autocomplete="organization" placeholder="Ex.: Vinícola Vale Encantado">
+                            <small class="form-error" id="v-nome-error"></small>
+                        </div>
+
+                        <div class="form-field">
+                            <label for="v-cidade">Cidade</label>
+                            <input type="text" id="v-cidade" required maxlength="60" placeholder="Bento Gonçalves">
+                        </div>
+
+                        <div class="form-field">
+                            <label for="v-tipo">Tipo</label>
+                            <select id="v-tipo" required>
+                                <option value="boutique">Boutique · intimista</option>
+                                <option value="grande">Grande · tradicional</option>
+                            </select>
+                        </div>
+
+                        <div class="form-field">
+                            <label for="v-tone">Paleta do cover</label>
+                            <select id="v-tone">
+                                <option value="a">Bordô profundo</option>
+                                <option value="b">Bordô &amp; âmbar</option>
+                                <option value="c">Bordô &amp; oliva</option>
+                                <option value="d">Bordô escuro</option>
+                                <option value="e">Oliva &amp; verde</option>
+                            </select>
+                        </div>
+
+                        <div class="form-field">
+                            <label for="v-duracao">Duração média (min)</label>
+                            <input type="number" id="v-duracao" min="15" max="300" step="5" value="75" required inputmode="numeric">
+                        </div>
+
+                        <div class="form-field">
+                            <label for="v-preco-min">Preço mínimo/pessoa (R$)</label>
+                            <input type="number" id="v-preco-min" min="0" step="5" value="50" required inputmode="numeric">
+                        </div>
+
+                        <div class="form-field">
+                            <label for="v-preco-max">Preço máximo/pessoa (R$)</label>
+                            <input type="number" id="v-preco-max" min="0" step="5" value="200" required inputmode="numeric">
+                            <small class="form-error" id="v-preco-error"></small>
+                        </div>
+
+                        <div class="form-field form-field--full">
+                            <label for="v-descricao">Descrição</label>
+                            <textarea id="v-descricao" rows="3" maxlength="240" placeholder="Conte em uma frase o diferencial da vinícola — colheita, ambiente, especialidade…"></textarea>
+                        </div>
                     </div>
+
+                    <div class="form-actions">
+                        <button type="reset" class="btn btn-ghost">Limpar</button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fa-solid fa-plus btn-icon" aria-hidden="true"></i>
+                            Cadastrar vinícola
+                        </button>
+                    </div>
+                </form>
+
+                <div class="manage-table-wrap" data-reveal>
+                    <div class="manage-table-head">
+                        <h3><i class="fa-solid fa-grip-vertical" aria-hidden="true"></i> Vinícolas cadastradas</h3>
+                        <div class="manage-stats">
+                            <span><strong id="v-stat-total">0</strong> vinícolas</span>
+                            <span><strong id="v-stat-boutique">0</strong> boutique</span>
+                        </div>
+                    </div>
+                    <div class="manage-vin-list" id="manage-vin-list"></div>
                 </div>
-                <div class="manage-table" id="manage-table"></div>
             </div>
         </div>
     </section>

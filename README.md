@@ -15,7 +15,8 @@
 [Features](#-o-que-o-mvp-entrega) ·
 [Arquitetura](#-arquitetura) ·
 [Decisões](decisoes.md) ·
-[Roadmap](#-roadmap)
+[Backlog](backlog.md) ·
+[Changelog](changelog.md)
 
 </div>
 
@@ -84,8 +85,18 @@ baseados em:
 - Botões "Editar roteiro" / "Adicionar experiência"
 
 ### 🛠️ Gestão (admin)
-- CRUD de horários (data, hora, capacidade)
+- **Subtabs:** Horários | Vinícolas
+- **CRUD de vinícolas**: nome, cidade, tipo, descrição, paleta, duração média, faixa de preço
+- **Horários — modo único** ou **modo faixa** (gera vários slots de uma vez com preview ao vivo)
+- Validação completa: datas no futuro, números positivos, nomes únicos
 - Métricas de ocupação em tempo real
+
+### ✨ Qualidade e detalhes
+- **Font Awesome 6** — ícones consistentes (não emojis variáveis por SO)
+- **Scrollbar oculta** mantendo scroll funcional
+- **Validação inline** em todos os formulários com mensagens de erro contextuais
+- **Touch-targets 44px+** garantidos em todos os elementos clicáveis
+- **`prefers-reduced-motion`** respeitado
 
 ---
 
@@ -132,7 +143,7 @@ breakpoints `min-width`. Touch-targets de 44px+ garantidos.
 └─────────────────────────────────────────┘
 ```
 
-📖 Detalhes em **[context.md](context.md)** e **[decisoes.md](decisoes.md)**.
+📖 Detalhes em **[context.md](context.md)**, **[decisoes.md](decisoes.md)** e **[backlog.md](backlog.md)**.
 
 ---
 
@@ -181,8 +192,10 @@ uvaevia/
 ├── db/                     # Schema + seed MySQL
 │   ├── schema.mysql.sql
 │   └── seed.mysql.sql
-├── context.md              # Visão de produto, público, dores
-├── logs.md                 # Log cronológico de mudanças
+├── context.md              # Visão de produto, público, dores, arquitetura
+├── logs.md                 # Log cronológico de mudanças (informal)
+├── changelog.md            # Changelog versionado em SemVer + Keep a Changelog
+├── backlog.md              # Stories por épico, sprints planejadas, parking lot
 ├── decisoes.md             # Decisões de arquitetura e por quês
 └── README.md
 ```
@@ -261,6 +274,6 @@ MIT — use, modifique, distribua. Beba com moderação. 🍷
 
 **Feito com 🍇 no Vale dos Vinhedos**
 
-[context.md](context.md) · [decisoes.md](decisoes.md) · [logs.md](logs.md)
+[context.md](context.md) · [decisoes.md](decisoes.md) · [backlog.md](backlog.md) · [changelog.md](changelog.md) · [logs.md](logs.md)
 
 </div>
