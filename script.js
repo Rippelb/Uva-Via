@@ -725,38 +725,88 @@ function getAllVinicolas() {
     return [...VINICOLAS, ...customVinicolas];
 }
 
+// Algoritmo v2 — scoring com 7 fatores + rationale por escolha.
+// Fatores: tags diretas, keywords no nome, perfil de viagem, vagas atuais,
+// preco vs orcamento, avaliacao media da vinicola, e variedade (anti-mesma-cidade-seguida).
+// Aceita `seed` opcional para gerar variacoes do mesmo input ("regenerar").
 function generateRoteiro(input) {
     const expsPerDay = { tranquilo: 2, equilibrado: 3, explorador: 4 }[input.pace] || 3;
     const totalExps = input.days * expsPerDay;
     const budgetPerExp = input.budget > 0 ? input.budget / totalExps / input.pessoas : Infinity;
+    const seed = Number(input.seed || 0);
+
+    // PRNG simples com seed — Mulberry32. Permite reproduzir / variar o roteiro
+    // sem alterar o input.
+    function makeRand(s) {
+        let a = s >>> 0;
+        return function () {
+            a |= 0; a = a + 0x6D2B79F5 | 0;
+            let t = Math.imul(a ^ a >>> 15, 1 | a);
+            t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+            return ((t ^ t >>> 14) >>> 0) / 4294967296;
+        };
+    }
+    const rand = makeRand(seed || Date.now());
 
     const scored = EXPERIENCIAS.map(e => {
         const vin = VINICOLAS.find(v => v.id === e.vinicola_id);
         const txt = (e.nome + ' ' + (vin ? vin.nome + ' ' + (vin.cidade || '') : '')).toLowerCase();
         const expTags = e.tags || [];
+        const motivos = [];
         let score = 0;
+
+        // Fator 1: interesses do visitante (tags + keywords)
+        const tagsBateu = [];
         input.interests.forEach(tag => {
-            // Match por tag direto
-            if (expTags.includes(tag)) score += 6;
-            // Match por keyword (legado)
+            if (expTags.includes(tag)) {
+                score += 6;
+                tagsBateu.push(tag);
+            }
             const kws = INTEREST_KEYWORDS[tag] || [];
             if (kws.some(k => txt.includes(k))) score += 3;
         });
-        // Match por perfil
-        if (input.profile === 'familia' && expTags.includes('familiar')) score += 2;
-        if (input.profile === 'solo'    && expTags.includes('rapida'))   score += 2;
-        if (input.profile === 'amigos'  && (expTags.includes('completa') || expTags.includes('harmonizado'))) score += 2;
-        if (input.profile === 'casal'   && (expTags.includes('por-do-sol') || expTags.includes('boutique')))  score += 2;
+        if (tagsBateu.length) {
+            const nomes = tagsBateu.map(t => TAG_LABEL[t] || t).join(', ').toLowerCase();
+            motivos.push(`combina com ${nomes}`);
+        }
 
+        // Fator 2: perfil de viagem
+        let bonusPerfil = 0;
+        if (input.profile === 'familia' && expTags.includes('familiar')) { bonusPerfil = 2; motivos.push('ideal para família adulta'); }
+        if (input.profile === 'solo'    && expTags.includes('rapida'))   { bonusPerfil = 2; motivos.push('ritmo enxuto para solo'); }
+        if (input.profile === 'amigos'  && (expTags.includes('completa') || expTags.includes('harmonizado'))) { bonusPerfil = 2; motivos.push('experiência completa para grupos'); }
+        if (input.profile === 'casal'   && (expTags.includes('por-do-sol') || expTags.includes('boutique')))  { bonusPerfil = 2; motivos.push('clima a dois'); }
+        score += bonusPerfil;
+
+        // Fator 3: vagas / disponibilidade
         const vagas = countHorariosDisponiveis(e.id);
         if (vagas > 0) score += 1;
         if (vagas > 5) score += 1;
-        if (e.preco <= budgetPerExp) score += 2;
-        return { exp: e, vin, score, vagas };
+        if (vagas > 10) { score += 1; motivos.push('vagas abertas'); }
+
+        // Fator 4: preco vs orcamento
+        if (e.preco <= budgetPerExp) { score += 2; motivos.push('dentro do orçamento'); }
+        else if (input.budget > 0 && e.preco > budgetPerExp * 1.5) score -= 1;
+
+        // Fator 5 (novo): avaliacoes da vinicola — bem avaliada pesa mais.
+        if (typeof getMediaAvaliacoes === 'function' && vin) {
+            const rating = getMediaAvaliacoes(vin.id);
+            if (rating.total >= 3) {
+                if (rating.media >= 4.5) { score += 3; motivos.push(`nota ${rating.media.toFixed(1)} entre visitantes`); }
+                else if (rating.media >= 4.0) { score += 2; motivos.push(`nota ${rating.media.toFixed(1)}`); }
+                else if (rating.media >= 3.5) { score += 1; }
+            }
+        }
+
+        // Fator 6 (novo): aleatoriedade leve com seed — permite variacao real ao regenerar.
+        score += rand() * 1.5;
+
+        return { exp: e, vin, score, vagas, motivos };
     });
 
     scored.sort((a, b) => b.score - a.score || a.exp.preco - b.exp.preco);
 
+    // Selecao: prioriza variedade (uma experiencia por vinicola), depois preenche.
     const chosen = [];
     const usedVin = new Set();
     for (const item of scored) {
@@ -770,12 +820,22 @@ function generateRoteiro(input) {
         if (!chosen.includes(item)) chosen.push(item);
     }
 
-    // Distribuicao por dia + horarios sugeridos
+    // Distribuicao por dia + horarios sugeridos (com janelas calculadas).
     const startTimes = ['10:00', '12:30', '15:00', '17:30'];
     const dias = [];
     for (let i = 0; i < input.days; i++) {
         const fatia = chosen.slice(i * expsPerDay, (i + 1) * expsPerDay);
-        const dia = fatia.map((item, idx) => {
+        // Otimiza ordem dentro do dia por proximidade geografica
+        // (primeira eh ancora, demais sao escolhidas pela menor distancia ate a anterior).
+        const ordenado = [];
+        const sobra = fatia.slice();
+        if (sobra.length) ordenado.push(sobra.shift());
+        while (sobra.length) {
+            const ultima = ordenado[ordenado.length - 1];
+            sobra.sort((a, b) => distanciaKm(ultima.vin, a.vin) - distanciaKm(ultima.vin, b.vin));
+            ordenado.push(sobra.shift());
+        }
+        const dia = ordenado.map((item, idx) => {
             const status = getDisponibilidadeStatus(item.vagas, 50);
             return {
                 exp: item.exp,
@@ -783,44 +843,86 @@ function generateRoteiro(input) {
                 vagas: item.vagas,
                 disponibilidade: status,
                 horario_sugerido: startTimes[idx] || '17:30',
+                motivos: item.motivos || [],
             };
         });
         if (dia.length > 0) dias.push(dia);
     }
 
-    // Tempo total estimado = soma das duracoes + deslocamentos
+    // Calcula tempo total + deslocamentos + horarios reais de chegada/saida por parada.
     let tempoTotal = 0;
     let tempoDesloc = 0;
+    let distanciaTotalKm = 0;
     dias.forEach(dia => {
         let prev = null;
-        dia.forEach(stop => {
-            tempoTotal += stop.exp.duracao;
-            if (prev) {
-                const desloc = tempoDeslocamentoMin(prev.vin, stop.vin);
-                stop.deslocamentoMin = desloc;
-                tempoTotal += desloc;
-                tempoDesloc += desloc;
-            } else {
+        let cursorMin = 0;
+        dia.forEach((stop, idx) => {
+            if (idx === 0) {
+                cursorMin = timeToMin(stop.horario_sugerido);
+                stop.chegada = stop.horario_sugerido;
                 stop.deslocamentoMin = 0;
+                stop.distanciaKm = 0;
+            } else {
+                const desloc = tempoDeslocamentoMin(prev.vin, stop.vin);
+                const km = distanciaKm(prev.vin, stop.vin);
+                stop.deslocamentoMin = desloc;
+                stop.distanciaKm = km;
+                cursorMin += prev.exp.duracao + desloc;
+                stop.chegada = minToTime(cursorMin);
+                stop.horario_sugerido = stop.chegada;
+                tempoDesloc += desloc;
+                distanciaTotalKm += km;
             }
+            stop.saida = minToTime(cursorMin + stop.exp.duracao);
+            tempoTotal += stop.exp.duracao;
+            tempoTotal += stop.deslocamentoMin;
             prev = stop;
         });
     });
 
     const total = chosen.reduce((sum, it) => sum + it.exp.preco * input.pessoas, 0);
-
-    // Tags unicas presentes nas experiencias escolhidas
     const tagsPresentes = [...new Set(chosen.flatMap(it => it.exp.tags || []))];
+
+    // Narrativa do roteiro — destaque as 2 caracteristicas mais fortes do conjunto.
+    const sumario = construirSumarioRoteiro({ chosen, days: input.days, distanciaTotalKm });
 
     return {
         dias,
         total,
-        chosen: chosen.map(c => ({ exp: c.exp, vin: c.vin, vagas: c.vagas })),
+        chosen: chosen.map(c => ({ exp: c.exp, vin: c.vin, vagas: c.vagas, motivos: c.motivos })),
         tempoTotal,
         tempoDesloc,
+        distanciaTotalKm,
         tagsPresentes,
+        sumario,
+        seed: input.seed || Date.now(),
         ...input,
     };
+}
+
+// Texto narrativo "porque esse roteiro" — frase curta exibida acima do roteiro.
+function construirSumarioRoteiro({ chosen, days, distanciaTotalKm }) {
+    const cidades = [...new Set(chosen.map(c => c.vin?.cidade).filter(Boolean))];
+    const temPiq = chosen.some(c => (c.exp.tags || []).includes('piquenique'));
+    const temPremium = chosen.some(c => (c.exp.tags || []).includes('degustacao-premium'));
+    const temHarmoniza = chosen.some(c => (c.exp.tags || []).includes('harmonizado'));
+    const temPorSol = chosen.some(c => (c.exp.tags || []).includes('por-do-sol'));
+    const temBoutique = chosen.filter(c => c.vin?.tipo === 'boutique').length;
+
+    const traços = [];
+    if (temPremium)   traços.push('degustações premium');
+    if (temHarmoniza) traços.push('harmonização gastronômica');
+    if (temPiq)       traços.push('piquenique entre vinhedos');
+    if (temPorSol)    traços.push('pôr do sol nas serras');
+    if (temBoutique >= 2) traços.push('vinícolas boutique intimistas');
+
+    const trecho = traços.slice(0, 2).join(' e ') || 'experiências variadas';
+    const cidStr = cidades.length === 1
+        ? cidades[0]
+        : (cidades.slice(0, -1).join(', ') + ' e ' + cidades[cidades.length - 1]);
+
+    return `Roteiro de ${days} ${days === 1 ? 'dia' : 'dias'} pelo Vale dos Vinhedos com foco em ${trecho}. ` +
+           `Passa por ${cidStr}, com ~${Math.round(distanciaTotalKm)} km de deslocamento total — equilibrando ritmo e descobertas.`;
 }
 
 // =================== Renderiza Roteiro Sugerido ===================
@@ -858,11 +960,38 @@ function renderRoteiro(plano) {
     document.getElementById('roteiro-subtitle').textContent =
         `${plano.chosen.length} experiências para ${profileLabel} (${plano.pessoas} ${plano.pessoas === 1 ? 'pessoa' : 'pessoas'}) · ritmo ${plano.pace}.`;
 
+    // Sumario narrativo (novo) + barra de acoes do algoritmo
+    let sumarioEl = document.getElementById('roteiro-sumario');
+    if (!sumarioEl) {
+        sumarioEl = document.createElement('div');
+        sumarioEl.id = 'roteiro-sumario';
+        sumarioEl.className = 'roteiro-sumario';
+        const meta = document.getElementById('roteiro-meta');
+        meta.parentNode.insertBefore(sumarioEl, meta);
+    }
+    sumarioEl.innerHTML = `
+        <p class="roteiro-narrativa"><i class="fa-solid fa-wand-magic-sparkles" aria-hidden="true"></i> ${plano.sumario || ''}</p>
+        <div class="roteiro-algoritmo-actions">
+            <button type="button" class="btn btn-ghost btn-sm" id="btn-regenerar">
+                <i class="fa-solid fa-shuffle btn-icon" aria-hidden="true"></i>
+                Gerar nova variação
+            </button>
+            <button type="button" class="btn btn-ghost btn-sm" id="btn-toggle-motivos">
+                <i class="fa-regular fa-lightbulb btn-icon" aria-hidden="true"></i>
+                <span>Mostrar critérios</span>
+            </button>
+        </div>
+    `;
+
+    const kmEl = plano.distanciaTotalKm > 0
+        ? `<div class="meta-stat"><span>Distância</span><strong>${Math.round(plano.distanciaTotalKm)} km</strong></div>`
+        : '';
     document.getElementById('roteiro-meta').innerHTML = `
         <div class="meta-stat"><span>Dias</span><strong>${plano.days}</strong></div>
         <div class="meta-stat"><span>Paradas</span><strong>${plano.chosen.length}</strong></div>
         <div class="meta-stat"><span>Tempo total</span><strong>${minutosParaHHMM(plano.tempoTotal)}</strong></div>
         <div class="meta-stat"><span>Deslocamento</span><strong>${minutosParaHHMM(plano.tempoDesloc)}</strong></div>
+        ${kmEl}
         <div class="meta-stat"><span>Custo total</span><strong>${fmtBRL(plano.total)}</strong></div>
     `;
 
@@ -887,11 +1016,20 @@ function renderRoteiro(plano) {
         <article class="roteiro-day">
             <h4>Dia ${i + 1}${plano.startDate ? ' · ' + fmtDataCurta(addDays(plano.startDate, i)) : ''}</h4>
             <ol>
-                ${dia.map(stop => `
+                ${dia.map(stop => {
+                    const motivos = (stop.motivos || []).slice(0, 3);
+                    const motivosHtml = motivos.length
+                        ? `<div class="stop-motivos" hidden><i class="fa-regular fa-lightbulb" aria-hidden="true"></i> Escolhida porque: <em>${motivos.join(' · ')}</em></div>`
+                        : '';
+                    const chegadaSaida = stop.chegada && stop.saida
+                        ? `<small class="stop-window">${stop.chegada} → ${stop.saida}</small>`
+                        : '';
+                    return `
                     <li class="roteiro-stop">
                         <div class="stop-when">
                             <span class="stop-time">${stop.horario_sugerido}</span>
                             <span class="stop-duracao">${stop.exp.duracao} min</span>
+                            ${chegadaSaida}
                         </div>
                         <div class="stop-main">
                             <strong>${stop.exp.nome}</strong>
@@ -899,6 +1037,7 @@ function renderRoteiro(plano) {
                                 ${stop.vin.nome} · ${stop.vin.cidade || ''}
                                 <span class="av-badge ${stop.disponibilidade.cls}">${stop.disponibilidade.label}</span>
                             </span>
+                            ${motivosHtml}
                         </div>
                         <div class="stop-actions">
                             <span class="stop-price">${fmtBRL(stop.exp.preco * plano.pessoas)}</span>
@@ -906,10 +1045,27 @@ function renderRoteiro(plano) {
                             <button type="button" class="btn btn-primary" data-action="reservar" data-vin="${stop.vin.id}" data-exp="${stop.exp.id}">Reservar</button>
                         </div>
                     </li>
-                `).join('')}
+                `;}).join('')}
             </ol>
         </article>
     `).join('');
+
+    // Bind: toggle motivos
+    section.querySelector('#btn-toggle-motivos')?.addEventListener('click', () => {
+        const btn = section.querySelector('#btn-toggle-motivos');
+        const todos = section.querySelectorAll('.stop-motivos');
+        const todosVisiveis = [...todos].every(m => !m.hidden);
+        todos.forEach(m => { m.hidden = todosVisiveis; });
+        btn.querySelector('span').textContent = todosVisiveis ? 'Mostrar critérios' : 'Ocultar critérios';
+    });
+
+    // Bind: regenerar — gera variacao com novo seed
+    section.querySelector('#btn-regenerar')?.addEventListener('click', () => {
+        const novoInput = { ...plano, seed: Date.now() };
+        const novoPlano = generateRoteiro(novoInput);
+        renderRoteiro(novoPlano);
+        showToast('Variação gerada com base nos mesmos critérios.');
+    });
 
     // Bind acoes
     section.querySelectorAll('[data-action="ver-vinicola"]').forEach(btn => {
@@ -992,6 +1148,27 @@ document.getElementById('roteiro-edit')?.addEventListener('click', () => {
 // =================== Mapa / Rota ===================
 let mapaActiveDay = 0;
 
+// Detecta se uma parada deve ser precedida por sugestao de almoco —
+// quando o gap (chegada da proxima vs saida da atual) cruza 12h-14h
+// e nenhuma das duas paradas eh harmonizada.
+function sugerirAlmoco(stopAtual, stopProx) {
+    if (!stopAtual.saida || !stopProx.chegada) return null;
+    const fim = timeToMin(stopAtual.saida);
+    const inicio = timeToMin(stopProx.chegada);
+    if (fim >= 12 * 60 && fim <= 14 * 60 && (inicio - fim) >= 30) {
+        const jaHarmonizada = (stopAtual.exp.tags || []).includes('harmonizado')
+            || (stopProx.exp.tags || []).includes('harmonizado');
+        if (jaHarmonizada) return null;
+        return {
+            tipo: 'almoço',
+            inicio: stopAtual.saida,
+            fim: stopProx.chegada,
+            duracaoMin: inicio - fim,
+        };
+    }
+    return null;
+}
+
 function renderMapa(plano) {
     const empty = document.getElementById('mapa-empty');
     const content = document.getElementById('mapa-content');
@@ -1004,10 +1181,13 @@ function renderMapa(plano) {
     content.hidden = false;
     if (mapaActiveDay >= plano.dias.length) mapaActiveDay = 0;
 
-    // Resumo
+    // Resumo enriquecido — inclui distancia total quando disponivel
     const totalParadas = plano.chosen.length;
     const partida = plano.dias[0]?.[0]?.vin?.cidade || 'Vale dos Vinhedos';
     const horarioPartida = plano.dias[0]?.[0]?.horario_sugerido || '—';
+    const kmCard = plano.distanciaTotalKm > 0
+        ? `<div class="mapa-resumo-item"><span>Distância</span><strong>${Math.round(plano.distanciaTotalKm)} km</strong></div>`
+        : '';
     document.getElementById('mapa-resumo').innerHTML = `
         <div class="mapa-resumo-item">
             <span>Tempo total</span>
@@ -1017,6 +1197,7 @@ function renderMapa(plano) {
             <span>Deslocamento</span>
             <strong>${minutosParaHHMM(plano.tempoDesloc)}</strong>
         </div>
+        ${kmCard}
         <div class="mapa-resumo-item">
             <span>Paradas</span>
             <strong>${totalParadas}</strong>
@@ -1026,6 +1207,30 @@ function renderMapa(plano) {
             <strong>${horarioPartida}<br><small style="font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;opacity:.7;font-style:normal;font-family:var(--font-sans);font-weight:600">${partida}</small></strong>
         </div>
     `;
+
+    // Barra de acoes — imprimir + compartilhar + .ics (novo)
+    let actionsEl = document.getElementById('mapa-actions');
+    if (!actionsEl) {
+        actionsEl = document.createElement('div');
+        actionsEl.id = 'mapa-actions';
+        actionsEl.className = 'mapa-actions';
+        const resumo = document.getElementById('mapa-resumo');
+        resumo.parentNode.insertBefore(actionsEl, resumo.nextSibling);
+    }
+    actionsEl.innerHTML = `
+        <button type="button" class="btn btn-ghost btn-sm" id="btn-mapa-print">
+            <i class="fa-solid fa-print btn-icon" aria-hidden="true"></i> Imprimir
+        </button>
+        <button type="button" class="btn btn-ghost btn-sm" id="btn-mapa-share">
+            <i class="fa-solid fa-share-nodes btn-icon" aria-hidden="true"></i> Compartilhar
+        </button>
+        <button type="button" class="btn btn-ghost btn-sm" id="btn-mapa-ics">
+            <i class="fa-regular fa-calendar-plus btn-icon" aria-hidden="true"></i> Exportar agenda
+        </button>
+    `;
+    document.getElementById('btn-mapa-print')?.addEventListener('click', () => window.print());
+    document.getElementById('btn-mapa-share')?.addEventListener('click', () => sharePlano(plano));
+    document.getElementById('btn-mapa-ics')?.addEventListener('click', () => downloadICSRoteiro(plano));
 
     // Tabs
     const tabsEl = document.getElementById('mapa-tabs');
@@ -1042,29 +1247,169 @@ function renderMapa(plano) {
         });
     });
 
-    // Timeline do dia ativo
+    // Cabecalho do dia ativo — km do dia, paradas do dia, primeiro e ultimo horario
     const dia = plano.dias[mapaActiveDay] || plano.dias[0];
+    const kmDia = dia.reduce((s, x) => s + (x.distanciaKm || 0), 0);
+    const tempoDia = dia.reduce((s, x) => s + x.exp.duracao + (x.deslocamentoMin || 0), 0);
+    const inicioDia = dia[0]?.chegada || dia[0]?.horario_sugerido || '—';
+    const fimDia = dia[dia.length - 1]?.saida || '—';
+
+    // Timeline do dia ativo com chegada/saida + sugestao de almoco + distancia
     const timeline = document.getElementById('mapa-timeline');
-    timeline.innerHTML = dia.map((stop, idx) => {
-        const desloc = stop.deslocamentoMin > 0
-            ? `<div class="mapa-deslocamento"><i class="fa-solid fa-car-side" aria-hidden="true"></i> ${minutosParaHHMM(stop.deslocamentoMin)} de deslocamento até ${stop.vin.nome}</div>`
-            : '';
-        return `
-            ${idx > 0 ? desloc : ''}
+    const partes = [];
+    partes.push(`
+        <div class="mapa-dia-header">
+            <div><span>Janela do dia</span><strong>${inicioDia} → ${fimDia}</strong></div>
+            <div><span>Paradas</span><strong>${dia.length}</strong></div>
+            <div><span>Duração do dia</span><strong>${minutosParaHHMM(tempoDia)}</strong></div>
+            ${kmDia > 0 ? `<div><span>Distância</span><strong>${Math.round(kmDia)} km</strong></div>` : ''}
+        </div>
+    `);
+
+    dia.forEach((stop, idx) => {
+        // Conector entre paradas: deslocamento + km + eventual sugestao de almoco
+        if (idx > 0) {
+            const prev = dia[idx - 1];
+            const km = stop.distanciaKm > 0 ? ` · ${stop.distanciaKm.toFixed(1)} km` : '';
+            partes.push(`
+                <div class="mapa-deslocamento">
+                    <i class="fa-solid fa-car-side" aria-hidden="true"></i>
+                    ${minutosParaHHMM(stop.deslocamentoMin)} de deslocamento até ${stop.vin.nome}${km}
+                </div>
+            `);
+            const almoco = sugerirAlmoco(prev, stop);
+            if (almoco) {
+                partes.push(`
+                    <div class="mapa-pausa">
+                        <span class="mapa-pausa-icon" aria-hidden="true"><i class="fa-solid fa-utensils"></i></span>
+                        <div class="mapa-pausa-body">
+                            <strong>Pausa sugerida — almoço</strong>
+                            <small>${almoco.inicio} → ${almoco.fim} · ${minutosParaHHMM(almoco.duracaoMin)} livres entre as paradas</small>
+                        </div>
+                    </div>
+                `);
+            }
+        }
+
+        const chegada = stop.chegada || stop.horario_sugerido;
+        const saida = stop.saida || '';
+        const motivos = (stop.motivos || []).slice(0, 2);
+        partes.push(`
             <div class="mapa-stop">
                 <div class="mapa-marker">${idx + 1}</div>
                 <div class="mapa-stop-body">
                     <div class="mapa-stop-when">
-                        <span class="mapa-stop-time">${stop.horario_sugerido}</span>
+                        <span class="mapa-stop-time">${chegada}${saida ? ' → ' + saida : ''}</span>
                         <span class="mapa-stop-duracao">${stop.exp.duracao} min · ${minutosParaHHMM(stop.exp.duracao)}</span>
                         <span class="av-badge ${stop.disponibilidade.cls}">${stop.disponibilidade.label}</span>
                     </div>
                     <span class="mapa-stop-vin">${stop.vin.nome} · ${stop.vin.cidade || ''}</span>
                     <span class="mapa-stop-exp">${stop.exp.nome}</span>
+                    ${motivos.length ? `<span class="mapa-stop-motivo"><i class="fa-regular fa-lightbulb" aria-hidden="true"></i> ${motivos.join(' · ')}</span>` : ''}
                 </div>
             </div>
-        `;
-    }).join('');
+        `);
+    });
+
+    timeline.innerHTML = partes.join('');
+}
+
+// Compartilha o plano via URL com hash codificado em base64.
+// O destinatario abre o link e o plano eh restaurado automaticamente.
+function sharePlano(plano) {
+    try {
+        // Compacta apenas o input do plano — quem abrir regenera o roteiro.
+        const payload = {
+            startDate: plano.startDate,
+            days: plano.days,
+            pessoas: plano.pessoas,
+            budget: plano.budget,
+            profile: plano.profile,
+            pace: plano.pace,
+            interests: plano.interests || [],
+            notes: plano.notes || '',
+            seed: plano.seed,
+        };
+        const bytes = new TextEncoder().encode(JSON.stringify(payload));
+        const hash = '#roteiro=' + btoa(String.fromCharCode(...bytes));
+        const url = location.origin + location.pathname + hash;
+        if (navigator.share) {
+            navigator.share({ title: 'Meu roteiro Uva & Via', url })
+                .catch(() => copiarUrl(url));
+        } else {
+            copiarUrl(url);
+        }
+    } catch (e) {
+        showToast('Não foi possível gerar o link.', 'error');
+    }
+}
+function copiarUrl(url) {
+    if (navigator.clipboard?.writeText) {
+        navigator.clipboard.writeText(url).then(
+            () => showToast('Link copiado — cole onde quiser compartilhar.'),
+            () => fallbackPromptUrl(url)
+        );
+    } else {
+        fallbackPromptUrl(url);
+    }
+}
+function fallbackPromptUrl(url) {
+    window.prompt('Copie o link do roteiro:', url);
+}
+
+// Tenta restaurar um plano vindo do hash da URL (#roteiro=...)
+function tryRestorePlanoFromHash() {
+    const m = (location.hash || '').match(/^#roteiro=(.+)$/);
+    if (!m) return false;
+    try {
+        const bytes = Uint8Array.from(atob(m[1]), c => c.charCodeAt(0));
+        const payload = JSON.parse(new TextDecoder().decode(bytes));
+        const plano = generateRoteiro(payload);
+        renderRoteiro(plano);
+        showToast('Roteiro compartilhado restaurado.');
+        // Limpa o hash para nao re-disparar em refresh acidental
+        history.replaceState(null, '', location.pathname);
+        return true;
+    } catch (e) {
+        console.warn('Falha ao restaurar plano:', e);
+        return false;
+    }
+}
+
+// Gera um .ics multi-evento com todas as paradas do roteiro.
+function downloadICSRoteiro(plano) {
+    if (!plano || !plano.dias || plano.dias.length === 0) return;
+    const toICS = (d) => d.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
+    const linhas = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//UvaVia//Roteiro//PT'];
+    plano.dias.forEach((dia, i) => {
+        const dataDia = plano.startDate ? addDays(plano.startDate, i) : getTodayISO();
+        dia.forEach((stop, idx) => {
+            const horario = stop.chegada || stop.horario_sugerido || '10:00';
+            const dt = new Date(dataDia + 'T' + horario + ':00');
+            if (isNaN(dt.getTime())) return;
+            const dtEnd = new Date(dt.getTime() + (stop.exp.duracao * 60 * 1000));
+            linhas.push('BEGIN:VEVENT');
+            linhas.push(`UID:roteiro-${plano.seed || Date.now()}-${i}-${idx}@uvaevia`);
+            linhas.push(`DTSTAMP:${toICS(new Date())}`);
+            linhas.push(`DTSTART:${toICS(dt)}`);
+            linhas.push(`DTEND:${toICS(dtEnd)}`);
+            linhas.push(`SUMMARY:${stop.exp.nome} — ${stop.vin.nome}`);
+            linhas.push(`LOCATION:${stop.vin.nome}, ${stop.vin.cidade || ''}`);
+            linhas.push(`DESCRIPTION:Parada ${idx + 1} do dia ${i + 1} no roteiro Uva & Via.`);
+            linhas.push('END:VEVENT');
+        });
+    });
+    linhas.push('END:VCALENDAR');
+    const blob = new Blob([linhas.join('\r\n')], { type: 'text/calendar;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `roteiro-uvaevia-${plano.startDate || getTodayISO()}.ics`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 500);
+    showToast('Roteiro exportado para sua agenda.');
 }
 
 // =================== Booking ===================
@@ -2337,7 +2682,9 @@ renderSugestoes();
 renderBoutique();
 renderAvaliacoes();
 
-const planoSalvo = loadPlan();
+// Tenta restaurar plano via hash compartilhado antes de cair pro localStorage
+const restauradoDoHash = tryRestorePlanoFromHash();
+const planoSalvo = restauradoDoHash ? null : loadPlan();
 if (planoSalvo) {
     renderMapa(planoSalvo);
     document.querySelector('[data-mapa-link]')?.removeAttribute('hidden');

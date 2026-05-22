@@ -5,6 +5,42 @@ e versionamento semântico [SemVer](https://semver.org/lang/pt-BR/).
 
 ---
 
+## [0.4.1] — 2026-05-22 (noite) — Algoritmo v2 e Timeline v2
+
+### Adicionado
+- **Algoritmo de geração de roteiro v2**:
+  - Novo fator: avaliação média da vinícola pesa no scoring (≥4.5 = +3, ≥4.0 = +2, ≥3.5 = +1,
+    com `total ≥ 3` mínimo para evitar viés de poucas reviews).
+  - PRNG com seed (Mulberry32) inline — botão **"Gerar nova variação"** regenera o roteiro com
+    o mesmo input mas seed diferente.
+  - **Rationale por parada**: motivos da escolha exibidos por baixo de cada experiência,
+    com toggle global ("Mostrar critérios / Ocultar critérios").
+  - **Ordenação geográfica intradiária**: dentro de cada dia, paradas reorganizadas por
+    nearest-neighbor a partir da primeira (reduz deslocamento real).
+  - **Chegada/saída por parada** calculadas a partir do horário inicial + duração + deslocamento.
+  - **Sumário narrativo** ("Roteiro de 2 dias com foco em degustações premium…") acima do roteiro.
+  - Penalidade de -1pt para experiências >1.5× o orçamento por parada.
+
+- **Timeline da rota v2**:
+  - Cabeçalho do dia ativo: janela (chegada→saída), nº paradas, duração, km.
+  - Distância em km exibida no conector de deslocamento entre paradas.
+  - **Sugestão automática de almoço** quando gap cai dentro de 12h-14h e dura ≥30min,
+    a menos que uma das paradas já seja harmonizada.
+  - **Chegada → Saída** mostrados em cada parada (substituindo só "horário sugerido").
+  - **Motivo curto** abaixo da experiência na timeline ("combina com piquenique · clima a dois").
+  - **Compartilhar via URL** (`#roteiro=base64(JSON)`, `navigator.share` no mobile,
+    clipboard no desktop) + auto-restore no load.
+  - **Exportar agenda** como `.ics` multi-evento (todas as paradas pontuadas com data/hora).
+  - **Imprimir** com `@media print` otimizado — esconde tudo exceto Roteiro/Mapa,
+    `page-break-inside: avoid` em cards e separadores.
+
+### Mudado
+- `plano` agora carrega `distanciaTotalKm`, `sumario`, `seed`; cada `stop` ganha
+  `chegada`, `saida`, `distanciaKm`, `motivos`.
+- Resumo do mapa exibe nova métrica de distância quando disponível.
+
+---
+
 ## [0.4.0] — 2026-05-22 — Avaliações, real-time, reservas v2
 
 ### Adicionado

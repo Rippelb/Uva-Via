@@ -7,6 +7,48 @@ Registro cronológico das mudanças significativas no projeto.
 
 ---
 
+## 2026-05-22 (noite) — Algoritmo v2 e Timeline v2
+
+### Algoritmo de geração de roteiro v2
+- **Novo fator de scoring**: avaliação média da vinícola — bem avaliada (≥4.5/5 e ≥3 reviews)
+  ganha +3 pts, ≥4.0 ganha +2, ≥3.5 ganha +1. Reaproveita a base de avaliações da feature
+  entregue mais cedo nesta data.
+- **PRNG com seed (Mulberry32)** — adiciona variabilidade controlada. Botão **"Gerar nova variação"**
+  cria roteiros diferentes a partir do mesmo input, sem mexer nas preferências.
+- **Rationale por escolha** (motivos): cada parada agora explica por que foi sugerida
+  ("combina com piquenique · clima a dois · nota 4.8 entre visitantes"). Toggle no roteiro
+  exibe/oculta todos os critérios de uma vez.
+- **Ordenação geográfica intradiária** — dentro de cada dia, paradas são ordenadas pela menor
+  distância até a parada anterior (nearest-neighbor). Reduz deslocamento real.
+- **Cálculo de chegada/saída por parada** — a partir do horário sugerido inicial, o algoritmo
+  calcula `chegada` e `saida` reais considerando duração e deslocamento.
+- **Sumário narrativo** — frase curta acima do roteiro descrevendo o que o conjunto entrega
+  ("Roteiro de 2 dias com foco em degustações premium e pôr do sol nas serras…").
+- **Bonus**: penaliza experiências muito acima do orçamento (`>1.5x budget per stop`) com -1pt.
+
+### Timeline da rota v2
+- **Cabeçalho do dia ativo** com 4 stats: janela do dia (primeira chegada → última saída),
+  número de paradas, duração do dia, e km totais do dia.
+- **Distância em km por trecho** ao lado do tempo de deslocamento ("12min · 8.4 km até Cave Geisse").
+- **Sugestão de almoço automática** — quando o gap entre duas paradas cai dentro de 12h-14h
+  e dura ≥30min, insere card "Pausa sugerida — almoço" entre elas. Não duplica se uma das
+  paradas já é harmonizada.
+- **Chegada → Saída** visíveis em cada parada da timeline (não só horário sugerido).
+- **Compartilhar roteiro via URL** — encode base64 do input em `#roteiro=…`, usa
+  `navigator.share` no mobile ou copia para clipboard no desktop. Hash decodificado no load
+  regenera o roteiro automaticamente.
+- **Exportar agenda (.ics multi-evento)** — gera um único arquivo com todas as paradas
+  pontuadas com data/hora; compatível com Google/Apple/Outlook.
+- **Imprimir roteiro** — `@media print` agora esconde tudo exceto roteiro+mapa, adiciona
+  `page-break-inside: avoid` em cards e separadores para um PDF nativo organizado.
+
+### Infra
+- `Mulberry32` (PRNG) implementado inline em [generateRoteiro](script.js#L735-L745).
+- `tryRestorePlanoFromHash()` no init, antes de cair para `loadPlan()` (localStorage).
+- Texto narrativo escrito de forma a soar natural por idioma, com fallback "experiências variadas".
+
+---
+
 ## 2026-05-22 — Avaliações, real-time, reservas v2 e sugestões filtráveis
 
 ### Avaliações de usuários (nova feature)

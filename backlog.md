@@ -24,6 +24,8 @@ ideias que surgiram durante o desenvolvimento.
 | 32 | Tick de disponibilidade em tempo real (simulado) | UX | ✅ |
 | 33 | Reservas v2 — status, grupos, .ics, cancelar com confirmação | Reservas | ✅ |
 | 34 | Sugestões com filtros temporais e motivo personalizado | Home | ✅ |
+| 35 | Algoritmo v2 — rating, rationale, seed/regenerar, ordenação geográfica | Algoritmo | ✅ |
+| 36 | Timeline v2 — chegada/saída, almoço sugerido, km, share, print, .ics | Mapa | ✅ |
 
 ---
 
@@ -94,6 +96,31 @@ ideias que surgiram durante o desenvolvimento.
 | 31d | Reviews dentro do perfil da vinícola | ✅ |
 | 31e | Badge de média em cards de Boutique/Sugestões/Experiências | ✅ |
 | 31f | Persistência em localStorage + sync entre abas | ✅ |
+
+## ÉPICO: ALGORITMO DE GERAÇÃO DE ROTEIRO
+
+| # | Story | Status |
+|---|---|---|
+| 27 | Algoritmo base (tags, keywords, perfil, vagas, orçamento) | ✅ |
+| 35a | Peso de avaliações da vinícola no scoring | ✅ |
+| 35b | Seed (Mulberry32) + botão "Gerar nova variação" | ✅ |
+| 35c | Rationale por parada (motivos da escolha) | ✅ |
+| 35d | Ordenação geográfica intradiária (nearest-neighbor) | ✅ |
+| 35e | Cálculo de chegada/saída por parada | ✅ |
+| 35f | Sumário narrativo do roteiro | ✅ |
+
+## ÉPICO: TIMELINE DA ROTA
+
+| # | Story | Status |
+|---|---|---|
+| 18 | Timeline com paradas, horários e deslocamento | ✅ |
+| 36a | Cabeçalho do dia com janela/paradas/duração/km | ✅ |
+| 36b | Distância em km por trecho | ✅ |
+| 36c | Sugestão automática de pausa para almoço (12h-14h) | ✅ |
+| 36d | Compartilhar roteiro via URL com hash codificado | ✅ |
+| 36e | Exportar roteiro completo como .ics multi-evento | ✅ |
+| 36f | Imprimir roteiro (`@media print` otimizado) | ✅ |
+| 36g | Chegada → Saída visíveis em cada parada | ✅ |
 
 ## ÉPICO: DISPONIBILIDADE EM TEMPO REAL
 

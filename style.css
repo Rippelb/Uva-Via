@@ -1570,6 +1570,178 @@ body.nav-open {
 }
 
 /* ============================================================
+   ROTEIRO v2 — sumario narrativo, motivos por parada, btn pequeno
+   ============================================================ */
+.roteiro-sumario {
+    background-color: var(--bege);
+    border: 1px solid var(--bege-escuro);
+    border-radius: 10px;
+    padding: var(--space-4) var(--space-5);
+    margin-bottom: var(--space-4);
+    position: relative;
+    overflow: hidden;
+}
+.roteiro-sumario::before {
+    content: "";
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 3px;
+    background: linear-gradient(180deg, var(--vinho), var(--oliva));
+}
+.roteiro-narrativa {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: 1.05rem;
+    line-height: 1.55;
+    color: var(--vinho);
+    display: flex;
+    align-items: flex-start;
+    gap: .55rem;
+}
+.roteiro-narrativa i {
+    color: var(--oliva);
+    font-size: .95rem;
+    margin-top: .25rem;
+    flex-shrink: 0;
+}
+.roteiro-algoritmo-actions {
+    display: flex;
+    gap: .6rem;
+    flex-wrap: wrap;
+    margin-top: var(--space-3);
+}
+
+/* Botao pequeno reutilizavel (usado em mapa-actions, roteiro-actions internas) */
+.btn-sm {
+    font-size: .78rem !important;
+    padding: .55rem 1rem !important;
+    min-height: 36px !important;
+    letter-spacing: .08em;
+}
+
+/* Motivos da escolha (collapsable inline na parada) */
+.stop-motivos {
+    margin-top: .5rem;
+    padding: .55rem .75rem;
+    background-color: rgba(107, 122, 58, .08);
+    border-left: 2px solid var(--oliva);
+    border-radius: 4px;
+    font-size: .82rem;
+    color: var(--texto);
+    line-height: 1.5;
+    animation: fadeUp .35s ease both;
+}
+.stop-motivos i { color: var(--oliva); margin-right: .25rem; }
+.stop-motivos em { font-style: italic; color: var(--vinho); }
+
+/* Janela chegada → saida abaixo do horario sugerido */
+.stop-window {
+    font-size: .72rem;
+    color: var(--oliva);
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    font-weight: 600;
+    display: block;
+    margin-top: .15rem;
+}
+
+/* ============================================================
+   MAPA v2 — actions bar, cabecalho do dia, pausa de almoco, motivo
+   ============================================================ */
+.mapa-actions {
+    display: flex;
+    gap: .55rem;
+    justify-content: center;
+    margin: 0 0 var(--space-4) 0;
+    flex-wrap: wrap;
+}
+.mapa-actions .btn { min-width: 0; }
+
+.mapa-dia-header {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-3);
+    background-color: var(--branco);
+    border: 1px solid var(--borda);
+    border-radius: 8px;
+    padding: var(--space-3) var(--space-4);
+    margin-bottom: var(--space-4);
+    box-shadow: var(--shadow-sm);
+}
+@media (min-width: 600px) {
+    .mapa-dia-header { grid-template-columns: repeat(4, 1fr); }
+}
+.mapa-dia-header > div {
+    display: flex;
+    flex-direction: column;
+    gap: .15rem;
+    text-align: center;
+}
+.mapa-dia-header span {
+    font-size: .68rem;
+    text-transform: uppercase;
+    letter-spacing: .12em;
+    color: var(--texto);
+    opacity: .65;
+    font-weight: 600;
+}
+.mapa-dia-header strong {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: 1.05rem;
+    color: var(--vinho);
+    line-height: 1.15;
+}
+
+/* Pausa sugerida (almoço) entre paradas */
+.mapa-pausa {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    margin: var(--space-2) 0 var(--space-3) 32px;
+    padding: var(--space-3) var(--space-4);
+    background: linear-gradient(135deg, rgba(201, 142, 62, .08), rgba(107, 122, 58, .06));
+    border: 1px dashed var(--bege-escuro);
+    border-radius: 8px;
+    animation: fadeUp .35s ease both;
+}
+.mapa-pausa-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-color: rgba(201, 142, 62, .18);
+    color: var(--status-quase);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+.mapa-pausa-body { display: flex; flex-direction: column; gap: .15rem; }
+.mapa-pausa-body strong {
+    font-family: var(--font-serif);
+    font-style: italic;
+    color: var(--vinho);
+    font-size: 1rem;
+}
+.mapa-pausa-body small {
+    font-size: .78rem;
+    color: var(--texto);
+    opacity: .75;
+}
+
+/* Motivo curto abaixo da experiencia na timeline */
+.mapa-stop-motivo {
+    display: inline-flex;
+    align-items: center;
+    gap: .35rem;
+    font-size: .8rem;
+    font-style: italic;
+    color: var(--oliva);
+    margin-top: .35rem;
+}
+.mapa-stop-motivo i { color: var(--oliva); }
+
+/* ============================================================
    VINICOLA (perfil)
    ============================================================ */
 .vinicola-empty {
@@ -3384,7 +3556,15 @@ body.nav-open {
 /* Print */
 @media print {
     .nav, .hero-scroll, .toast, .form-actions, .roteiro-actions,
-    .reservations-actions, .stop-actions { display: none !important; }
+    .reservations-actions, .stop-actions, .mapa-actions,
+    .roteiro-algoritmo-actions, .mapa-tabs, .sug-filters, .aval-filters,
+    .footer, #planejar, #sugestoes, #boutique, #reservar, #experiencias,
+    #minhas-reservas, #avaliacoes, #diferenciais, #gestao { display: none !important; }
     body { background: #fff; color: #000; }
-    .roteiro-section, .mapa-section, .reservations { background: #fff; padding: 1rem; }
+    .roteiro-section, .mapa-section { background: #fff; padding: 1rem; page-break-after: auto; }
+    .mapa-timeline .mapa-stop, .mapa-pausa, .mapa-deslocamento { page-break-inside: avoid; }
+    .roteiro-day { page-break-inside: avoid; }
+    .mapa-dia-header { box-shadow: none; }
+    /* No modo impressao mostra todos os dias da timeline empilhados */
+    .mapa-tabs { display: none !important; }
 }

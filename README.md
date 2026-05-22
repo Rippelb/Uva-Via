@@ -63,11 +63,13 @@ baseados em:
 - Geração instantânea (zero round-trip)
 
 ### 📋 Roteiro Sugerido
-- Resumo: dias, paradas, **tempo total**, deslocamento, custo
+- **Sumário narrativo** descrevendo o foco do conjunto ("…degustações premium e pôr do sol…")
+- Resumo: dias, paradas, **tempo total**, deslocamento, **distância em km**, custo
 - Tags de experiências incluídas
 - Gauge de orçamento (dentro/acima)
-- Cards de paradas com **botões "Ver vinícola" e "Reservar"**
+- Cards de paradas com **chegada → saída**, motivos da escolha (toggle), e botões "Ver vinícola"/"Reservar"
 - Badges de disponibilidade
+- **"Gerar nova variação"** — re-roll com seed diferente
 
 ### 🍇 Página da Vinícola
 - Cover personalizado, descrição, faixa de preço, duração média
@@ -75,9 +77,13 @@ baseados em:
 - Reserva direta com pré-preenchimento
 
 ### 🗺️ Mapa / Rota
-- **Visão resumida** — tempo total, deslocamento, paradas, saída sugerida
+- **Visão resumida** — tempo total, deslocamento, **distância em km**, paradas, saída sugerida
+- **Barra de ações** — Imprimir · Compartilhar (URL com hash) · Exportar agenda (.ics multi-evento)
 - Tabs por dia (scroll horizontal mobile-friendly)
-- **Timeline vertical** com marcadores numerados e deslocamento entre paradas
+- **Cabeçalho do dia ativo** com janela, nº paradas, duração e km do dia
+- **Timeline vertical** com marcadores numerados, chegada → saída, deslocamento em km e tempo
+- **Sugestão automática de pausa para almoço** quando há gap entre 12h-14h
+- Motivo curto da escolha visível em cada parada
 
 ### 📅 Reservas Confirmadas
 - Próxima visita destacada
