@@ -7,6 +7,54 @@ Registro cronológico das mudanças significativas no projeto.
 
 ---
 
+## 2026-05-22 — Avaliações, real-time, reservas v2 e sugestões filtráveis
+
+### Avaliações de usuários (nova feature)
+- Nova seção `#avaliacoes` com feed da comunidade — média geral, total, estrelas,
+  e cards com avatar/inicial, perfil do visitante, vinícola, experiência, comentário e data.
+- **Filtros**: Todas · 5 estrelas · 4+ estrelas · Mais recentes (chips no mesmo estilo do admin).
+- **Formulário inline** dentro de cada reserva passada — picker de 1 a 5 estrelas (FA `fa-star`),
+  textarea com limite de 320 caracteres, validação de nota mínima antes de habilitar envio.
+- **Persistência em localStorage** (`uvaevia.avaliacoes`) + 12 avaliações seed para a comunidade
+  não nascer vazia. Após avaliar, a reserva ganha selo "Você já avaliou esta experiência".
+- **Bloco de avaliações no perfil da vinícola** — mostra média + estrelas + 4 reviews mais recentes,
+  ou empty state convidativo.
+- **Badge de média** nos cards de Boutique, Sugestões e Experiências (estrela âmbar + nota + total).
+- Hero stat "nota média" agora calcula a média real das avaliações (substitui mock 4.9).
+
+### Disponibilidade em tempo real (aprimorado)
+- **Tick simulado** a cada 45s: decrementa 1-2 vagas aleatórias para dar sensação de "outros visitantes reservando".
+- **Pausa quando aba não está visível** (Page Visibility API) — economia de processamento.
+- **Timestamp "Atualizado há X"** em todas as superfícies de disponibilidade (sugestões, slots),
+  refrescado a cada 5s sem causar re-render.
+- Live dot já existente nas sugestões e no formulário de reserva, agora alimentado pelo tick global.
+- Slots animam (`.is-updated`) quando o número de vagas muda durante a sessão do usuário.
+
+### Sistema de reservas v2
+- **Status derivado**: Pendente (primeiras 2h) → Confirmada → Realizada → Cancelada (pill colorida).
+- **Agrupamento por bucket temporal**: Hoje · Amanhã · Esta semana · Em breve · Histórico —
+  cada grupo com header serif itálico e contagem.
+- **Ações inline por reserva**: "Agenda" (gera `.ics` baixável para Google/Apple/Outlook),
+  "Avaliar" (após data passar — abre formulário inline), "Cancelar" (confirm dialog antes).
+- Reservas canceladas mantidas no histórico mas excluídas da soma do valor total.
+- Confirm dialog padrão do navegador antes de cancelar — evita perda acidental.
+
+### Sugestões do dia (aprimorado)
+- **Filtros temporais**: Hoje · Amanhã · Fim de semana · Todas (chips no estilo do admin).
+- **Motivo personalizado** por sugestão — frase explicando porque essa experiência foi recomendada
+  (ex.: "A luz dourada cai sobre os vinhedos — momento icônico" para `por-do-sol`).
+- **Badge de média** em cada card (estrela + nota + total de avaliações).
+- **Fallback elegante** quando o filtro estrito não traz nada — botão "Ver todas" inline.
+
+### Infra
+- Funções globais expostas em `window` (`renderAvaliacoes`) para o `api-client.js` re-renderizar
+  pós-bootstrap.
+- Sync entre abas adicionado para `STORAGE_AVAL` — avaliar numa aba atualiza a outra.
+- Spy de scroll inclui `#avaliacoes` para destacar o link na nav.
+- IDs altos (>=1000) continuam reservados para custom data local — coexistência com seed/backend.
+
+---
+
 ## 2026-05-15 (tarde) — Polimento UX + Admin
 
 ### Iconografia

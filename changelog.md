@@ -5,6 +5,46 @@ e versionamento semântico [SemVer](https://semver.org/lang/pt-BR/).
 
 ---
 
+## [0.4.0] — 2026-05-22 — Avaliações, real-time, reservas v2
+
+### Adicionado
+- **Avaliações de usuários** (épico inteiro):
+  - Nova seção `#avaliacoes` com feed da comunidade, média geral, total e cards (autor inicial,
+    perfil do visitante, vinícola, experiência, comentário e data).
+  - Filtros (todas / 5 / 4+ / recentes) no estilo dos chips do admin.
+  - Formulário inline dentro de cada reserva passada: picker de 1-5 estrelas (FA),
+    textarea limitada a 320 chars, validação antes de enviar.
+  - Persistência em `localStorage` (`uvaevia.avaliacoes`) + sync entre abas.
+  - 12 avaliações seed para a comunidade não nascer vazia.
+  - Bloco de reviews dentro do perfil da vinícola (média + 4 mais recentes).
+  - Badge de média (estrela âmbar + nota + total) em cards de Boutique, Sugestões, Experiências.
+  - Hero stat "nota média" agora calcula a média real (substitui mock 4.9).
+- **Disponibilidade em tempo real** (tick simulado):
+  - Decremento aleatório de 0-2 vagas a cada 45s (parece outros visitantes reservando).
+  - Pausa quando aba fica oculta (Page Visibility API).
+  - Timestamp "Atualizado há Xs" em sugestões e slots, refrescado a cada 5s.
+  - Animação `.is-updated` nos slots que mudaram durante a sessão.
+- **Sistema de reservas v2**:
+  - Status derivado (Pendente nas primeiras 2h → Confirmada → Realizada → Cancelada).
+  - Agrupamento por bucket temporal (Hoje / Amanhã / Esta semana / Em breve / Histórico).
+  - Botão "Agenda" gera `.ics` baixável (compatível com Google/Apple/Outlook).
+  - Botão "Avaliar" após data passar (abre form inline).
+  - Confirm dialog padrão do navegador antes de cancelar.
+  - Reservas canceladas mantidas no histórico mas excluídas do total.
+- **Sugestões do dia v2**:
+  - Filtros temporais: Hoje · Amanhã · Fim de semana · Todas.
+  - Motivo personalizado por tag ("A luz dourada cai sobre os vinhedos…").
+  - Fallback elegante quando o filtro estrito não traz nada.
+  - Badge de média de avaliações no card.
+
+### Mudado
+- Spy de scroll inclui `#avaliacoes`, ativando o link na nav.
+- `api-client.js` invoca `renderAvaliacoes()` no bootstrap pós-API (mesma forma de
+  `renderSugestoes`/`renderBoutique`).
+- Reserva agora armazena `criadaEm` e `cancelada` para alimentar o status derivado.
+
+---
+
 ## [Não publicado] — 2026-05-15 (noite)
 
 ### Corrigido

@@ -87,6 +87,23 @@ let HORARIOS = [
     { id: 29, experiencia_id: 26, data: '2026-05-09', horario: '11:30', vagas: 20 },
 ];
 
+// Avaliacoes (seed) - reviews iniciais para a comunidade nao parecer vazia.
+// Usuarias podem adicionar novas pela tela "Minhas reservas" apos a data passar.
+const AVALIACOES_SEED = [
+    { id: 'av_seed_1',  vinicola_id: 1,  experiencia_id: 1,  nota: 5, autor: 'Helena M.',     perfil: 'Casal',           comentario: 'Atendimento impecável e a degustação de Merlot foi memorável. Voltaremos!',                            data: '2026-04-12' },
+    { id: 'av_seed_2',  vinicola_id: 2,  experiencia_id: 5,  nota: 5, autor: 'Lucas e Ana',   perfil: 'Casal',           comentario: 'Piquenique entre os vinhedos no fim de tarde — luz mágica, espumante perfeito.',                       data: '2026-04-20' },
+    { id: 'av_seed_3',  vinicola_id: 3,  experiencia_id: 8,  nota: 4, autor: 'Família Souza', perfil: 'Família adulta',  comentario: 'Participar da vindima com as crianças adultas foi inesquecível. Só achei que faltou um pouco de sombra.', data: '2026-03-05' },
+    { id: 'av_seed_4',  vinicola_id: 4,  experiencia_id: 10, nota: 5, autor: 'Ricardo P.',    perfil: 'Grupo de amigos', comentario: 'Vertical do Dádivas é uma experiência sensorial sem igual. O sommelier conduziu com maestria.',         data: '2026-04-28' },
+    { id: 'av_seed_5',  vinicola_id: 6,  experiencia_id: 16, nota: 5, autor: 'Marina C.',     perfil: 'Casal',           comentario: 'Jantar Maria Valduga foi um dos melhores que já fizemos. Harmonização de outro nível.',                  data: '2026-05-01' },
+    { id: 'av_seed_6',  vinicola_id: 7,  experiencia_id: 18, nota: 5, autor: 'Patrícia L.',   perfil: 'Casal',           comentario: 'A cave na rocha é um espetáculo. Espumante envelhecido vale cada centavo.',                              data: '2026-04-15' },
+    { id: 'av_seed_7',  vinicola_id: 9,  experiencia_id: 24, nota: 4, autor: 'Carlos R.',     perfil: 'Família adulta',  comentario: 'Almoço toscano divino, ambiente lindo. A espera entre os pratos foi um pouco longa.',                    data: '2026-04-03' },
+    { id: 'av_seed_8',  vinicola_id: 5,  experiencia_id: 13, nota: 5, autor: 'Bruna T.',      perfil: 'Grupo de amigos', comentario: 'Lote 43 é uma referência nacional — degustá-lo com explicação técnica foi muito enriquecedor.',         data: '2026-03-22' },
+    { id: 'av_seed_9',  vinicola_id: 10, experiencia_id: 26, nota: 4, autor: 'Júlia F.',      perfil: 'Viajante solo',   comentario: 'Flight de moscatéis surpreendente, ótimo custo-benefício. Atendimento simpático e familiar.',           data: '2026-04-09' },
+    { id: 'av_seed_10', vinicola_id: 1,  experiencia_id: 3,  nota: 4, autor: 'Eduardo M.',    perfil: 'Grupo de amigos', comentario: 'Tour pelas caves bem informativo, gostei da estrutura. Senti falta de uma degustação inclusa.',          data: '2026-03-15' },
+    { id: 'av_seed_11', vinicola_id: 8,  experiencia_id: 21, nota: 4, autor: 'Sofia D.',      perfil: 'Família adulta',  comentario: 'Tour histórico Salton é uma aula de enologia gaúcha. Recomendo para quem ama história.',                data: '2026-04-25' },
+    { id: 'av_seed_12', vinicola_id: 2,  experiencia_id: 4,  nota: 5, autor: 'Rafael G.',     perfil: 'Casal',           comentario: 'Espumantes Torcello: sabor, brilho e uma vista de tirar o fôlego. Top!',                                 data: '2026-05-08' },
+];
+
 // =================== Utils ===================
 const fmtBRL = (n) => (n || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 const fmtData = (iso) => {
@@ -209,7 +226,7 @@ desktopMQ.addEventListener('change', (e) => {
 
 // Active link no scroll
 const spySections = ['home', 'planejar', 'roteiro', 'vinicola', 'mapa',
-                     'experiencias', 'reservar', 'minhas-reservas']
+                     'experiencias', 'reservar', 'minhas-reservas', 'avaliacoes']
     .map(id => document.getElementById(id))
     .filter(Boolean);
 
@@ -330,10 +347,48 @@ function getProximoHorario(expId) {
         .sort((a, b) => (a.data + a.horario).localeCompare(b.data + b.horario))[0];
 }
 
+// Filtro temporal das sugestoes — alimenta os chips "Hoje | Amanhã | Fim de semana | Todas".
+let sugFiltro = 'hoje';
+
+function dataMatchesFiltro(iso, filtro) {
+    if (!iso) return false;
+    if (filtro === 'todas') return true;
+    const hoje = getTodayISO();
+    if (filtro === 'hoje')   return iso === hoje;
+    if (filtro === 'amanha') return iso === addDays(hoje, 1);
+    if (filtro === 'fimsemana') {
+        const d = new Date(iso + 'T00:00:00');
+        if (isNaN(d.getTime())) return false;
+        const dow = d.getDay(); // 0=domingo, 6=sabado
+        // proximos 7 dias E (sex/sab/dom)
+        const ate = new Date();
+        ate.setHours(0,0,0,0);
+        ate.setDate(ate.getDate() + 14);
+        return d <= ate && (dow === 0 || dow === 5 || dow === 6);
+    }
+    return true;
+}
+
+function getProximoHorarioComFiltro(expId, filtro) {
+    return getAllHorarios()
+        .filter(h => h.experiencia_id === expId && h.vagas > 0)
+        .filter(h => dataMatchesFiltro(h.data, filtro))
+        .sort((a, b) => (a.data + a.horario).localeCompare(b.data + b.horario))[0];
+}
+
+// Motivo personalizado por tag — explica "porque essa sugestao".
+const SUG_MOTIVO = {
+    'piquenique':         'Para curtir os vinhedos ao ar livre, com tempo de respirar.',
+    'degustacao-premium': 'Vinhos ícones conduzidos por sommelier — para quem quer profundidade.',
+    'visita-tecnica':     'Entenda o terroir e o processo direto na cave.',
+    'harmonizado':        'Cada vinho casado com um prato pensado pelo chef.',
+    'por-do-sol':         'A luz dourada cai sobre os vinhedos — momento icônico.',
+    'boutique':           'Cantina intimista, atendimento próximo, produção limitada.',
+};
+
 function renderSugestoes() {
     const grid = document.getElementById('sugestoes-grid');
     if (!grid) return;
-    // Curadoria: 1 piquenique, 1 degustacao premium, 1 visita tecnica/intimista
     const curatedTags = ['piquenique', 'degustacao-premium', 'visita-tecnica',
                           'harmonizado', 'por-do-sol', 'boutique'];
     const usedVin = new Set();
@@ -342,7 +397,7 @@ function renderSugestoes() {
     for (const tag of curatedTags) {
         const candidatos = EXPERIENCIAS
             .filter(e => (e.tags || []).includes(tag))
-            .map(e => ({ e, prox: getProximoHorario(e.id) }))
+            .map(e => ({ e, prox: getProximoHorarioComFiltro(e.id, sugFiltro) }))
             .filter(x => x.prox)
             .filter(x => !usedVin.has(x.e.vinicola_id));
         if (candidatos.length) {
@@ -352,10 +407,26 @@ function renderSugestoes() {
         }
         if (sugestoes.length >= 6) break;
     }
+
+    // Fallback: se filtro estrito nao trouxe nada, mostra "todas" mas avisa.
+    if (sugestoes.length === 0 && sugFiltro !== 'todas') {
+        grid.innerHTML = `<p class="exp-empty">Sem sugestões com vagas para esse período — <button type="button" class="btn btn-ghost" id="sug-fallback" style="display:inline-flex;margin-left:.5rem;padding:.5rem .9rem;font-size:.75rem;min-height:36px">Ver todas</button></p>`;
+        document.getElementById('sug-fallback')?.addEventListener('click', () => {
+            sugFiltro = 'todas';
+            document.querySelectorAll('.sug-filter').forEach(b => {
+                const on = b.dataset.sugFilter === 'todas';
+                b.classList.toggle('is-active', on);
+                b.setAttribute('aria-selected', String(on));
+            });
+            renderSugestoes();
+        });
+        return;
+    }
     if (sugestoes.length === 0) {
         grid.innerHTML = `<p class="exp-empty">Sem sugestões disponíveis no momento.</p>`;
         return;
     }
+
     const tagLabel = {
         'piquenique':         'Piquenique',
         'degustacao-premium': 'Degustação premium',
@@ -367,16 +438,23 @@ function renderSugestoes() {
     grid.innerHTML = sugestoes.map(s => {
         const vin = getAllVinicolas().find(v => v.id === s.exp.vinicola_id);
         const vagas = countHorariosDisponiveis(s.exp.id);
+        const motivo = SUG_MOTIVO[s.tag] || '';
+        const rating = getMediaAvaliacoes(s.exp.vinicola_id);
+        const ratingBadge = rating.total > 0
+            ? `<span class="card-rating"><i class="fa-solid fa-star" aria-hidden="true" style="color:var(--status-quase)"></i> <strong>${rating.media.toFixed(1)}</strong> (${rating.total})</span>`
+            : '';
         return `
             <article class="sug-card">
                 <span class="sug-badge">${tagLabel[s.tag] || s.tag}</span>
                 <h3>${s.exp.nome}</h3>
                 <span class="sug-vin">${vin?.nome ?? ''} · ${vin?.cidade ?? ''}</span>
+                ${motivo ? `<p class="sug-motivo">${motivo}</p>` : ''}
                 <div class="sug-meta">
                     <span><i class="fa-regular fa-clock" aria-hidden="true"></i> <strong>${s.exp.duracao} min</strong></span>
                     <span><i class="fa-solid fa-tag" aria-hidden="true"></i> <strong>${fmtBRL(s.exp.preco)}</strong>/pessoa</span>
                     <span><i class="fa-regular fa-calendar" aria-hidden="true"></i> ${fmtDataCurta(s.hor.data)} · ${s.hor.horario}</span>
                     <span><span class="av-badge ${getDisponibilidadeStatus(vagas, 50).cls}">${vagas} vagas</span></span>
+                    ${ratingBadge}
                 </div>
                 <button class="btn btn-primary" type="button" data-vin="${s.exp.vinicola_id}" data-exp="${s.exp.id}">
                     Reservar
@@ -391,6 +469,19 @@ function renderSugestoes() {
         });
     });
 }
+
+// Bind dos chips de filtro de sugestoes
+document.querySelectorAll('.sug-filter').forEach(btn => {
+    btn.addEventListener('click', () => {
+        sugFiltro = btn.dataset.sugFilter;
+        document.querySelectorAll('.sug-filter').forEach(b => {
+            const on = b.dataset.sugFilter === sugFiltro;
+            b.classList.toggle('is-active', on);
+            b.setAttribute('aria-selected', String(on));
+        });
+        renderSugestoes();
+    });
+});
 
 // =================== Vinicolas boutique em destaque ===================
 function renderBoutique() {
@@ -407,6 +498,10 @@ function renderBoutique() {
         const preco = v.preco_min && v.preco_max
             ? `${fmtBRL(v.preco_min)}–${fmtBRL(v.preco_max)}`
             : '—';
+        const rating = getMediaAvaliacoes(v.id);
+        const ratingTag = rating.total > 0
+            ? `<span><i class="fa-solid fa-star" aria-hidden="true" style="color:var(--status-quase)"></i> <strong>${rating.media.toFixed(1)}</strong> (${rating.total})</span>`
+            : '';
         return `
             <button class="bout-card" type="button" data-vin="${v.id}" aria-label="Abrir ${v.nome}">
                 <div class="bout-cover tone-${v.tone || 'a'}" aria-hidden="true">${initial}</div>
@@ -418,6 +513,7 @@ function renderBoutique() {
                         <span><i class="fa-solid fa-wine-glass" aria-hidden="true"></i> <strong>${expCount}</strong> experiências</span>
                         <span><i class="fa-regular fa-clock" aria-hidden="true"></i> <strong>${v.duracao_media_min || 75}</strong> min</span>
                         <span><i class="fa-solid fa-tag" aria-hidden="true"></i> ${preco}</span>
+                        ${ratingTag}
                     </div>
                     <span class="btn btn-ghost">Ver perfil</span>
                 </div>
@@ -441,9 +537,48 @@ function openVinicola(vinId, focusExpId) {
     section.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
+// Bloco de avaliacoes embutido no perfil da vinicola (usado em renderVinicolaPerfil).
+// Funcao definida em modulo separado abaixo, mas referenciada aqui — chamada gera HTML.
+function renderVinAvaliacoes(vin) {
+    // Funcao acessa getAllAvaliacoes/avalCardHTML definidos mais abaixo no arquivo;
+    // funciona porque `function` declarations sao hoisted.
+    if (typeof getAllAvaliacoes !== 'function') return '';
+    const lista = getAllAvaliacoes()
+        .filter(a => a.vinicola_id === vin.id)
+        .sort((a, b) => (b.data || '').localeCompare(a.data || ''))
+        .slice(0, 4);
+    const { media, total } = getMediaAvaliacoes(vin.id);
+    if (total === 0) {
+        return `
+            <section class="vin-aval-section">
+                <div class="vin-aval-head">
+                    <h3>Avaliações</h3>
+                </div>
+                <p class="aval-empty">Ainda não há avaliações para essa vinícola. Seja o primeiro a contar como foi.</p>
+            </section>
+        `;
+    }
+    return `
+        <section class="vin-aval-section">
+            <div class="vin-aval-head">
+                <h3>Avaliações</h3>
+                <div class="vin-aval-summary">
+                    ${renderEstrelas(media, 'sm')}
+                    <strong>${media.toFixed(1)}</strong>
+                    <span>· ${total} avaliaç${total === 1 ? 'ão' : 'ões'}</span>
+                </div>
+            </div>
+            <ul class="vin-aval-list">
+                ${lista.map(a => avalCardHTML(a, { showVin: false })).join('')}
+            </ul>
+        </section>
+    `;
+}
+
 function renderVinicolaPerfil(vin, focusExpId) {
     const container = document.getElementById('vinicola-content');
     const exps = EXPERIENCIAS.filter(e => e.vinicola_id === vin.id);
+    const { media, total } = getMediaAvaliacoes(vin.id);
 
     container.innerHTML = `
         <article class="vin-profile">
@@ -468,6 +603,10 @@ function renderVinicolaPerfil(vin, focusExpId) {
                     <div class="vin-meta-item">
                         <span>Experiências disponíveis</span>
                         <strong>${exps.length}</strong>
+                    </div>
+                    <div class="vin-meta-item">
+                        <span>Avaliação dos visitantes</span>
+                        <strong>${total > 0 ? media.toFixed(1) + ' / 5' : '—'}</strong>
                     </div>
                 </div>
 
@@ -503,6 +642,8 @@ function renderVinicolaPerfil(vin, focusExpId) {
                         }).join('')}
                     </ul>
                 </div>
+
+                ${renderVinAvaliacoes(vin)}
             </div>
         </article>
     `;
@@ -1119,6 +1260,67 @@ function diasAte(isoData) {
     return Math.round((alvo - hoje) / (1000 * 60 * 60 * 24));
 }
 
+// Status derivado da reserva: pendente -> confirmada -> realizada -> cancelada.
+function getReservaStatus(r) {
+    if (r.cancelada) return { cls: 'is-cancelada', label: 'Cancelada' };
+    if (diasAte(r.data) < 0) return { cls: 'is-realizada', label: 'Realizada' };
+    const criada = Number(r.criadaEm || 0);
+    if (criada && (Date.now() - criada) < (2 * 60 * 60 * 1000)) {
+        return { cls: 'is-pendente', label: 'Pendente' };
+    }
+    return { cls: 'is-confirmada', label: 'Confirmada' };
+}
+
+function bucketDaReserva(r) {
+    const d = diasAte(r.data);
+    if (r.cancelada) return 'realizadas';
+    if (d < 0)       return 'realizadas';
+    if (d === 0)     return 'hoje';
+    if (d === 1)     return 'amanha';
+    if (d <= 7)      return 'semana';
+    return 'futuras';
+}
+const BUCKET_LABELS = {
+    hoje:       { title: 'Hoje',        hint: 'Aproveite!' },
+    amanha:     { title: 'Amanhã',      hint: 'Prepare-se' },
+    semana:     { title: 'Esta semana', hint: 'Próximos dias' },
+    futuras:    { title: 'Em breve',    hint: 'Planejado' },
+    realizadas: { title: 'Histórico',   hint: 'Já visitadas' },
+};
+const BUCKET_ORDER = ['hoje', 'amanha', 'semana', 'futuras', 'realizadas'];
+
+// Gera um .ics e dispara o download — funciona em Google/Apple/Outlook agenda.
+function downloadICS(r) {
+    const dt = new Date(r.data + 'T' + r.horario + ':00');
+    if (isNaN(dt.getTime())) return;
+    const dtEnd = new Date(dt.getTime() + (90 * 60 * 1000));
+    const toICS = (d) => d.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
+    const ics = [
+        'BEGIN:VCALENDAR',
+        'VERSION:2.0',
+        'PRODID:-//UvaVia//Reserva//PT',
+        'BEGIN:VEVENT',
+        `UID:${r.id}@uvaevia`,
+        `DTSTAMP:${toICS(new Date())}`,
+        `DTSTART:${toICS(dt)}`,
+        `DTEND:${toICS(dtEnd)}`,
+        `SUMMARY:${r.experiencia} — ${r.vinicola}`,
+        `LOCATION:${r.vinicola}, ${r.cidade}`,
+        `DESCRIPTION:Reserva Uva & Via — ${r.pessoas} pessoa(s). Responsável: ${r.nome}.`,
+        'END:VEVENT',
+        'END:VCALENDAR',
+    ].join('\r\n');
+    const blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `reserva-${r.vinicola.replace(/\s+/g, '-').toLowerCase()}-${r.data}.ics`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 500);
+}
+
 function renderReservas() {
     const reservas = loadReservas().sort((a, b) => (a.data + a.horario).localeCompare(b.data + b.horario));
     if (reservas.length === 0) {
@@ -1134,9 +1336,9 @@ function renderReservas() {
     statsEl.hidden = false;
     actionsEl.hidden = false;
 
-    const futuras = reservas.filter(r => diasAte(r.data) >= 0);
+    const futuras = reservas.filter(r => diasAte(r.data) >= 0 && !r.cancelada);
     const proxima = futuras[0];
-    const totalValor = reservas.reduce((sum, r) => sum + r.total, 0);
+    const totalValor = reservas.filter(r => !r.cancelada).reduce((sum, r) => sum + r.total, 0);
 
     rstatTotal.textContent = reservas.length;
     rstatValor.textContent = fmtBRL(totalValor);
@@ -1147,44 +1349,351 @@ function renderReservas() {
         rstatProxima.textContent = 'Concluídas';
     }
 
-    listEl.innerHTML = '';
+    // Agrupa por bucket temporal
+    const grupos = {};
     reservas.forEach(r => {
-        const isNext = proxima && r.id === proxima.id;
-        const d = diasAte(r.data);
-        const statusLabel = d < 0 ? 'Realizada' : (isNext ? 'Próxima' : 'Confirmada');
-        const li = document.createElement('li');
-        li.className = 'reserva-card' + (isNext ? ' is-next' : '');
-        li.innerHTML = `
-            <div class="reserva-when">
-                <span class="reserva-day">${fmtData(r.data)}</span>
-                <span class="reserva-time">${r.horario}</span>
-            </div>
-            <div class="reserva-info">
-                <h3>${r.experiencia}</h3>
-                <p class="reserva-place">${r.vinicola} · ${r.cidade}</p>
-                <p class="reserva-meta">
-                    <span>${r.pessoas} ${r.pessoas === 1 ? 'pessoa' : 'pessoas'}</span>
-                    <span>·</span>
-                    <span>Responsável: ${r.nome}</span>
-                </p>
-            </div>
-            <div class="reserva-side">
-                <span class="reserva-status">${statusLabel}</span>
-                <strong class="reserva-total">${fmtBRL(r.total)}</strong>
-                <button class="reserva-cancel" data-id="${r.id}" type="button">Cancelar</button>
-            </div>
-        `;
-        listEl.appendChild(li);
+        const b = bucketDaReserva(r);
+        (grupos[b] = grupos[b] || []).push(r);
     });
 
-    listEl.querySelectorAll('.reserva-cancel').forEach(btn => {
+    listEl.innerHTML = '';
+    BUCKET_ORDER.forEach(bucket => {
+        const itens = grupos[bucket];
+        if (!itens || itens.length === 0) return;
+        const groupLi = document.createElement('li');
+        groupLi.className = 'reservas-group';
+        const meta = BUCKET_LABELS[bucket];
+        const groupHtml = [
+            `<header class="reservas-group-head">
+                <h3>${meta.title}</h3>
+                <small>${itens.length} · ${meta.hint}</small>
+            </header>`,
+            '<ul class="reservas-group-list" style="list-style:none;display:flex;flex-direction:column;gap:1rem;">',
+        ];
+        itens.forEach(r => {
+            const isNext = proxima && r.id === proxima.id;
+            const status = getReservaStatus(r);
+            const podeAvaliar = diasAte(r.data) < 0 && !r.cancelada && !temAvaliacaoDoUsuario(r.id);
+            const jaAvaliou   = diasAte(r.data) < 0 && temAvaliacaoDoUsuario(r.id);
+            groupHtml.push(`
+                <li class="reserva-card${isNext ? ' is-next' : ''}" data-reserva="${r.id}">
+                    <div class="reserva-when">
+                        <span class="reserva-day">${fmtData(r.data)}</span>
+                        <span class="reserva-time">${r.horario}</span>
+                    </div>
+                    <div class="reserva-info">
+                        <h3>${r.experiencia}</h3>
+                        <p class="reserva-place">${r.vinicola} · ${r.cidade}</p>
+                        <p class="reserva-meta">
+                            <span>${r.pessoas} ${r.pessoas === 1 ? 'pessoa' : 'pessoas'}</span>
+                            <span>·</span>
+                            <span>Responsável: ${r.nome}</span>
+                        </p>
+                        ${jaAvaliou ? '<p class="reserva-meta" style="color:var(--oliva);margin-top:.35rem;"><i class="fa-solid fa-circle-check" aria-hidden="true"></i> Você já avaliou esta experiência</p>' : ''}
+                    </div>
+                    <div class="reserva-side">
+                        <span class="reserva-status ${status.cls}">${isNext ? 'Próxima' : status.label}</span>
+                        <strong class="reserva-total">${fmtBRL(r.total)}</strong>
+                        <div class="reserva-actions">
+                            ${!r.cancelada && diasAte(r.data) >= 0 ? `<button type="button" class="reserva-action" data-action="ics" data-id="${r.id}" title="Adicionar à agenda"><i class="fa-regular fa-calendar-plus"></i> Agenda</button>` : ''}
+                            ${podeAvaliar ? `<button type="button" class="reserva-action is-primary" data-action="avaliar" data-id="${r.id}"><i class="fa-regular fa-star"></i> Avaliar</button>` : ''}
+                            ${!r.cancelada && diasAte(r.data) >= 0 ? `<button type="button" class="reserva-action is-danger" data-action="cancelar" data-id="${r.id}"><i class="fa-regular fa-circle-xmark"></i> Cancelar</button>` : ''}
+                        </div>
+                        <div class="aval-form-container" data-form-for="${r.id}"></div>
+                    </div>
+                </li>
+            `);
+        });
+        groupHtml.push('</ul>');
+        groupLi.innerHTML = groupHtml.join('');
+        listEl.appendChild(groupLi);
+    });
+
+    listEl.querySelectorAll('[data-action="cancelar"]').forEach(btn => {
         btn.addEventListener('click', () => {
             const id = btn.dataset.id;
+            if (!confirm('Cancelar esta reserva? A vaga será liberada para outros visitantes.')) return;
             const updated = loadReservas().filter(r => r.id !== id);
             saveReservas(updated);
             renderReservas();
             showToast('Reserva cancelada.');
         });
+    });
+    listEl.querySelectorAll('[data-action="ics"]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const r = loadReservas().find(x => x.id === btn.dataset.id);
+            if (r) {
+                downloadICS(r);
+                showToast('Arquivo .ics gerado — abra para adicionar à agenda.');
+            }
+        });
+    });
+    listEl.querySelectorAll('[data-action="avaliar"]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const id = btn.dataset.id;
+            const container = listEl.querySelector(`[data-form-for="${id}"]`);
+            if (!container) return;
+            if (container.firstChild) {
+                container.innerHTML = '';
+                return;
+            }
+            const r = loadReservas().find(x => x.id === id);
+            if (r) container.appendChild(buildAvalForm(r));
+        });
+    });
+}
+
+// =================== AVALIACOES (reviews) ===================
+const STORAGE_AVAL = 'uvaevia.avaliacoes';
+let avalFilter = 'todas';
+
+function loadAvaliacoes() {
+    try { return JSON.parse(localStorage.getItem(STORAGE_AVAL)) || []; }
+    catch { return []; }
+}
+function saveAvaliacoes(arr) {
+    localStorage.setItem(STORAGE_AVAL, JSON.stringify(arr));
+}
+function getAllAvaliacoes() {
+    return [...AVALIACOES_SEED, ...loadAvaliacoes()];
+}
+function temAvaliacaoDoUsuario(reservaId) {
+    return loadAvaliacoes().some(a => a.reserva_id === reservaId);
+}
+function getMediaAvaliacoes(vinId) {
+    const list = getAllAvaliacoes().filter(a => a.vinicola_id === vinId);
+    if (list.length === 0) return { media: 0, total: 0 };
+    const soma = list.reduce((s, a) => s + a.nota, 0);
+    return { media: soma / list.length, total: list.length };
+}
+function getMediaGeral() {
+    const all = getAllAvaliacoes();
+    if (all.length === 0) return { media: 0, total: 0 };
+    const soma = all.reduce((s, a) => s + a.nota, 0);
+    return { media: soma / all.length, total: all.length };
+}
+
+// Renderiza N estrelas. Usa fa-solid para cheia, fa-regular para vazia.
+function renderEstrelas(nota, tamanho = '') {
+    const cheia = Math.round(nota || 0);
+    let html = `<span class="aval-stars ${tamanho}" aria-label="${(nota||0).toFixed(1)} de 5 estrelas">`;
+    for (let i = 1; i <= 5; i++) {
+        html += i <= cheia
+            ? '<i class="fa-solid fa-star" aria-hidden="true"></i>'
+            : '<i class="fa-regular fa-star star-empty" aria-hidden="true"></i>';
+    }
+    return html + '</span>';
+}
+
+function fmtDataAval(iso) {
+    if (!iso) return '';
+    const d = new Date(iso + 'T00:00:00');
+    if (isNaN(d.getTime())) return '';
+    const meses = ['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+    return `${d.getDate()} ${meses[d.getMonth()]} ${d.getFullYear()}`;
+}
+
+function avalCardHTML(a, opts = {}) {
+    const vin = getAllVinicolas().find(v => v.id === a.vinicola_id);
+    const exp = EXPERIENCIAS.find(e => e.id === a.experiencia_id);
+    const initial = (a.autor || '?').charAt(0).toUpperCase();
+    const showVin = opts.showVin !== false;
+    return `
+        <article class="aval-card" data-id="${a.id}">
+            <div class="aval-card-header">
+                <div class="aval-author">
+                    <span class="aval-avatar" aria-hidden="true">${initial}</span>
+                    <div class="aval-author-info">
+                        <strong>${a.autor}</strong>
+                        <small>${a.perfil || 'Visitante'}</small>
+                    </div>
+                </div>
+                ${renderEstrelas(a.nota, 'sm')}
+            </div>
+            ${showVin && vin ? `<span class="aval-vin">${vin.nome} · ${vin.cidade || ''}</span>` : ''}
+            ${exp ? `<span class="aval-exp">${exp.nome}</span>` : ''}
+            <p class="aval-comment">${a.comentario}</p>
+            <footer class="aval-card-foot">
+                <span><i class="fa-regular fa-calendar" aria-hidden="true"></i> ${fmtDataAval(a.data)}</span>
+                ${a.local ? '<span><i class="fa-solid fa-circle-check" aria-hidden="true"></i> Sua avaliação</span>' : ''}
+            </footer>
+        </article>
+    `;
+}
+
+function renderAvaliacoes() {
+    const grid = document.getElementById('aval-grid');
+    const empty = document.getElementById('aval-empty');
+    const mediaEl = document.getElementById('aval-media');
+    const totalEl = document.getElementById('aval-total');
+    const starsEl = document.getElementById('aval-stars-media');
+    if (!grid) return;
+
+    const all = getAllAvaliacoes();
+    const { media, total } = getMediaGeral();
+    if (mediaEl) mediaEl.textContent = total > 0 ? media.toFixed(1) : '—';
+    if (totalEl) totalEl.textContent = total;
+    const heroRating = document.getElementById('hero-rating');
+    if (heroRating && total > 0) heroRating.textContent = media.toFixed(1);
+    if (starsEl) {
+        if (total > 0) {
+            const inner = renderEstrelas(media, 'lg').replace(/^<span[^>]*>|<\/span>$/g, '');
+            starsEl.innerHTML = inner;
+        } else {
+            starsEl.innerHTML = '';
+        }
+    }
+
+    let lista = all.slice();
+    if (avalFilter === '5')      lista = lista.filter(a => a.nota === 5);
+    else if (avalFilter === '4') lista = lista.filter(a => a.nota >= 4);
+    // ordenacao padrao: recentes primeiro
+    lista.sort((a, b) => (b.data || '').localeCompare(a.data || ''));
+    lista = lista.slice(0, avalFilter === 'recentes' ? 9 : 12);
+
+    if (lista.length === 0) {
+        grid.innerHTML = '';
+        empty.hidden = false;
+        return;
+    }
+    empty.hidden = true;
+    grid.innerHTML = lista.map(a => avalCardHTML(a)).join('');
+}
+window.renderAvaliacoes = renderAvaliacoes;
+
+document.querySelectorAll('.aval-filter').forEach(btn => {
+    btn.addEventListener('click', () => {
+        avalFilter = btn.dataset.avalFilter;
+        document.querySelectorAll('.aval-filter').forEach(b => {
+            const on = b.dataset.avalFilter === avalFilter;
+            b.classList.toggle('is-active', on);
+            b.setAttribute('aria-selected', String(on));
+        });
+        renderAvaliacoes();
+    });
+});
+
+// Formulario inline de avaliacao numa reserva passada
+function buildAvalForm(reserva) {
+    const form = document.createElement('div');
+    form.className = 'aval-form';
+    form.innerHTML = `
+        <span class="aval-form-head">Avaliar sua visita a ${reserva.vinicola}</span>
+        <div class="aval-rating-picker" role="radiogroup" aria-label="Sua nota de 1 a 5 estrelas">
+            ${[1,2,3,4,5].map(n => `<button type="button" data-n="${n}" aria-label="${n} estrela${n>1?'s':''}"><i class="fa-regular fa-star" aria-hidden="true"></i></button>`).join('')}
+        </div>
+        <textarea placeholder="Conte como foi a experiência — atendimento, vinhos, ambiente, harmonização…" maxlength="320" rows="3"></textarea>
+        <div class="aval-form-actions">
+            <button type="button" class="btn btn-ghost" data-aval-cancel>Cancelar</button>
+            <button type="button" class="btn btn-primary" data-aval-send disabled>Enviar avaliação</button>
+        </div>
+    `;
+    let notaSelecionada = 0;
+    const buttons = form.querySelectorAll('.aval-rating-picker button');
+    const textarea = form.querySelector('textarea');
+    const sendBtn = form.querySelector('[data-aval-send]');
+    const cancelBtn = form.querySelector('[data-aval-cancel]');
+
+    buttons.forEach(b => {
+        b.addEventListener('click', () => {
+            notaSelecionada = Number(b.dataset.n);
+            buttons.forEach(x => {
+                const n = Number(x.dataset.n);
+                x.classList.toggle('is-active', n <= notaSelecionada);
+                const i = x.querySelector('i');
+                if (i) {
+                    i.classList.toggle('fa-solid', n <= notaSelecionada);
+                    i.classList.toggle('fa-regular', n > notaSelecionada);
+                }
+            });
+            sendBtn.disabled = notaSelecionada === 0;
+        });
+    });
+    cancelBtn.addEventListener('click', () => form.remove());
+    sendBtn.addEventListener('click', () => {
+        if (notaSelecionada < 1) return;
+        const vin = getAllVinicolas().find(v => v.nome === reserva.vinicola);
+        const exp = EXPERIENCIAS.find(e => e.nome === reserva.experiencia);
+        const nova = {
+            id: 'av_' + Date.now(),
+            reserva_id: reserva.id,
+            vinicola_id: vin ? vin.id : null,
+            experiencia_id: exp ? exp.id : null,
+            nota: notaSelecionada,
+            autor: reserva.nome,
+            perfil: 'Visitante',
+            comentario: textarea.value.trim() || 'Experiência avaliada.',
+            data: getTodayISO(),
+            local: true,
+        };
+        const arr = loadAvaliacoes();
+        arr.push(nova);
+        saveAvaliacoes(arr);
+        showToast('Avaliação enviada — obrigada por compartilhar!');
+        form.remove();
+        renderAvaliacoes();
+        renderReservas();
+        renderBoutique();
+        renderSugestoes();
+        renderExperiencias();
+    });
+    return form;
+}
+
+// =================== Disponibilidade em tempo real — tick simulado ===================
+const STORAGE_LAST_TICK = 'uvaevia.lastTick';
+let liveTickHandle = null;
+let liveTickTimestamp = Date.now();
+
+function fmtRelativoCurto(ms) {
+    const seg = Math.max(0, Math.floor((Date.now() - ms) / 1000));
+    if (seg < 5)   return 'agora';
+    if (seg < 60)  return `há ${seg}s`;
+    const min = Math.floor(seg / 60);
+    if (min < 60) return `há ${min}min`;
+    const hr = Math.floor(min / 60);
+    return `há ${hr}h`;
+}
+
+function refreshLiveTimestamps() {
+    const txt = fmtRelativoCurto(liveTickTimestamp);
+    const sugT = document.getElementById('sug-updated-time');
+    if (sugT) sugT.textContent = txt;
+    const slotT = document.getElementById('slots-updated-time');
+    if (slotT) slotT.textContent = txt;
+}
+
+// Tick: simula outros usuarios reservando vagas. Decrementa 1 vaga em 0-2
+// horarios futuros aleatorios para a UI dar a sensacao de "real time".
+function liveTick() {
+    if (document.hidden) return;
+    const candidatos = HORARIOS.filter(h => h.vagas > 0 && !isPastDate(h.data));
+    if (candidatos.length === 0) return;
+    const qtd = Math.random() < 0.4 ? 0 : (Math.random() < 0.7 ? 1 : 2);
+    for (let i = 0; i < qtd; i++) {
+        const pick = candidatos[Math.floor(Math.random() * candidatos.length)];
+        if (pick && pick.vagas > 0) pick.vagas = Math.max(0, pick.vagas - 1);
+    }
+    liveTickTimestamp = Date.now();
+    try { localStorage.setItem(STORAGE_LAST_TICK, String(liveTickTimestamp)); } catch {}
+
+    if (typeof refreshSlots === 'function' && document.getElementById('reservar')) {
+        refreshSlots({ preserveSelection: true });
+    }
+    renderSugestoes();
+    renderExperiencias();
+    refreshLiveTimestamps();
+}
+
+function startLiveTick() {
+    if (liveTickHandle) return;
+    liveTickHandle = setInterval(liveTick, 45 * 1000);
+    setInterval(refreshLiveTimestamps, 5 * 1000);
+    document.addEventListener('visibilitychange', () => {
+        if (!document.hidden) {
+            liveTickTimestamp = Date.now();
+            refreshLiveTimestamps();
+        }
     });
 }
 
@@ -1209,6 +1718,8 @@ document.getElementById('booking-form').addEventListener('submit', (e) => {
         pessoas,
         nome,
         total: exp.preco * pessoas,
+        criadaEm: Date.now(),
+        cancelada: false,
     };
     const reservas = loadReservas();
     reservas.push(reserva);
@@ -1280,6 +1791,7 @@ function renderExperiencias() {
         const vin = getAllVinicolas().find(v => v.id === e.vinicola_id);
         const vagas = countHorariosDisponiveis(e.id);
         const status = getDisponibilidadeStatus(vagas, 50);
+        const rating = vin ? getMediaAvaliacoes(vin.id) : { media: 0, total: 0 };
         const card = document.createElement('article');
         card.className = 'exp-card';
         card.innerHTML = `
@@ -1289,6 +1801,7 @@ function renderExperiencias() {
                 <span><i class="fa-regular fa-clock" aria-hidden="true"></i> <strong>${e.duracao} min</strong></span>
                 <span><i class="fa-solid fa-tag" aria-hidden="true"></i> <strong>${fmtBRL(e.preco)}</strong>/pessoa</span>
                 <span><span class="av-badge ${status.cls}">${vagas > 0 ? vagas + ' vagas' : 'Lotado'}</span></span>
+                ${rating.total > 0 ? `<span><i class="fa-solid fa-star" aria-hidden="true" style="color:var(--status-quase)"></i> <strong>${rating.media.toFixed(1)}</strong> (${rating.total})</span>` : ''}
             </div>
             <div class="exp-card-actions">
                 <button class="btn btn-ghost" type="button" data-action="ver" data-vin="${vin?.id}">Ver vinícola</button>
@@ -1795,6 +2308,12 @@ window.addEventListener('storage', (e) => {
         const p = loadPlan();
         if (p) renderMapa(p);
     }
+    if (e.key === STORAGE_AVAL) {
+        renderAvaliacoes();
+        renderBoutique();
+        renderSugestoes();
+        renderExperiencias();
+    }
 });
 
 // =================== Init ===================
@@ -1816,6 +2335,7 @@ renderManageTable();
 renderManageVinList();
 renderSugestoes();
 renderBoutique();
+renderAvaliacoes();
 
 const planoSalvo = loadPlan();
 if (planoSalvo) {
@@ -1825,3 +2345,6 @@ if (planoSalvo) {
 
 // Re-aplica min={today} a cada meia hora caso o usuario deixe a aba aberta
 setInterval(setMinDateInputs, 30 * 60 * 1000);
+
+// Inicia o tick de disponibilidade em tempo real (45s) com pausa quando aba oculta
+startLiveTick();

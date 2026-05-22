@@ -133,6 +133,7 @@ async function bootstrap() {
         if (typeof window.renderManageVinList === 'function')  window.renderManageVinList();
         if (typeof window.renderSugestoes === 'function')      window.renderSugestoes();
         if (typeof window.renderBoutique === 'function')       window.renderBoutique();
+        if (typeof window.renderAvaliacoes === 'function')     window.renderAvaliacoes();
 
         console.info(`[Uva&Via] API carregada: ${VINICOLAS.length} vinicolas, ${EXPERIENCIAS.length} experiencias, ${HORARIOS.length} horarios.`);
     } catch (err) {

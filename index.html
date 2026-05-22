@@ -33,6 +33,7 @@
                 <a href="#experiencias" class="nav-link"><i class="fa-solid fa-wine-glass" aria-hidden="true"></i><span>Experiências</span></a>
                 <a href="#reservar" class="nav-link"><i class="fa-regular fa-calendar-plus" aria-hidden="true"></i><span>Reservar</span></a>
                 <a href="#minhas-reservas" class="nav-link"><i class="fa-regular fa-calendar-check" aria-hidden="true"></i><span>Reservas</span></a>
+                <a href="#avaliacoes" class="nav-link"><i class="fa-regular fa-star" aria-hidden="true"></i><span>Avaliações</span></a>
             </nav>
         </div>
     </header>
@@ -76,7 +77,7 @@
             <div class="hero-stats" data-reveal>
                 <div class="stat"><strong>10</strong><span>vinícolas parceiras</span></div>
                 <div class="stat"><strong>26</strong><span>experiências curadas</span></div>
-                <div class="stat"><strong>4.9</strong><span>nota média</span></div>
+                <div class="stat"><strong id="hero-rating">4.9</strong><span>nota média</span></div>
             </div>
         </div>
         <div class="hero-scroll" aria-hidden="true">
@@ -94,6 +95,28 @@
                     Experiências curadas com vagas abertas para as próximas datas — escolha e reserve agora.
                 </p>
             </header>
+
+            <div class="sugestoes-controls" data-reveal>
+                <div class="sug-filters" role="tablist" aria-label="Filtrar sugestões por período">
+                    <button type="button" class="sug-filter is-active" role="tab" aria-selected="true" data-sug-filter="hoje">
+                        <i class="fa-solid fa-sun" aria-hidden="true"></i> Hoje
+                    </button>
+                    <button type="button" class="sug-filter" role="tab" aria-selected="false" data-sug-filter="amanha">
+                        <i class="fa-regular fa-calendar" aria-hidden="true"></i> Amanhã
+                    </button>
+                    <button type="button" class="sug-filter" role="tab" aria-selected="false" data-sug-filter="fimsemana">
+                        <i class="fa-solid fa-mug-saucer" aria-hidden="true"></i> Fim de semana
+                    </button>
+                    <button type="button" class="sug-filter" role="tab" aria-selected="false" data-sug-filter="todas">
+                        <i class="fa-solid fa-grip-vertical" aria-hidden="true"></i> Todas
+                    </button>
+                </div>
+                <span class="sug-live" aria-live="polite">
+                    <span class="live-dot" aria-hidden="true"></span>
+                    Atualizado <time id="sug-updated-time">agora</time>
+                </span>
+            </div>
+
             <div class="sugestoes-grid" id="sugestoes-grid"></div>
         </div>
     </section>
@@ -421,6 +444,56 @@
         </div>
     </section>
 
+    <!-- =================== AVALIAÇÕES =================== -->
+    <section id="avaliacoes" class="avaliacoes" aria-labelledby="avaliacoes-title">
+        <div class="avaliacoes-inner">
+            <header class="planner-header" data-reveal>
+                <span class="planner-eyebrow">Comunidade</span>
+                <h2 id="avaliacoes-title" class="planner-title">Avaliações dos visitantes</h2>
+                <p class="planner-subtitle">
+                    O que casais, famílias e grupos contaram depois de visitar — opiniões reais para guiar sua escolha.
+                </p>
+            </header>
+
+            <div class="aval-summary" id="aval-summary" data-reveal>
+                <div class="aval-summary-score">
+                    <strong id="aval-media">—</strong>
+                    <span class="aval-stars" id="aval-stars-media" aria-hidden="true"></span>
+                    <small><span id="aval-total">0</span> avaliações no total</small>
+                </div>
+                <div class="aval-summary-cta">
+                    <p>
+                        Já visitou uma vinícola pelo Uva &amp; Via? Conte como foi e ajude outros enoturistas a planejar.
+                    </p>
+                    <a href="#minhas-reservas" class="btn btn-ghost">
+                        <i class="fa-regular fa-pen-to-square btn-icon" aria-hidden="true"></i>
+                        Avaliar uma reserva
+                    </a>
+                </div>
+            </div>
+
+            <div class="aval-filters" role="tablist" aria-label="Filtrar avaliações" data-reveal>
+                <button type="button" class="aval-filter is-active" role="tab" aria-selected="true" data-aval-filter="todas">
+                    <i class="fa-solid fa-grip-vertical" aria-hidden="true"></i> Todas
+                </button>
+                <button type="button" class="aval-filter" role="tab" aria-selected="false" data-aval-filter="5">
+                    <i class="fa-solid fa-star" aria-hidden="true"></i> 5 estrelas
+                </button>
+                <button type="button" class="aval-filter" role="tab" aria-selected="false" data-aval-filter="4">
+                    <i class="fa-regular fa-star" aria-hidden="true"></i> 4+ estrelas
+                </button>
+                <button type="button" class="aval-filter" role="tab" aria-selected="false" data-aval-filter="recentes">
+                    <i class="fa-regular fa-clock" aria-hidden="true"></i> Mais recentes
+                </button>
+            </div>
+
+            <div class="aval-grid" id="aval-grid" data-reveal></div>
+            <p class="aval-empty" id="aval-empty" hidden>
+                Nenhuma avaliação encontrada com esse filtro.
+            </p>
+        </div>
+    </section>
+
     <!-- =================== DIFERENCIAIS =================== -->
     <section id="diferenciais" class="differentials">
         <div class="differentials-inner">
@@ -682,6 +755,7 @@
                 <a href="#mapa">Mapa do roteiro</a>
                 <a href="#reservar">Reservar horário</a>
                 <a href="#minhas-reservas">Minhas reservas</a>
+                <a href="#avaliacoes">Avaliações</a>
                 <a href="#gestao">Gestão</a>
             </div>
             <div class="footer-col">

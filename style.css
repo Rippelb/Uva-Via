@@ -2178,6 +2178,546 @@ body.nav-open {
 }
 
 /* ============================================================
+   SUGESTOES — filtros + live timestamp
+   ============================================================ */
+.sugestoes-controls {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    align-items: stretch;
+    margin-bottom: var(--space-5);
+}
+@media (min-width: 600px) {
+    .sugestoes-controls {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+    }
+}
+.sug-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .4rem;
+}
+.sug-filter {
+    background: transparent;
+    border: 1px solid var(--borda);
+    color: var(--texto);
+    font-family: inherit;
+    font-size: .78rem;
+    text-transform: uppercase;
+    letter-spacing: .1em;
+    padding: .55rem .95rem;
+    border-radius: 999px;
+    cursor: pointer;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    min-height: 36px;
+    opacity: .65;
+    transition: background-color var(--t-fast), color var(--t-fast),
+                border-color var(--t-fast), opacity var(--t-fast);
+}
+.sug-filter i { font-size: .85em; }
+.sug-filter:hover { opacity: 1; color: var(--vinho); border-color: var(--vinho); }
+.sug-filter.is-active {
+    background-color: var(--vinho);
+    color: var(--bege);
+    border-color: var(--vinho);
+    opacity: 1;
+    box-shadow: 0 2px 8px var(--vinho-glow);
+}
+.sug-live {
+    display: inline-flex;
+    align-items: center;
+    gap: .45rem;
+    font-size: .72rem;
+    color: var(--texto);
+    opacity: .7;
+    text-transform: uppercase;
+    letter-spacing: .12em;
+    font-weight: 600;
+}
+
+/* Card de sugestão: motivo personalizado + selo de match */
+.sug-motivo {
+    font-size: .82rem;
+    color: var(--oliva);
+    font-style: italic;
+    line-height: 1.45;
+    padding-left: .55rem;
+    border-left: 2px solid var(--oliva-claro);
+    opacity: .95;
+}
+
+/* ============================================================
+   AVALIACOES (reviews)
+   ============================================================ */
+.avaliacoes {
+    padding: var(--space-7) var(--space-5);
+    position: relative;
+    overflow: hidden;
+    background:
+        linear-gradient(180deg, var(--bege) 0%, var(--branco) 120px, var(--branco) 100%);
+}
+.avaliacoes-inner {
+    max-width: 960px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+}
+@media (min-width: 720px) {
+    .avaliacoes { padding: var(--space-8) var(--space-6); }
+}
+@media (max-width: 380px) {
+    .avaliacoes { padding: var(--space-6) var(--space-4); }
+}
+
+.aval-summary {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+    background-color: var(--bege);
+    border: 1px solid var(--borda);
+    border-radius: 12px;
+    padding: var(--space-5);
+    margin-bottom: var(--space-5);
+    box-shadow: var(--shadow-sm);
+    position: relative;
+    overflow: hidden;
+}
+.aval-summary::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--vinho), var(--oliva));
+}
+@media (min-width: 720px) {
+    .aval-summary { grid-template-columns: minmax(220px, 1fr) 2fr; gap: var(--space-6); }
+}
+.aval-summary-score {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: .25rem;
+    padding: var(--space-2) 0;
+}
+.aval-summary-score strong {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: 3rem;
+    color: var(--vinho);
+    line-height: 1;
+}
+.aval-summary-score small {
+    font-size: .75rem;
+    color: var(--texto);
+    opacity: .65;
+    text-transform: uppercase;
+    letter-spacing: .12em;
+    font-weight: 600;
+}
+.aval-summary-cta {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    align-items: flex-start;
+}
+.aval-summary-cta p {
+    font-size: .95rem;
+    color: var(--texto);
+    opacity: .8;
+    line-height: 1.55;
+}
+
+.aval-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .4rem;
+    margin-bottom: var(--space-4);
+}
+.aval-filter {
+    background: transparent;
+    border: 1px solid var(--borda);
+    color: var(--texto);
+    font-family: inherit;
+    font-size: .78rem;
+    text-transform: uppercase;
+    letter-spacing: .1em;
+    padding: .55rem .95rem;
+    border-radius: 999px;
+    cursor: pointer;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    min-height: 36px;
+    opacity: .65;
+    transition: background-color var(--t-fast), color var(--t-fast),
+                border-color var(--t-fast), opacity var(--t-fast);
+}
+.aval-filter:hover { opacity: 1; color: var(--vinho); border-color: var(--vinho); }
+.aval-filter.is-active {
+    background-color: var(--vinho);
+    color: var(--bege);
+    border-color: var(--vinho);
+    opacity: 1;
+    box-shadow: 0 2px 8px var(--vinho-glow);
+}
+
+.aval-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+}
+@media (min-width: 720px) { .aval-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 960px) { .aval-grid { grid-template-columns: repeat(3, 1fr); } }
+
+.aval-card {
+    background-color: var(--branco);
+    border: 1px solid var(--borda);
+    border-radius: 10px;
+    padding: var(--space-5);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    box-shadow: var(--shadow-sm);
+    transition: transform var(--t-base), box-shadow var(--t-base), border-color var(--t-base);
+    animation: fadeUp .5s ease both;
+    position: relative;
+    overflow: hidden;
+}
+.aval-card::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--vinho), var(--oliva));
+}
+.aval-card:hover {
+    transform: translateY(-3px);
+    border-color: var(--vinho);
+    box-shadow: var(--shadow-md);
+}
+.aval-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+}
+.aval-author {
+    display: flex;
+    align-items: center;
+    gap: .65rem;
+    flex: 1;
+    min-width: 0;
+}
+.aval-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--vinho), var(--vinho-claro));
+    color: var(--bege);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: 1.1rem;
+    font-weight: 600;
+    flex-shrink: 0;
+    box-shadow: var(--shadow-sm);
+}
+.aval-author-info {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+    min-width: 0;
+}
+.aval-author-info strong {
+    color: var(--vinho);
+    font-size: .95rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.aval-author-info small {
+    font-size: .72rem;
+    color: var(--oliva);
+    text-transform: uppercase;
+    letter-spacing: .1em;
+    font-weight: 600;
+}
+.aval-vin {
+    font-size: .75rem;
+    color: var(--oliva);
+    text-transform: uppercase;
+    letter-spacing: .12em;
+    font-weight: 600;
+}
+.aval-exp {
+    font-family: var(--font-serif);
+    color: var(--vinho);
+    font-style: italic;
+    font-size: 1.1rem;
+    line-height: 1.3;
+}
+.aval-comment {
+    font-size: .92rem;
+    color: var(--texto);
+    line-height: 1.6;
+    opacity: .88;
+}
+.aval-card-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-top: auto;
+    padding-top: var(--space-3);
+    border-top: 1px dashed var(--borda);
+    font-size: .75rem;
+    color: var(--texto);
+    opacity: .65;
+}
+.aval-empty {
+    text-align: center;
+    color: var(--texto);
+    opacity: .6;
+    font-style: italic;
+    padding: var(--space-6) var(--space-4);
+}
+
+/* Estrelas universais */
+.aval-stars {
+    display: inline-flex;
+    gap: 2px;
+    color: var(--status-quase);
+    font-size: .9rem;
+    line-height: 1;
+}
+.aval-stars i { color: var(--status-quase); }
+.aval-stars .star-empty { color: var(--borda); }
+.aval-stars.lg { font-size: 1.1rem; gap: 3px; }
+.aval-stars.sm { font-size: .75rem; gap: 1px; }
+
+/* Formulario de avaliacao inline na reserva passada */
+.aval-form {
+    background-color: var(--bege);
+    border: 1px solid var(--bege-escuro);
+    border-radius: 8px;
+    padding: var(--space-4);
+    margin-top: var(--space-3);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    animation: fadeUp .35s ease both;
+}
+.aval-form-head {
+    font-size: .78rem;
+    text-transform: uppercase;
+    letter-spacing: .14em;
+    color: var(--vinho);
+    font-weight: 600;
+}
+.aval-rating-picker {
+    display: inline-flex;
+    gap: .25rem;
+    font-size: 1.6rem;
+    line-height: 1;
+}
+.aval-rating-picker button {
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+    color: var(--borda);
+    padding: .25rem;
+    transition: color var(--t-fast), transform var(--t-fast);
+    line-height: 1;
+}
+.aval-rating-picker button:hover,
+.aval-rating-picker button.is-active {
+    color: var(--status-quase);
+    transform: scale(1.1);
+}
+.aval-rating-picker button.is-active i,
+.aval-rating-picker button:hover i { font-weight: 900; }
+.aval-form textarea {
+    width: 100%;
+    min-height: 80px;
+    border: 1px solid var(--borda);
+    background-color: var(--branco);
+    border-radius: 6px;
+    padding: .75rem .9rem;
+    font-family: inherit;
+    font-size: 15px;
+    color: var(--texto);
+    resize: vertical;
+    transition: border-color var(--t-fast), box-shadow var(--t-fast);
+}
+.aval-form textarea:focus {
+    outline: none;
+    border-color: var(--vinho);
+    box-shadow: 0 0 0 3px rgba(74, 13, 31, .1);
+}
+.aval-form-actions {
+    display: flex;
+    gap: .65rem;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
+/* Avaliacoes dentro do perfil da vinicola */
+.vin-aval-section {
+    margin-top: var(--space-5);
+    padding-top: var(--space-5);
+    border-top: 1px solid var(--borda);
+}
+.vin-aval-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    flex-wrap: wrap;
+    margin-bottom: var(--space-4);
+}
+.vin-aval-head h3 {
+    font-family: var(--font-serif);
+    color: var(--vinho);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 1.35rem;
+}
+.vin-aval-head .vin-aval-summary {
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+    font-size: .9rem;
+    color: var(--texto);
+    opacity: .8;
+}
+.vin-aval-head .vin-aval-summary strong {
+    font-family: var(--font-serif);
+    font-style: italic;
+    color: var(--vinho);
+    font-size: 1.1rem;
+}
+.vin-aval-list {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-3);
+    list-style: none;
+}
+@media (min-width: 720px) { .vin-aval-list { grid-template-columns: repeat(2, 1fr); } }
+
+/* Selo de média de estrelas em cards (boutique, exp, sug) */
+.card-rating {
+    display: inline-flex;
+    align-items: center;
+    gap: .35rem;
+    font-size: .78rem;
+    color: var(--texto);
+    opacity: .85;
+}
+.card-rating strong { color: var(--vinho); font-weight: 600; }
+.card-rating-empty {
+    font-style: italic;
+    opacity: .55;
+    font-size: .78rem;
+}
+
+/* ============================================================
+   RESERVAS — status pills + groups + acoes extras
+   ============================================================ */
+.reservas-group {
+    margin-bottom: var(--space-5);
+}
+.reservas-group-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-3);
+    margin-bottom: var(--space-3);
+    padding-bottom: var(--space-2);
+    border-bottom: 1px dashed var(--borda);
+}
+.reservas-group-head h3 {
+    font-family: var(--font-serif);
+    font-style: italic;
+    color: var(--vinho);
+    font-weight: 400;
+    font-size: 1.2rem;
+    letter-spacing: .03em;
+}
+.reservas-group-head small {
+    color: var(--oliva);
+    text-transform: uppercase;
+    letter-spacing: .12em;
+    font-size: .7rem;
+    font-weight: 600;
+}
+
+.reserva-status.is-pendente {
+    background-color: rgba(201, 142, 62, .18);
+    color: var(--status-quase);
+}
+.reserva-status.is-realizada {
+    background-color: rgba(74, 13, 31, .08);
+    color: var(--vinho);
+}
+.reserva-status.is-cancelada {
+    background-color: rgba(168, 50, 71, .12);
+    color: var(--status-cheio);
+}
+.reserva-actions {
+    display: flex;
+    gap: .5rem;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+}
+.reserva-action {
+    background: transparent;
+    border: 1px solid var(--borda);
+    color: var(--texto);
+    font-family: inherit;
+    font-size: .76rem;
+    padding: .45rem .8rem;
+    border-radius: 999px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: border-color var(--t-fast), color var(--t-fast), background-color var(--t-fast);
+    min-height: 34px;
+    display: inline-flex;
+    align-items: center;
+    gap: .35rem;
+    font-weight: 600;
+}
+.reserva-action i { font-size: .85em; }
+.reserva-action:hover {
+    border-color: var(--vinho);
+    color: var(--vinho);
+    background-color: rgba(74, 13, 31, .04);
+}
+.reserva-action.is-primary {
+    border-color: var(--oliva);
+    color: var(--oliva);
+    background-color: rgba(107, 122, 58, .08);
+}
+.reserva-action.is-primary:hover {
+    background-color: var(--oliva);
+    color: #fff;
+}
+.reserva-action.is-danger:hover {
+    border-color: var(--status-cheio);
+    color: var(--status-cheio);
+    background-color: rgba(168, 50, 71, .06);
+}
+
+/* ============================================================
    DIFERENCIAIS
    ============================================================ */
 .diff-grid {

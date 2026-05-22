@@ -20,6 +20,10 @@ ideias que surgiram durante o desenvolvimento.
 | – | Font Awesome substituindo emojis | UX | ✅ |
 | – | Ocultar scrollbar visual | UX | ✅ |
 | – | Selects estilizados na paleta | UX | ✅ |
+| 31 | Avaliações da comunidade (estrelas + comentário) | Engajamento | ✅ |
+| 32 | Tick de disponibilidade em tempo real (simulado) | UX | ✅ |
+| 33 | Reservas v2 — status, grupos, .ics, cancelar com confirmação | Reservas | ✅ |
+| 34 | Sugestões com filtros temporais e motivo personalizado | Home | ✅ |
 
 ---
 
@@ -75,6 +79,30 @@ ideias que surgiram durante o desenvolvimento.
 | 21 | Lista de reservas confirmadas + estado vazio | ✅ |
 | 22 | Valor total estimado (card destacado) | ✅ |
 | 23 | Botões "Editar roteiro" e "Adicionar experiência" | ✅ |
+| 33a | Status derivado (pendente/confirmada/realizada/cancelada) | ✅ |
+| 33b | Agrupamento por bucket temporal (hoje/amanhã/semana…) | ✅ |
+| 33c | Exportação .ics para Google/Apple/Outlook | ✅ |
+| 33d | Confirm dialog antes de cancelar | ✅ |
+
+## ÉPICO: AVALIAÇÕES / COMUNIDADE
+
+| # | Story | Status |
+|---|---|---|
+| 31a | Seção pública de avaliações com média e total | ✅ |
+| 31b | Filtros (todas / 5 estrelas / 4+ / recentes) | ✅ |
+| 31c | Formulário inline na reserva passada (1-5 estrelas + comentário) | ✅ |
+| 31d | Reviews dentro do perfil da vinícola | ✅ |
+| 31e | Badge de média em cards de Boutique/Sugestões/Experiências | ✅ |
+| 31f | Persistência em localStorage + sync entre abas | ✅ |
+
+## ÉPICO: DISPONIBILIDADE EM TEMPO REAL
+
+| # | Story | Status |
+|---|---|---|
+| 32a | Tick simulado a cada 45s decrementando vagas aleatórias | ✅ |
+| 32b | Pausa automática quando aba fica oculta (Page Visibility API) | ✅ |
+| 32c | Timestamp "Atualizado há X" em sugestões e slots | ✅ |
+| 32d | Animação `.is-updated` nos slots quando vagas mudam | ✅ |
 
 ## ÉPICO: INFRAESTRUTURA / BACKEND
 
@@ -126,9 +154,11 @@ ideias que surgiram durante o desenvolvimento.
 - 📋 Recomendações por LLM (histórico do visitante → próximas sugestões)
 - 📋 Embeddings de experiências para "vinícolas parecidas com…"
 - 📋 Notificações push antes da visita
-- 📋 Sistema de reviews pós-experiência (estrelas + texto)
+- ✅ ~~Sistema de reviews pós-experiência (estrelas + texto)~~ — entregue em 2026-05-22 (épico Avaliações)
+- 📋 Reviews moderadas server-side (anti-spam, idioma)
 - 📋 Roteiros colaborativos (família/grupo edita junto via socket)
 - 📋 Integração real com agendas das vinícolas (API/webhook)
+- 📋 Disponibilidade real (substituir tick simulado por websocket/SSE do backend)
 
 ### Sprint v4 — Mobile nativo
 

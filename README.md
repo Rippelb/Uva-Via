@@ -81,8 +81,26 @@ baseados em:
 
 ### 📅 Reservas Confirmadas
 - Próxima visita destacada
+- **Status derivado**: Pendente · Confirmada · Realizada · Cancelada
+- **Grupos por bucket**: Hoje · Amanhã · Esta semana · Em breve · Histórico
 - **Valor total estimado** em card destacado
 - Botões "Editar roteiro" / "Adicionar experiência"
+- **Exportar para agenda** (.ics — Google/Apple/Outlook) por reserva
+- **Cancelar com confirmação** (evita perda acidental)
+
+### ⭐ Avaliações da comunidade
+- Feed público com média geral, total e cards (autor, perfil, vinícola, comentário, data)
+- Filtros: Todas · 5 estrelas · 4+ estrelas · Mais recentes
+- **Formulário inline** após a data da reserva passar (1-5 estrelas + texto até 320 chars)
+- Bloco de reviews dentro do perfil de cada vinícola
+- Badge de média em cards de Boutique/Sugestões/Experiências
+- 12 avaliações seed para a comunidade não nascer vazia
+
+### 🟢 Disponibilidade em tempo real
+- Tick simulado a cada 45s — outros usuários "consomem" vagas
+- Pausa quando aba fica oculta (Page Visibility API)
+- Timestamp "Atualizado há Xs" nos slots e nas sugestões
+- Animação `.is-updated` nos slots que mudaram
 
 ### 🛠️ Gestão (admin)
 - **Subtabs:** Horários | Vinícolas
@@ -242,7 +260,11 @@ Miolo Wine Group · Casa Valduga · Salton
 - [ ] Reservas persistentes server-side
 - [ ] Pagamento integrado (Pix + cartão)
 - [ ] Notificações push antes da visita
-- [ ] Reviews pós-experiência
+- [x] Reviews pós-experiência (entregue 2026-05-22)
+- [x] Exportação .ics da reserva (entregue 2026-05-22)
+- [x] Tick simulado de disponibilidade em tempo real (entregue 2026-05-22)
+- [ ] Disponibilidade real via WebSocket/SSE do backend
+- [ ] Reviews moderadas server-side
 
 ### v3 — Inteligência
 - [ ] Recomendações por LLM dado histórico
