@@ -1,75 +1,144 @@
 // Cliente da API Uva & Via. Carregado APOS script.js.
-// Substitui o conteudo dos arrays VINICOLAS/EXPERIENCIAS/HORARIOS pelos dados
-// do backend mantendo a forma esperada pelo frontend (preco, duracao, vagas).
+// Gerencia sessao via cookie HttpOnly + CSRF token, e substitui o conteudo dos
+// arrays VINICOLAS/EXPERIENCIAS/HORARIOS pelos dados do backend.
 
 const API_BASE = (() => {
-    // Funciona tanto em http://localhost/Uva-Via quanto em subpaths.
     const path = window.location.pathname.replace(/index\.html?$/, '').replace(/\/$/, '');
     return (path || '') + '/api';
 })();
 
+const authState = {
+    user: null,
+    csrf: '',
+    listeners: new Set(),
+};
+
+function notifyAuthChange() {
+    authState.listeners.forEach(fn => {
+        try { fn(authState.user); } catch (err) { console.error(err); }
+    });
+}
+
+async function apiFetch(path, { method = 'GET', body = null, params = null } = {}) {
+    let url = `${API_BASE}${path}`;
+    if (params) {
+        const qs = new URLSearchParams(params).toString();
+        if (qs) url += (url.includes('?') ? '&' : '?') + qs;
+    }
+    const headers = {};
+    const mutating = !['GET', 'HEAD', 'OPTIONS'].includes(method);
+    if (mutating) {
+        headers['Content-Type'] = 'application/json';
+        if (authState.csrf) headers['X-CSRF-Token'] = authState.csrf;
+    }
+    const res = await fetch(url, {
+        method,
+        headers,
+        body: body ? JSON.stringify(body) : null,
+        credentials: 'include',
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) {
+        const err = new Error(data.erro || `${method} ${path} -> ${res.status}`);
+        err.status = res.status;
+        err.data = data;
+        throw err;
+    }
+    return data;
+}
+
 const UvaViaApi = {
     base: API_BASE,
-    async _get(path, params = {}) {
-        const qs = new URLSearchParams(params).toString();
-        const url = `${API_BASE}${path}${qs ? '?' + qs : ''}`;
-        const res = await fetch(url);
-        if (!res.ok) throw new Error(`GET ${path} -> ${res.status}`);
-        return res.json();
+
+    // --- Sessao
+    get user() { return authState.user; },
+    get csrf() { return authState.csrf; },
+    onAuthChange(fn) {
+        authState.listeners.add(fn);
+        return () => authState.listeners.delete(fn);
     },
-    async _send(path, method, body) {
-        const res = await fetch(`${API_BASE}${path}`, {
-            method,
-            headers: { 'Content-Type': 'application/json' },
-            body: body ? JSON.stringify(body) : null,
-        });
-        const data = await res.json().catch(() => ({}));
-        if (!res.ok) throw new Error(data.erro || `${method} ${path} -> ${res.status}`);
-        return data;
+    async refreshSession() {
+        const data = await apiFetch('/auth/me.php');
+        authState.user = data.user;
+        authState.csrf = data.csrf || '';
+        notifyAuthChange();
+        return authState.user;
     },
-    vinicolas: (params) => UvaViaApi._get('/vinicolas.php', params),
-    vinicola: (id) => UvaViaApi._get('/vinicolas.php', { id }),
-    experiencias: (params) => UvaViaApi._get('/experiencias.php', params),
-    horarios: (params) => UvaViaApi._get('/horarios.php', params),
-    tags: () => UvaViaApi._get('/tags.php'),
-    perfis: () => UvaViaApi._get('/perfis.php'),
-    categorias: () => UvaViaApi._get('/categorias.php'),
-    reservasDoVisitante: (email) => UvaViaApi._get('/reservas.php', { email }),
-    criarReserva: (payload) => UvaViaApi._send('/reservas.php', 'POST', payload),
-    cancelarReserva: (id) => UvaViaApi._send(`/reservas.php?id=${id}`, 'DELETE'),
-    gerarRoteiro: (payload) => UvaViaApi._send('/roteiros.php', 'POST', payload),
-    roteirosDoVisitante: (email) => UvaViaApi._get('/roteiros.php', { email }),
+    async login(email, senha) {
+        const data = await apiFetch('/auth/login.php', { method: 'POST', body: { email, senha } });
+        authState.user = data.user;
+        authState.csrf = data.csrf || '';
+        notifyAuthChange();
+        return data.user;
+    },
+    async register(payload) {
+        const data = await apiFetch('/auth/register.php', { method: 'POST', body: payload });
+        authState.user = data.user;
+        authState.csrf = data.csrf || '';
+        notifyAuthChange();
+        return data.user;
+    },
+    async logout() {
+        await apiFetch('/auth/logout.php', { method: 'POST' });
+        authState.user = null;
+        await UvaViaApi.refreshSession();
+    },
+    async changePassword(senha_atual, senha_nova) {
+        return apiFetch('/auth/change-password.php', { method: 'POST', body: { senha_atual, senha_nova } });
+    },
+
+    // --- Catalogo
+    vinicolas: (params) => apiFetch('/vinicolas.php', { params }),
+    vinicola: (id) => apiFetch('/vinicolas.php', { params: { id } }),
+    experiencias: (params) => apiFetch('/experiencias.php', { params }),
+    horarios: (params) => apiFetch('/horarios.php', { params }),
+    tags: () => apiFetch('/tags.php'),
+    perfis: () => apiFetch('/perfis.php'),
+    categorias: () => apiFetch('/categorias.php'),
+
+    // --- Reservas / Roteiros
+    minhasReservas: () => apiFetch('/reservas.php'),
+    criarReserva: (payload) => apiFetch('/reservas.php', { method: 'POST', body: payload }),
+    cancelarReserva: (id) => apiFetch('/reservas.php', { method: 'DELETE', params: { id } }),
+    meusRoteiros: () => apiFetch('/roteiros.php'),
+    gerarRoteiro: (payload) => apiFetch('/roteiros.php', { method: 'POST', body: payload }),
+
+    // --- Admin (adm_supremo)
+    listarUsuarios: (params) => apiFetch('/usuarios.php', { params }),
+    criarUsuario: (payload) => apiFetch('/usuarios.php', { method: 'POST', body: payload }),
+    atualizarUsuario: (id, payload) => apiFetch('/usuarios.php', { method: 'PUT', body: { id, ...payload } }),
+    removerUsuario: (id) => apiFetch('/usuarios.php', { method: 'DELETE', params: { id } }),
+
+    criarVinicola: (payload) => apiFetch('/vinicolas.php', { method: 'POST', body: payload }),
+    atualizarVinicola: (id, payload) => apiFetch('/vinicolas.php', { method: 'PUT', body: { id, ...payload } }),
+    removerVinicola: (id) => apiFetch('/vinicolas.php', { method: 'DELETE', params: { id } }),
+
+    criarExperiencia: (payload) => apiFetch('/experiencias.php', { method: 'POST', body: payload }),
+    atualizarExperiencia: (id, payload) => apiFetch('/experiencias.php', { method: 'PUT', body: { id, ...payload } }),
+    removerExperiencia: (id) => apiFetch('/experiencias.php', { method: 'DELETE', params: { id } }),
+
+    criarHorario: (payload) => apiFetch('/horarios.php', { method: 'POST', body: payload }),
+    atualizarHorario: (id, payload) => apiFetch('/horarios.php', { method: 'PUT', body: { id, ...payload } }),
+    removerHorario: (id) => apiFetch('/horarios.php', { method: 'DELETE', params: { id } }),
 };
 window.UvaViaApi = UvaViaApi;
 
-// Mapeia API -> shape esperado pelo frontend legado.
-// Preserva campos da curadoria local (tipo, tone, lat/long) quando o backend
-// nao os fornece, fazendo lookup por id no array embutido.
+// --- Mapeamento campos API -> frontend legado
 function mapVinicola(v) {
-    const fallback = (typeof VINICOLAS !== 'undefined')
-        ? VINICOLAS.find(x => Number(x.id) === Number(v.id))
-        : null;
     return {
         id: Number(v.id),
         nome: v.nome,
         cidade: v.cidade,
-        descricao: v.descricao || fallback?.descricao,
+        descricao: v.descricao,
         foto_url: v.foto_url,
-        tipo: v.tipo || fallback?.tipo || 'grande',
-        tone: v.tone || fallback?.tone || 'a',
-        latitude:  v.latitude  != null ? Number(v.latitude)  : (fallback?.latitude  ?? null),
-        longitude: v.longitude != null ? Number(v.longitude) : (fallback?.longitude ?? null),
-        duracao_media_min: v.duracao_media_min != null ? Number(v.duracao_media_min) : (fallback?.duracao_media_min ?? null),
-        preco_min: v.preco_min != null ? Number(v.preco_min) : (fallback?.preco_min ?? null),
-        preco_max: v.preco_max != null ? Number(v.preco_max) : (fallback?.preco_max ?? null),
+        latitude: v.latitude != null ? Number(v.latitude) : null,
+        longitude: v.longitude != null ? Number(v.longitude) : null,
+        duracao_media_min: v.duracao_media_min != null ? Number(v.duracao_media_min) : null,
+        preco_min: v.preco_min != null ? Number(v.preco_min) : null,
+        preco_max: v.preco_max != null ? Number(v.preco_max) : null,
     };
 }
-
 function mapExperiencia(e) {
-    // API retorna tags como [{id, nome}]; mantemos slugs locais para o algoritmo de scoring
-    const fallback = (typeof EXPERIENCIAS !== 'undefined')
-        ? EXPERIENCIAS.find(x => Number(x.id) === Number(e.id))
-        : null;
     return {
         id: Number(e.id),
         vinicola_id: Number(e.vinicola_id),
@@ -79,12 +148,10 @@ function mapExperiencia(e) {
         preco: Number(e.preco_por_pessoa),
         duracao: Number(e.duracao_minutos),
         categoria: e.categoria,
-        tags: fallback?.tags || (Array.isArray(e.tags) ? e.tags.map(t => typeof t === 'string' ? t : t?.nome).filter(Boolean) : []),
+        tags: Array.isArray(e.tags) ? e.tags : [],
     };
 }
-
 function mapHorario(h) {
-    const cap = Number(h.capacidade_maxima);
     return {
         id: Number(h.id),
         vinicola_id: Number(h.vinicola_id),
@@ -92,7 +159,7 @@ function mapHorario(h) {
         data: h.data,
         horario: typeof h.horario === 'string' ? h.horario.slice(0, 5) : h.horario,
         vagas: Number(h.vagas_disponiveis),
-        capacidade: cap,
+        capacidade: Number(h.capacidade_maxima),
         status: h.status,
     };
 }
@@ -110,63 +177,65 @@ function repopularSelect(selectEl, items, valueKey, labelFn, placeholder) {
 
 async function bootstrap() {
     try {
+        // Sessao primeiro (define csrf token disponivel a todos).
+        await UvaViaApi.refreshSession();
+
         const [vinicolas, experiencias, horarios] = await Promise.all([
             UvaViaApi.vinicolas(),
             UvaViaApi.experiencias(),
             UvaViaApi.horarios({ incluir_lotados: 1 }),
         ]);
 
-        const fmtBRL = (n) => n.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-
-        VINICOLAS.splice(0, VINICOLAS.length, ...vinicolas.map(mapVinicola));
-        EXPERIENCIAS.splice(0, EXPERIENCIAS.length, ...experiencias.map(mapExperiencia));
-        HORARIOS.splice(0, HORARIOS.length, ...horarios.map(mapHorario));
-
-        // populateVinicolaSelects() cobre todos os selects (b-vinicola, exp-vinicola, m-vinicola)
-        if (typeof window.populateVinicolaSelects === 'function') {
-            window.populateVinicolaSelects();
+        if (Array.isArray(window.VINICOLAS)) {
+            VINICOLAS.splice(0, VINICOLAS.length, ...vinicolas.map(mapVinicola));
+        }
+        if (Array.isArray(window.EXPERIENCIAS)) {
+            EXPERIENCIAS.splice(0, EXPERIENCIAS.length, ...experiencias.map(mapExperiencia));
+        }
+        if (Array.isArray(window.HORARIOS)) {
+            HORARIOS.splice(0, HORARIOS.length, ...horarios.map(mapHorario));
         }
 
-        // Re-renderiza catalogo, gestao e secoes da home usando os dados frescos.
-        if (typeof window.renderExperiencias === 'function')   window.renderExperiencias();
-        if (typeof window.renderManageTable === 'function')    window.renderManageTable();
-        if (typeof window.renderManageVinList === 'function')  window.renderManageVinList();
-        if (typeof window.renderSugestoes === 'function')      window.renderSugestoes();
-        if (typeof window.renderBoutique === 'function')       window.renderBoutique();
-        if (typeof window.renderAvaliacoes === 'function')     window.renderAvaliacoes();
+        repopularSelect(document.getElementById('b-vinicola'), window.VINICOLAS || [], 'id',
+            v => `${v.nome} — ${v.cidade}`, 'Selecione uma vinícola…');
+        repopularSelect(document.getElementById('exp-vinicola'), window.VINICOLAS || [], 'id',
+            v => v.nome, 'Todas as vinícolas');
+        repopularSelect(document.getElementById('m-vinicola'), window.VINICOLAS || [], 'id',
+            v => v.nome, 'Selecione…');
 
-        console.info(`[Uva&Via] API carregada: ${VINICOLAS.length} vinicolas, ${EXPERIENCIAS.length} experiencias, ${HORARIOS.length} horarios.`);
+        if (typeof window.renderExperiencias === 'function') window.renderExperiencias();
+        if (typeof window.renderManageTable === 'function') window.renderManageTable();
+
+        console.info(`[Uva&Via] API carregada: ${(window.VINICOLAS||[]).length} vinicolas, ${(window.EXPERIENCIAS||[]).length} experiencias, ${(window.HORARIOS||[]).length} horarios. user=${authState.user ? authState.user.email : 'anon'}`);
     } catch (err) {
         console.warn('[Uva&Via] Falha ao carregar API, usando dados embutidos.', err);
     }
 }
 
-// Persiste reservas tambem no backend (alem do localStorage usado pela UI).
-// Captura: roda ANTES do handler original (que reseta o form apos sucesso).
+// Reserva via backend: gate de auth (so persiste se logado, mensagem clara senao).
 document.getElementById('booking-form')?.addEventListener('submit', (ev) => {
     const slotSelected = ev.currentTarget.querySelector('.slot.is-selected');
     const expSelect = document.getElementById('b-experiencia');
-    const nome = document.getElementById('b-nome')?.value.trim();
     const pessoas = Math.max(1, Number(document.getElementById('b-pessoas')?.value) || 1);
 
-    if (!slotSelected || !nome || !expSelect?.value) return;
+    if (!slotSelected || !expSelect?.value) return;
     const horarioId = Number(slotSelected.dataset.id);
-    // IDs altos (>=1000) sao horarios criados localmente via Gestao e nao existem no backend.
     if (!horarioId || horarioId >= 1000) return;
 
-    // Fire-and-forget: nao bloqueia o handler original.
-    UvaViaApi.criarReserva({
-        horario_id: horarioId,
-        num_pessoas: pessoas,
-        visitante: {
-            nome_completo: nome,
-            email: `${nome.toLowerCase().replace(/\s+/g, '.')}@uvaevia.local`,
-        },
-    }).then(() => console.info('[Uva&Via] Reserva persistida no backend.'))
-      .catch(err => console.warn('[Uva&Via] Reserva nao foi persistida no backend.', err));
+    if (!authState.user) {
+        ev.preventDefault();
+        ev.stopImmediatePropagation();
+        document.dispatchEvent(new CustomEvent('uvaevia:require-login', {
+            detail: { motivo: 'Faca login para confirmar sua reserva.' }
+        }));
+        return;
+    }
+
+    UvaViaApi.criarReserva({ horario_id: horarioId, num_pessoas: pessoas })
+        .then(() => console.info('[Uva&Via] Reserva persistida no backend.'))
+        .catch(err => console.warn('[Uva&Via] Reserva nao persistida no backend.', err));
 }, { capture: true });
 
-// Roda apos o script.js ja ter populado os selects e wired tudo.
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', bootstrap);
 } else {

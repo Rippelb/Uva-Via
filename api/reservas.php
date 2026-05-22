@@ -1,40 +1,45 @@
 <?php
 require __DIR__ . '/config/db.php';
 require __DIR__ . '/config/helpers.php';
+require __DIR__ . '/config/auth.php';
 
 require_method('GET', 'POST', 'DELETE');
+require_csrf();
 
 try {
     $pdo = getDb();
+    $me = require_login();
 
     if (method() === 'GET') {
         $where = [];
         $params = [];
 
-        if (isset($_GET['email']) && $_GET['email'] !== '') {
-            $where[] = 'vis.email = ?';
-            $params[] = trim($_GET['email']);
+        // Escopo por papel.
+        if ($me['role'] === 'usuario') {
+            $where[] = 'r.usuario_id = ?';
+            $params[] = (int) $me['id'];
+        } elseif ($me['role'] === 'adm_vinicola') {
+            $where[] = 'r.vinicola_id = ?';
+            $params[] = (int) $me['vinicola_id'];
         }
-        if (isset($_GET['visitante_id'])) {
-            $where[] = 'r.visitante_id = ?';
-            $params[] = (int) $_GET['visitante_id'];
-        }
+        // adm_supremo: sem filtro de escopo.
+
         if (isset($_GET['status']) && $_GET['status'] !== '') {
             $where[] = 'r.status = ?';
             $params[] = $_GET['status'];
         }
 
         $sql = '
-            SELECT r.id, r.visitante_id, r.vinicola_id, r.experiencia_id, r.horario_id,
+            SELECT r.id, r.usuario_id, r.vinicola_id, r.experiencia_id, r.horario_id,
                    r.data_reserva, r.horario, r.num_pessoas, r.preco_total, r.status,
                    r.criado_em,
                    v.nome AS vinicola_nome, v.cidade,
                    e.nome AS experiencia_nome, e.duracao_minutos,
-                   vis.nome_completo, vis.email
+                   u.nome_completo, u.email
             FROM reservas r
             JOIN vinicolas v ON v.id = r.vinicola_id
             JOIN experiencias e ON e.id = r.experiencia_id
-            JOIN visitantes vis ON vis.id = r.visitante_id
+            JOIN usuarios u ON u.id = r.usuario_id
         ';
         if ($where) $sql .= ' WHERE ' . implode(' AND ', $where);
         $sql .= ' ORDER BY r.data_reserva, r.horario';
@@ -46,7 +51,6 @@ try {
 
     if (method() === 'POST') {
         $body = read_json_body();
-
         $horarioId = (int) ($body['horario_id'] ?? 0);
         $numPessoas = (int) ($body['num_pessoas'] ?? 1);
 
@@ -54,36 +58,8 @@ try {
             json_error('horario_id e num_pessoas sao obrigatorios', 422);
         }
 
-        // Visitante: aceita visitante_id direto ou bloco "visitante" com nome+email.
-        $visitanteId = isset($body['visitante_id']) ? (int) $body['visitante_id'] : 0;
-        $vis = $body['visitante'] ?? null;
-
         $pdo->beginTransaction();
 
-        if ($visitanteId === 0) {
-            if (!is_array($vis) || empty($vis['email']) || empty($vis['nome_completo'] ?? $vis['nome'] ?? '')) {
-                $pdo->rollBack();
-                json_error('visitante.nome_completo e visitante.email sao obrigatorios', 422);
-            }
-            $email = trim((string) $vis['email']);
-            $nome = trim((string) ($vis['nome_completo'] ?? $vis['nome']));
-            $tel = trim((string) ($vis['telefone'] ?? '')) ?: null;
-
-            $sel = $pdo->prepare('SELECT id FROM visitantes WHERE email = ? FOR UPDATE');
-            $sel->execute([$email]);
-            $row = $sel->fetch();
-            if ($row) {
-                $visitanteId = (int) $row['id'];
-                $upd = $pdo->prepare('UPDATE visitantes SET nome_completo = ?, telefone = ? WHERE id = ?');
-                $upd->execute([$nome, $tel, $visitanteId]);
-            } else {
-                $ins = $pdo->prepare('INSERT INTO visitantes (nome_completo, email, telefone) VALUES (?, ?, ?)');
-                $ins->execute([$nome, $email, $tel]);
-                $visitanteId = (int) $pdo->lastInsertId();
-            }
-        }
-
-        // Trava o horario para impedir overbooking concorrente.
         $sel = $pdo->prepare('
             SELECT h.id, h.vinicola_id, h.experiencia_id, h.data, h.horario,
                    h.capacidade_maxima, h.vagas_disponiveis, e.preco_por_pessoa
@@ -109,12 +85,12 @@ try {
         $precoTotal = (float) $h['preco_por_pessoa'] * $numPessoas;
 
         $ins = $pdo->prepare('
-            INSERT INTO reservas (visitante_id, vinicola_id, experiencia_id, horario_id,
+            INSERT INTO reservas (usuario_id, vinicola_id, experiencia_id, horario_id,
                                   data_reserva, horario, num_pessoas, preco_total, status)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
         ');
         $ins->execute([
-            $visitanteId,
+            (int) $me['id'],
             (int) $h['vinicola_id'],
             (int) $h['experiencia_id'],
             (int) $h['id'],
@@ -129,7 +105,7 @@ try {
         $pdo->commit();
 
         $stmt = $pdo->prepare('
-            SELECT r.id, r.visitante_id, r.vinicola_id, r.experiencia_id, r.horario_id,
+            SELECT r.id, r.usuario_id, r.vinicola_id, r.experiencia_id, r.horario_id,
                    r.data_reserva, r.horario, r.num_pessoas, r.preco_total, r.status,
                    v.nome AS vinicola_nome, e.nome AS experiencia_nome
             FROM reservas r
@@ -151,13 +127,23 @@ try {
 
         $pdo->beginTransaction();
 
-        $sel = $pdo->prepare('SELECT horario_id, num_pessoas, status FROM reservas WHERE id = ? FOR UPDATE');
+        $sel = $pdo->prepare('SELECT usuario_id, vinicola_id, horario_id, num_pessoas, status FROM reservas WHERE id = ? FOR UPDATE');
         $sel->execute([$id]);
         $r = $sel->fetch();
         if (!$r) {
             $pdo->rollBack();
             json_error('Reserva nao encontrada', 404);
         }
+
+        // Escopo de cancelamento.
+        $podeCancel = $me['role'] === 'adm_supremo'
+            || ($me['role'] === 'adm_vinicola' && (int) $r['vinicola_id'] === (int) $me['vinicola_id'])
+            || ($me['role'] === 'usuario' && (int) $r['usuario_id'] === (int) $me['id']);
+        if (!$podeCancel) {
+            $pdo->rollBack();
+            json_error('Voce nao tem permissao para cancelar essa reserva', 403);
+        }
+
         if ($r['status'] === 'cancelada') {
             $pdo->rollBack();
             json_error('Reserva ja cancelada', 409);

@@ -1,8 +1,10 @@
 <?php
 require __DIR__ . '/config/db.php';
 require __DIR__ . '/config/helpers.php';
+require __DIR__ . '/config/auth.php';
 
 require_method('GET', 'POST');
+require_csrf();
 
 const PARADAS_POR_DIA = 3;
 const HORARIOS_INICIO = ['10:00:00', '13:00:00', '16:00:00'];
@@ -19,9 +21,9 @@ function distancia_km(float $lat1, float $lon1, float $lat2, float $lon2): float
 
 function carregar_roteiro_completo(PDO $pdo, int $roteiroId): array {
     $stmt = $pdo->prepare('
-        SELECT r.*, v.nome_completo AS visitante_nome, v.email AS visitante_email
+        SELECT r.*, u.nome_completo AS usuario_nome, u.email AS usuario_email
         FROM roteiros r
-        JOIN visitantes v ON v.id = r.visitante_id
+        JOIN usuarios u ON u.id = r.usuario_id
         WHERE r.id = ?
     ');
     $stmt->execute([$roteiroId]);
@@ -60,31 +62,33 @@ function carregar_roteiro_completo(PDO $pdo, int $roteiroId): array {
 
 try {
     $pdo = getDb();
+    $me = require_login();
 
     if (method() === 'GET') {
         if (isset($_GET['id'])) {
             $r = carregar_roteiro_completo($pdo, (int) $_GET['id']);
             if (!$r) json_error('Roteiro nao encontrado', 404);
+
+            // Escopo: usuario so ve os proprios; adm_supremo ve todos.
+            if ($me['role'] === 'usuario' && (int) $r['usuario_id'] !== (int) $me['id']) {
+                json_error('Sem permissao', 403);
+            }
             json_response($r);
         }
 
         $where = [];
         $params = [];
-        if (isset($_GET['email']) && $_GET['email'] !== '') {
-            $where[] = 'vis.email = ?';
-            $params[] = trim($_GET['email']);
-        }
-        if (isset($_GET['visitante_id'])) {
-            $where[] = 'r.visitante_id = ?';
-            $params[] = (int) $_GET['visitante_id'];
+        if ($me['role'] === 'usuario') {
+            $where[] = 'r.usuario_id = ?';
+            $params[] = (int) $me['id'];
         }
 
         $sql = '
-            SELECT r.id, r.visitante_id, r.preferencia_id, r.nome, r.total_dias,
+            SELECT r.id, r.usuario_id, r.preferencia_id, r.nome, r.total_dias,
                    r.custo_estimado, r.status, r.criado_em,
-                   vis.email AS visitante_email
+                   u.email AS usuario_email
             FROM roteiros r
-            JOIN visitantes vis ON vis.id = r.visitante_id
+            JOIN usuarios u ON u.id = r.usuario_id
         ';
         if ($where) $sql .= ' WHERE ' . implode(' AND ', $where);
         $sql .= ' ORDER BY r.criado_em DESC';
@@ -94,7 +98,7 @@ try {
         json_response($stmt->fetchAll());
     }
 
-    // POST: gerar roteiro otimizado
+    // POST: gerar roteiro otimizado para o usuario logado.
     $body = read_json_body();
 
     $numDias = max(1, (int) ($body['num_dias'] ?? 1));
@@ -109,42 +113,15 @@ try {
     if (!$tagIds) json_error('tag_ids obrigatorio (lista de interesses)', 422);
     if ($perfilId === null) json_error('perfil_id obrigatorio', 422);
 
-    // Visitante: aceita visitante_id ou bloco visitante { nome, email, telefone }
-    $visitanteId = isset($body['visitante_id']) ? (int) $body['visitante_id'] : 0;
-    $vis = $body['visitante'] ?? null;
-
     $pdo->beginTransaction();
-
-    if ($visitanteId === 0) {
-        if (!is_array($vis) || empty($vis['email']) || empty($vis['nome_completo'] ?? $vis['nome'] ?? '')) {
-            $pdo->rollBack();
-            json_error('visitante.nome_completo e visitante.email sao obrigatorios', 422);
-        }
-        $email = trim((string) $vis['email']);
-        $nome = trim((string) ($vis['nome_completo'] ?? $vis['nome']));
-        $tel = trim((string) ($vis['telefone'] ?? '')) ?: null;
-
-        $sel = $pdo->prepare('SELECT id FROM visitantes WHERE email = ? FOR UPDATE');
-        $sel->execute([$email]);
-        $row = $sel->fetch();
-        if ($row) {
-            $visitanteId = (int) $row['id'];
-            $upd = $pdo->prepare('UPDATE visitantes SET nome_completo = ?, telefone = ? WHERE id = ?');
-            $upd->execute([$nome, $tel, $visitanteId]);
-        } else {
-            $ins = $pdo->prepare('INSERT INTO visitantes (nome_completo, email, telefone) VALUES (?, ?, ?)');
-            $ins->execute([$nome, $email, $tel]);
-            $visitanteId = (int) $pdo->lastInsertId();
-        }
-    }
 
     // Cria preferencia + preferencias_tags
     $orcamentoPorPessoa = $orcamentoTotal / $numPessoas;
     $ins = $pdo->prepare('
-        INSERT INTO preferencias_viagem (visitante_id, perfil_id, num_dias, num_pessoas, orcamento_por_pessoa)
+        INSERT INTO preferencias_viagem (usuario_id, perfil_id, num_dias, num_pessoas, orcamento_por_pessoa)
         VALUES (?, ?, ?, ?, ?)
     ');
-    $ins->execute([$visitanteId, $perfilId, $numDias, $numPessoas, $orcamentoPorPessoa]);
+    $ins->execute([(int) $me['id'], $perfilId, $numDias, $numPessoas, $orcamentoPorPessoa]);
     $preferenciaId = (int) $pdo->lastInsertId();
 
     $insTag = $pdo->prepare('INSERT INTO preferencias_tags (preferencia_id, tag_id) VALUES (?, ?)');
@@ -174,7 +151,6 @@ try {
     $candidatas = $expStmt->fetchAll();
 
     if (count($candidatas) < $totalParadas) {
-        // Relaxa o teto de preco e tenta de novo (so com preco_max do orcamento total)
         $sql2 = "
             SELECT e.id, e.vinicola_id, e.nome, e.duracao_minutos, e.preco_por_pessoa,
                    v.nome AS vinicola_nome, v.latitude, v.longitude, v.cidade,
@@ -198,12 +174,11 @@ try {
         json_error('Nenhuma experiencia compativel com o orcamento informado', 422);
     }
 
-    // Cria roteiro + distribui paradas dia a dia (uma vinicola por parada, sem repetir no mesmo dia)
     $ins = $pdo->prepare('
-        INSERT INTO roteiros (visitante_id, preferencia_id, nome, total_dias, status)
+        INSERT INTO roteiros (usuario_id, preferencia_id, nome, total_dias, status)
         VALUES (?, ?, ?, ?, ?)
     ');
-    $ins->execute([$visitanteId, $preferenciaId, $nomeRoteiro, $numDias, 'gerado']);
+    $ins->execute([(int) $me['id'], $preferenciaId, $nomeRoteiro, $numDias, 'gerado']);
     $roteiroId = (int) $pdo->lastInsertId();
 
     $insDia = $pdo->prepare('INSERT INTO roteiro_dias (roteiro_id, numero_dia, data_dia) VALUES (?, ?, ?)');
@@ -213,7 +188,7 @@ try {
         VALUES (?, ?, ?, ?, ?, ?)
     ');
 
-    $usadas = []; // experiencia_id ja usada em qualquer dia
+    $usadas = [];
     $custoTotal = 0.0;
     $dataAtual = $dataInicio ? new DateTimeImmutable($dataInicio) : null;
 
@@ -222,7 +197,6 @@ try {
         $insDia->execute([$roteiroId, $d, $dataDia]);
         $diaId = (int) $pdo->lastInsertId();
 
-        // Seleciona PARADAS_POR_DIA experiencias para esse dia, sem repetir vinicola no mesmo dia
         $vinicolasDoDia = [];
         $paradasDoDia = [];
         foreach ($candidatas as $c) {
@@ -236,7 +210,6 @@ try {
             $usadas[$expId] = true;
         }
 
-        // Se sobraram poucas opcoes, completa repetindo vinicolas
         if (count($paradasDoDia) < PARADAS_POR_DIA) {
             foreach ($candidatas as $c) {
                 if (count($paradasDoDia) >= PARADAS_POR_DIA) break;
@@ -247,7 +220,6 @@ try {
             }
         }
 
-        // Ordena por proximidade geografica (nearest neighbor a partir da primeira parada)
         if (count($paradasDoDia) > 1) {
             $ordenadas = [array_shift($paradasDoDia)];
             while ($paradasDoDia) {
@@ -270,7 +242,6 @@ try {
             $paradasDoDia = $ordenadas;
         }
 
-        // Persiste paradas com horarios sugeridos e tempo de deslocamento
         $anterior = null;
         foreach ($paradasDoDia as $ordem => $c) {
             $tempoDeslocamento = null;

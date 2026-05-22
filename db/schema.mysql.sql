@@ -1,5 +1,6 @@
 -- Schema MySQL/MariaDB (XAMPP). Versao adaptada do schema.sql (PostgreSQL).
--- Crie o database antes:  CREATE DATABASE uva_via CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+-- Crie o database antes:  CREATE DATABASE `uva&via` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+-- (o nome tem `&`, entao SEMPRE use backticks em comandos SQL referenciando-o)
 
 CREATE TABLE perfis_viagem (
   id INT AUTO_INCREMENT PRIMARY KEY,

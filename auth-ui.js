@@ -1,0 +1,418 @@
+// UI de autenticacao: widget no header + modal login/cadastro + troca de senha
+// forcada. Carregado APOS api-client.js, escuta UvaViaApi.onAuthChange.
+
+(function () {
+    if (!window.UvaViaApi) {
+        console.error('[auth-ui] UvaViaApi nao encontrado. Carregue api-client.js antes.');
+        return;
+    }
+
+    // -------- estilos
+    const css = `
+/* Lock global: enquanto nao houver sessao valida, esconde tudo exceto o modal. */
+body.auth-locked > *:not(.auth-overlay) { display: none !important; }
+body.auth-locked { overflow: hidden; background: var(--vinho); }
+body.auth-locked .auth-overlay { background: linear-gradient(135deg, var(--vinho) 0%, #2a0612 100%); }
+body.auth-locked .auth-modal-foot { background: rgba(245,236,217,.6); }
+.auth-modal--locked .auth-close { display: none !important; }
+
+.nav-user {
+    display: flex; align-items: center; gap: .5rem;
+    margin-left: auto; position: relative;
+    flex-shrink: 0;
+}
+.nav-user .btn-entrar {
+    background: rgba(255,255,255,.15); color: var(--branco);
+    border: 1.5px solid rgba(255,255,255,.4);
+    padding: .5rem 1.1rem; border-radius: 999px; font: inherit; font-weight: 600;
+    font-size: .88rem; cursor: pointer;
+    transition: all var(--t-fast); display: inline-flex; align-items: center; gap: .45rem;
+}
+.nav-user .btn-entrar:hover { background: rgba(255,255,255,.25); border-color: var(--branco); }
+.nav-user .user-chip {
+    width: 40px; height: 40px; border-radius: 50%;
+    background: var(--branco); color: var(--vinho);
+    border: 1.5px solid rgba(255,255,255,.55);
+    cursor: pointer; display: grid; place-items: center;
+    font: inherit; font-weight: 700; font-size: 1rem;
+    transition: all var(--t-fast); padding: 0;
+}
+.nav-user .user-chip:hover { transform: scale(1.05); border-color: var(--branco); box-shadow: 0 0 0 3px rgba(255,255,255,.18); }
+.nav-user .user-chip.is-open { box-shadow: 0 0 0 3px rgba(255,255,255,.3); }
+
+.user-menu {
+    position: absolute; top: calc(100% + .65rem); right: 0;
+    background: var(--branco); border: 1px solid var(--borda);
+    border-radius: 14px; box-shadow: var(--shadow-md);
+    min-width: 260px; z-index: 60;
+    display: none; overflow: hidden;
+    animation: user-menu-pop var(--t-fast);
+}
+.user-menu.is-open { display: block; }
+@keyframes user-menu-pop { from { opacity:0; transform: translateY(-6px); } to { opacity:1; transform: translateY(0); } }
+.user-menu-head {
+    padding: .9rem 1rem; background: linear-gradient(135deg, rgba(74,13,31,.04), rgba(107,122,58,.04));
+    border-bottom: 1px solid var(--borda);
+}
+.user-menu-name { font-weight: 700; font-size: 1rem; color: var(--vinho); display: block; }
+.user-menu-role {
+    display: inline-block; margin-top: .35rem; padding: .15rem .55rem;
+    background: var(--oliva); color: var(--branco); border-radius: 999px;
+    font-size: .68rem; text-transform: uppercase; letter-spacing: .06em; font-weight: 600;
+}
+.user-menu-role.role-supremo { background: var(--vinho); }
+.user-menu-role.role-vinicola { background: var(--oliva); }
+.user-menu-role.role-usuario { background: var(--bege-escuro); color: var(--texto); }
+.user-menu-email { font-size: .82rem; color: rgba(44,26,31,.65); display: block; margin-top: .35rem; word-break: break-all; }
+.user-menu-actions { padding: .35rem; }
+.user-menu button.menu-item {
+    width: 100%; text-align: left; padding: .65rem .85rem; border: 0;
+    background: transparent; cursor: pointer; border-radius: 10px;
+    font: inherit; color: var(--texto); display: flex; align-items: center; gap: .6rem;
+    font-size: .92rem;
+}
+.user-menu button.menu-item:hover { background: rgba(74,13,31,.06); }
+.user-menu button.menu-item i { width: 16px; color: var(--vinho-claro); }
+.user-menu button.menu-item.danger { color: var(--status-cheio); }
+.user-menu button.menu-item.danger i { color: var(--status-cheio); }
+
+.auth-overlay {
+    position: fixed; inset: 0; background: rgba(44,26,31,.55);
+    display: none; align-items: center; justify-content: center;
+    z-index: 100; padding: 1rem;
+}
+.auth-overlay.is-open { display: flex; }
+.auth-modal {
+    background: var(--branco); border-radius: 20px; box-shadow: var(--shadow-lg);
+    width: 100%; max-width: 440px; max-height: 90vh; overflow-y: auto;
+    animation: auth-pop var(--t-base);
+}
+@keyframes auth-pop { from { opacity:0; transform: translateY(12px); } to { opacity:1; transform: translateY(0); } }
+.auth-modal-head { padding: 1.5rem 1.5rem .5rem; }
+.auth-modal-head h2 { font-family: var(--font-serif); font-size: 1.7rem; color: var(--vinho); }
+.auth-modal-head p { color: rgba(44,26,31,.7); font-size: .95rem; margin-top: .2rem; }
+.auth-tabs { display: flex; gap: .25rem; padding: 0 1.5rem; margin: 1rem 0 .5rem; }
+.auth-tabs button {
+    flex: 1; padding: .65rem 0; border: 0; background: transparent;
+    font: inherit; font-weight: 600; cursor: pointer; color: rgba(44,26,31,.5);
+    border-bottom: 2px solid transparent; transition: all var(--t-fast);
+}
+.auth-tabs button.is-active { color: var(--vinho); border-bottom-color: var(--vinho); }
+.auth-form { padding: 1rem 1.5rem 1.5rem; display: none; }
+.auth-form.is-active { display: block; }
+.auth-form label { display: block; font-size: .85rem; font-weight: 600; color: var(--texto); margin-top: .8rem; }
+.auth-form input {
+    width: 100%; padding: .7rem .9rem; margin-top: .3rem;
+    border: 1px solid var(--borda); border-radius: 10px; font: inherit;
+    background: var(--branco); color: var(--texto);
+}
+.auth-form input:focus { outline: 2px solid var(--vinho-glow); border-color: var(--vinho); }
+.auth-form .auth-error { color: var(--status-cheio); font-size: .85rem; margin-top: .7rem; min-height: 1.1em; }
+.auth-form .auth-actions { display: flex; gap: .6rem; margin-top: 1.2rem; align-items: center; }
+.auth-form .auth-actions .btn { flex: 1; justify-content: center; }
+.auth-modal-foot {
+    border-top: 1px solid var(--borda); padding: .9rem 1.5rem;
+    font-size: .82rem; color: rgba(44,26,31,.6); background: rgba(245,236,217,.4);
+    border-radius: 0 0 20px 20px;
+}
+.auth-close {
+    position: absolute; top: 1rem; right: 1rem; background: rgba(74,13,31,.08);
+    border: 0; width: 36px; height: 36px; border-radius: 50%; cursor: pointer;
+    font-size: 1.3rem; color: var(--vinho);
+}
+.auth-modal { position: relative; }
+@media (max-width: 600px) {
+    .user-menu { right: -.5rem; min-width: 240px; }
+}
+`;
+    const style = document.createElement('style');
+    style.id = 'uvaevia-auth-styles';
+    style.textContent = css;
+    document.head.appendChild(style);
+
+    // -------- widget de usuario no header
+    const navInner = document.querySelector('.nav-inner');
+    const navMenu = document.getElementById('nav-menu');
+    const navUser = document.createElement('div');
+    navUser.className = 'nav-user';
+    navInner.appendChild(navUser);
+
+    // -------- modal
+    const overlay = document.createElement('div');
+    overlay.className = 'auth-overlay';
+    overlay.innerHTML = `
+        <div class="auth-modal" role="dialog" aria-modal="true" aria-labelledby="auth-title">
+            <button class="auth-close" type="button" aria-label="Fechar">&times;</button>
+            <div class="auth-modal-head">
+                <h2 id="auth-title">Bem-vindo</h2>
+                <p>Entre ou crie sua conta para reservar experiências e salvar roteiros.</p>
+            </div>
+            <div class="auth-tabs" role="tablist">
+                <button type="button" class="is-active" data-tab="login" role="tab">Entrar</button>
+                <button type="button" data-tab="register" role="tab">Criar conta</button>
+            </div>
+            <form class="auth-form is-active" data-form="login" novalidate>
+                <label for="auth-login-email">Email</label>
+                <input id="auth-login-email" type="email" autocomplete="email" required>
+                <label for="auth-login-senha">Senha</label>
+                <input id="auth-login-senha" type="password" autocomplete="current-password" required>
+                <p class="auth-error" data-error></p>
+                <div class="auth-actions">
+                    <button type="submit" class="btn btn-primary">Entrar</button>
+                </div>
+            </form>
+            <form class="auth-form" data-form="register" novalidate>
+                <label for="auth-reg-nome">Nome completo</label>
+                <input id="auth-reg-nome" type="text" autocomplete="name" required>
+                <label for="auth-reg-email">Email</label>
+                <input id="auth-reg-email" type="email" autocomplete="email" required>
+                <label for="auth-reg-telefone">Telefone (opcional)</label>
+                <input id="auth-reg-telefone" type="tel" autocomplete="tel">
+                <label for="auth-reg-senha">Senha (mínimo 8 caracteres)</label>
+                <input id="auth-reg-senha" type="password" autocomplete="new-password" minlength="8" required>
+                <p class="auth-error" data-error></p>
+                <div class="auth-actions">
+                    <button type="submit" class="btn btn-primary">Criar conta</button>
+                </div>
+            </form>
+            <form class="auth-form" data-form="change-password" novalidate>
+                <p style="background: rgba(201,142,62,.15); color: #6b4d1a; padding:.7rem; border-radius:10px; font-size:.85rem;">
+                    Esta é sua primeira sessão. Defina uma nova senha para continuar.
+                </p>
+                <label for="auth-cp-atual">Senha atual</label>
+                <input id="auth-cp-atual" type="password" autocomplete="current-password" required>
+                <label for="auth-cp-nova">Nova senha (mínimo 8 caracteres)</label>
+                <input id="auth-cp-nova" type="password" autocomplete="new-password" minlength="8" required>
+                <p class="auth-error" data-error></p>
+                <div class="auth-actions">
+                    <button type="submit" class="btn btn-primary">Atualizar senha</button>
+                </div>
+            </form>
+            <div class="auth-modal-foot">
+                Suas reservas e roteiros ficam vinculados à conta — você pode acessá-los de qualquer dispositivo.
+            </div>
+        </div>
+    `;
+    document.body.appendChild(overlay);
+
+    const modal = overlay.querySelector('.auth-modal');
+    const tabBtns = overlay.querySelectorAll('.auth-tabs button');
+    const forms = overlay.querySelectorAll('.auth-form');
+
+    // Locked: modal nao fecha (sem X, ESC ou clique fora). Usado quando o
+    // sistema inteiro esta gated atras do login ou exige troca de senha.
+    let locked = true;
+    document.body.classList.add('auth-locked');
+
+    function setLocked(value) {
+        locked = !!value;
+        modal.classList.toggle('auth-modal--locked', locked);
+        document.body.classList.toggle('auth-locked', locked);
+    }
+
+    function openModal(tab = 'login') {
+        overlay.classList.add('is-open');
+        switchTab(tab);
+        setTimeout(() => modal.querySelector('.auth-form.is-active input:not([type=hidden])')?.focus(), 50);
+    }
+    function closeModal(force = false) {
+        if (locked && !force) return;
+        overlay.classList.remove('is-open');
+        forms.forEach(f => f.reset());
+        forms.forEach(f => f.querySelector('[data-error]').textContent = '');
+    }
+    function switchTab(tab) {
+        tabBtns.forEach(b => b.classList.toggle('is-active', b.dataset.tab === tab));
+        forms.forEach(f => f.classList.toggle('is-active', f.dataset.form === tab));
+        const title = modal.querySelector('#auth-title');
+        const head = modal.querySelector('.auth-modal-head p');
+        const tabsBar = modal.querySelector('.auth-tabs');
+        if (tab === 'change-password') {
+            title.textContent = 'Atualize sua senha';
+            head.textContent = 'Por segurança, defina uma nova senha antes de continuar.';
+            tabsBar.style.display = 'none';
+        } else {
+            title.textContent = tab === 'login' ? 'Bem-vindo de volta' : 'Crie sua conta';
+            head.textContent = tab === 'login'
+                ? 'Entre para acessar suas reservas e roteiros.'
+                : 'Em segundos você tem acesso a tudo.';
+            tabsBar.style.display = '';
+        }
+    }
+
+    overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) closeModal();
+    });
+    overlay.querySelector('.auth-close').addEventListener('click', () => closeModal());
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && overlay.classList.contains('is-open')) closeModal();
+    });
+    tabBtns.forEach(b => b.addEventListener('click', () => switchTab(b.dataset.tab)));
+
+    // -------- submit handlers
+    overlay.querySelector('[data-form="login"]').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const err = e.target.querySelector('[data-error]');
+        err.textContent = '';
+        try {
+            const user = await UvaViaApi.login(
+                document.getElementById('auth-login-email').value.trim(),
+                document.getElementById('auth-login-senha').value,
+            );
+            if (user?.must_change_password) {
+                switchTab('change-password');
+                // permanece travado ate trocar senha
+            } else {
+                setLocked(false);
+                closeModal(true);
+                window.showToast?.(`Bem-vindo, ${user.nome_completo.split(' ')[0]}!`);
+            }
+        } catch (ex) {
+            err.textContent = ex.message || 'Erro ao entrar';
+        }
+    });
+
+    overlay.querySelector('[data-form="register"]').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const err = e.target.querySelector('[data-error]');
+        err.textContent = '';
+        try {
+            const user = await UvaViaApi.register({
+                nome_completo: document.getElementById('auth-reg-nome').value.trim(),
+                email: document.getElementById('auth-reg-email').value.trim(),
+                telefone: document.getElementById('auth-reg-telefone').value.trim(),
+                senha: document.getElementById('auth-reg-senha').value,
+            });
+            setLocked(false);
+            closeModal(true);
+            window.showToast?.(`Conta criada. Bem-vindo, ${user.nome_completo.split(' ')[0]}!`);
+        } catch (ex) {
+            err.textContent = ex.message || 'Erro ao cadastrar';
+        }
+    });
+
+    overlay.querySelector('[data-form="change-password"]').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const err = e.target.querySelector('[data-error]');
+        err.textContent = '';
+        try {
+            await UvaViaApi.changePassword(
+                document.getElementById('auth-cp-atual').value,
+                document.getElementById('auth-cp-nova').value,
+            );
+            await UvaViaApi.refreshSession();
+            setLocked(false);
+            closeModal(true);
+            window.showToast?.('Senha atualizada.');
+        } catch (ex) {
+            err.textContent = ex.message || 'Erro ao trocar senha';
+        }
+    });
+
+    // -------- render do widget
+    function roleLabel(role) {
+        return { adm_supremo: 'Admin supremo', adm_vinicola: 'Admin vinícola', usuario: 'Membro' }[role] || role;
+    }
+    function roleClass(role) {
+        return { adm_supremo: 'role-supremo', adm_vinicola: 'role-vinicola', usuario: 'role-usuario' }[role] || '';
+    }
+    function renderWidget(user) {
+        navUser.innerHTML = '';
+        if (!user) {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'btn-entrar';
+            btn.innerHTML = '<i class="fa-solid fa-right-to-bracket" aria-hidden="true"></i> Entrar';
+            btn.addEventListener('click', () => openModal('login'));
+            navUser.appendChild(btn);
+            return;
+        }
+
+        const initial = (user.nome_completo || user.email || '?').trim()[0].toUpperCase();
+        const chip = document.createElement('button');
+        chip.type = 'button';
+        chip.className = 'user-chip';
+        chip.setAttribute('aria-label', `Conta de ${user.nome_completo}`);
+        chip.title = user.nome_completo;
+        chip.textContent = initial;
+
+        const menu = document.createElement('div');
+        menu.className = 'user-menu';
+        menu.innerHTML = `
+            <div class="user-menu-head">
+                <span class="user-menu-name">${user.nome_completo}</span>
+                <span class="user-menu-role ${roleClass(user.role)}">${roleLabel(user.role)}</span>
+                <span class="user-menu-email">${user.email}</span>
+            </div>
+            <div class="user-menu-actions">
+                <button type="button" class="menu-item" data-action="change-pw">
+                    <i class="fa-solid fa-key" aria-hidden="true"></i> Trocar senha
+                </button>
+                <button type="button" class="menu-item danger" data-action="logout">
+                    <i class="fa-solid fa-right-from-bracket" aria-hidden="true"></i> Sair
+                </button>
+            </div>
+        `;
+        navUser.append(chip, menu);
+
+        chip.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const open = menu.classList.toggle('is-open');
+            chip.classList.toggle('is-open', open);
+        });
+        document.addEventListener('click', () => {
+            menu.classList.remove('is-open');
+            chip.classList.remove('is-open');
+        });
+        menu.addEventListener('click', (e) => e.stopPropagation());
+        menu.querySelector('[data-action="logout"]').addEventListener('click', async () => {
+            menu.classList.remove('is-open');
+            await UvaViaApi.logout();
+            window.showToast?.('Sessão encerrada.');
+        });
+        menu.querySelector('[data-action="change-pw"]').addEventListener('click', () => {
+            menu.classList.remove('is-open');
+            chip.classList.remove('is-open');
+            openModal('change-password');
+        });
+    }
+
+    // -------- visibilidade por papel
+    function applyRoleVisibility(user) {
+        const gestao = document.querySelector('a[href="#gestao"]');
+        const gestaoSection = document.getElementById('gestao');
+        const isAdmin = user && (user.role === 'adm_supremo' || user.role === 'adm_vinicola');
+        if (gestao) gestao.style.display = isAdmin ? '' : 'none';
+        if (gestaoSection) gestaoSection.style.display = isAdmin ? '' : 'none';
+    }
+
+    // -------- liga eventos globais
+    UvaViaApi.onAuthChange((user) => {
+        renderWidget(user);
+        applyRoleVisibility(user);
+
+        if (!user) {
+            // Sessao perdida ou logout: re-trava tudo.
+            setLocked(true);
+            openModal('login');
+        } else if (user.must_change_password) {
+            setLocked(true);
+            openModal('change-password');
+        } else {
+            setLocked(false);
+            closeModal(true);
+        }
+    });
+
+    document.addEventListener('uvaevia:require-login', (e) => {
+        window.showToast?.(e.detail?.motivo || 'É necessário fazer login para continuar.', 'error');
+        openModal('login');
+    });
+
+    // Estado inicial: travado ate o primeiro refreshSession resolver.
+    renderWidget(null);
+    applyRoleVisibility(null);
+    openModal('login');
+
+    window.UvaViaAuthUI = { open: openModal, close: () => closeModal(true), lock: () => setLocked(true), unlock: () => setLocked(false) };
+})();
