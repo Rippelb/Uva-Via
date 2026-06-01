@@ -775,7 +775,21 @@
         </div>
     </footer>
 
-    <script src="script.js"></script>
+    <!-- Modulos divididos de script.js — carregados como <script> classicos, A ORDEM IMPORTA -->
+    <script src="js/data.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/navegacao.js"></script>
+    <script src="js/destaques.js"></script>
+    <script src="js/roteiro.js"></script>
+    <script src="js/mapa.js"></script>
+    <script src="js/reserva.js"></script>
+    <script src="js/reservas.js"></script>
+    <script src="js/avaliacoes.js"></script>
+    <script src="js/disponibilidade.js"></script>
+    <script src="js/experiencias.js"></script>
+    <script src="js/gestao.js"></script>
+    <script src="js/init.js"></script><!-- init por ultimo: roda o bootstrap -->
+    <!-- Integracao backend (dependem dos globais window.* acima) -->
     <script src="api-client.js"></script>
     <script src="auth-ui.js"></script>
 </body>
