@@ -112,6 +112,20 @@ CREATE TABLE usuarios (
   CONSTRAINT fk_usuarios_vinicola FOREIGN KEY (vinicola_id) REFERENCES vinicolas(id)
 ) ENGINE=InnoDB;
 
+-- Tokens de recuperacao de senha (TTL curto + uso unico). token_hash guarda
+-- SHA-256 do token raw enviado ao usuario; nunca o token em claro.
+CREATE TABLE password_resets (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  usuario_id INT NOT NULL,
+  token_hash VARCHAR(64) NOT NULL,
+  expira_em TIMESTAMP NOT NULL,
+  usado_em TIMESTAMP NULL DEFAULT NULL,
+  criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_pwreset_usuario FOREIGN KEY (usuario_id) REFERENCES usuarios(id),
+  INDEX idx_pwreset_token (token_hash),
+  INDEX idx_pwreset_usuario_status (usuario_id, usado_em)
+) ENGINE=InnoDB;
+
 CREATE TABLE preferencias_viagem (
   id INT AUTO_INCREMENT PRIMARY KEY,
   usuario_id INT NOT NULL,

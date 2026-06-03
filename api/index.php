@@ -14,6 +14,8 @@ json_response([
         'POST /auth/register.php'        => 'Cria usuario role=usuario { nome_completo, email, senha }',
         'GET  /auth/me.php'              => 'Retorna { user, csrf }. user=null se anonimo',
         'POST /auth/change-password.php' => 'Troca senha { senha_atual, senha_nova }',
+        'POST /auth/forgot-password.php' => 'Gera token de recuperacao (anon) { email } -> { token, expira_em }',
+        'POST /auth/reset-password.php'  => 'Troca senha com token (anon) { token, senha_nova }',
 
         // Catalogo publico (GET sem auth)
         'GET  /vinicolas.php'            => 'Lista vinicolas',

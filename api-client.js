@@ -86,6 +86,12 @@ const UvaViaApi = {
     async changePassword(senha_atual, senha_nova) {
         return apiFetch('/auth/change-password.php', { method: 'POST', body: { senha_atual, senha_nova } });
     },
+    async forgotPassword(email) {
+        return apiFetch('/auth/forgot-password.php', { method: 'POST', body: { email } });
+    },
+    async resetPassword(token, senha_nova) {
+        return apiFetch('/auth/reset-password.php', { method: 'POST', body: { token, senha_nova } });
+    },
 
     // --- Catalogo
     vinicolas: (params) => apiFetch('/vinicolas.php', { params }),
@@ -212,29 +218,12 @@ async function bootstrap() {
     }
 }
 
-// Reserva via backend: gate de auth (so persiste se logado, mensagem clara senao).
-document.getElementById('booking-form')?.addEventListener('submit', (ev) => {
-    const slotSelected = ev.currentTarget.querySelector('.slot.is-selected');
-    const expSelect = document.getElementById('b-experiencia');
-    const pessoas = Math.max(1, Number(document.getElementById('b-pessoas')?.value) || 1);
-
-    if (!slotSelected || !expSelect?.value) return;
-    const horarioId = Number(slotSelected.dataset.id);
-    if (!horarioId || horarioId >= 1000) return;
-
-    if (!authState.user) {
-        ev.preventDefault();
-        ev.stopImmediatePropagation();
-        document.dispatchEvent(new CustomEvent('uvaevia:require-login', {
-            detail: { motivo: 'Faca login para confirmar sua reserva.' }
-        }));
-        return;
-    }
-
-    UvaViaApi.criarReserva({ horario_id: horarioId, num_pessoas: pessoas })
-        .then(() => console.info('[Uva&Via] Reserva persistida no backend.'))
-        .catch(err => console.warn('[Uva&Via] Reserva nao persistida no backend.', err));
-}, { capture: true });
+// Reserva agora e responsabilidade de script.js (await na API). Aqui apenas
+// avisamos quem precisa quando o estado de auth muda — script.js refetcha
+// reservas/roteiros ao logar via 'uvaevia:auth-change'.
+UvaViaApi.onAuthChange((user) => {
+    document.dispatchEvent(new CustomEvent('uvaevia:auth-change', { detail: { user } }));
+});
 
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', bootstrap);

@@ -1132,6 +1132,7 @@ document.getElementById('travel-form').addEventListener('submit', (e) => {
     const plano = generateRoteiro(input);
     renderRoteiro(plano);
     showToast('Roteiro gerado com base nas suas preferências!');
+    persistirRoteiroNoBackend(input);
 });
 
 // Limpa erros em tempo real
@@ -1580,18 +1581,48 @@ inpPessoas.addEventListener('input', refreshSummary);
 inpNome.addEventListener('input', refreshSummary);
 
 // =================== Reservas confirmadas ===================
-const STORAGE_KEY = 'uvaevia.reservas';
+// Persistencia no backend via UvaViaApi (era localStorage). Cache em memoria
+// pra evitar refetch a cada render; sincronizado no login e apos cada mutacao.
+const STORAGE_KEY = 'uvaevia.reservas';        // mantido so para limpeza one-time
 const listEl = document.getElementById('reservations-list');
 const emptyEl = document.getElementById('reservations-empty');
 const actionsEl = document.getElementById('reservations-actions');
 
-function loadReservas() {
-    try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; }
-    catch { return []; }
+let reservasCache = [];
+
+// Mapeia campo da API -> formato esperado pelo render (vinicola_nome -> vinicola, etc).
+function mapReservaApi(r) {
+    const horario = typeof r.horario === 'string' ? r.horario.slice(0, 5) : r.horario;
+    return {
+        id: String(r.id),
+        vinicola: r.vinicola_nome,
+        cidade: r.cidade,
+        experiencia: r.experiencia_nome,
+        data: r.data_reserva,
+        horario,
+        pessoas: Number(r.num_pessoas),
+        nome: r.nome_completo || (window.UvaViaApi?.user?.nome_completo) || '—',
+        total: Number(r.preco_total),
+        criadaEm: r.criado_em ? new Date(r.criado_em).getTime() : Date.now(),
+        cancelada: r.status === 'cancelada',
+    };
 }
-function saveReservas(arr) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(arr));
+
+async function fetchReservasFromAPI() {
+    if (!window.UvaViaApi?.user) { reservasCache = []; renderReservas(); return; }
+    try {
+        const lista = await UvaViaApi.minhasReservas();
+        reservasCache = lista.map(mapReservaApi);
+        renderReservas();
+    } catch (err) {
+        console.warn('[Uva&Via] Falha ao buscar reservas:', err);
+    }
 }
+
+function loadReservas() { return reservasCache; }
+
+// Limpa restos antigos de localStorage (versao pre-API). One-shot.
+try { localStorage.removeItem(STORAGE_KEY); } catch {}
 
 const statsEl = document.getElementById('reservations-stats');
 const rstatTotal = document.getElementById('rstat-total');
@@ -1755,13 +1786,24 @@ function renderReservas() {
     });
 
     listEl.querySelectorAll('[data-action="cancelar"]').forEach(btn => {
-        btn.addEventListener('click', () => {
+        btn.addEventListener('click', async () => {
             const id = btn.dataset.id;
             if (!confirm('Cancelar esta reserva? A vaga será liberada para outros visitantes.')) return;
-            const updated = loadReservas().filter(r => r.id !== id);
-            saveReservas(updated);
-            renderReservas();
-            showToast('Reserva cancelada.');
+            btn.disabled = true;
+            try {
+                await UvaViaApi.cancelarReserva(id);
+                // Backend marcou como cancelada e devolveu vagas. Atualiza cache local.
+                const r = reservasCache.find(x => x.id === id);
+                if (r) r.cancelada = true;
+                renderReservas();
+                showToast('Reserva cancelada.');
+                // Refresca catalogo + slots pra refletir as vagas devolvidas.
+                if (typeof refreshSlots === 'function') refreshSlots({ preserveSelection: true });
+                if (typeof renderExperiencias === 'function') renderExperiencias();
+            } catch (err) {
+                btn.disabled = false;
+                showToast(err.message || 'Não foi possível cancelar a reserva.', 'error');
+            }
         });
     });
     listEl.querySelectorAll('[data-action="ics"]').forEach(btn => {
@@ -2042,57 +2084,82 @@ function startLiveTick() {
     });
 }
 
-document.getElementById('booking-form').addEventListener('submit', (e) => {
+document.getElementById('booking-form').addEventListener('submit', async (e) => {
     e.preventDefault();
     const exp = getExperiencia();
     const hor = getHorario();
     const vin = VINICOLAS.find(v => v.id === Number(selVinicola.value));
     const pessoas = Math.max(1, Number(inpPessoas.value) || 0);
-    const nome = inpNome.value.trim();
+    const nome = inpNome.value.trim() || window.UvaViaApi?.user?.nome_completo || '';
     if (!exp || !hor || !vin || !nome) {
         showToast('Preencha todos os campos antes de reservar.', 'error');
         return;
     }
-    const reserva = {
-        id: 'r_' + Date.now(),
-        vinicola: vin.nome,
-        cidade: vin.cidade,
-        experiencia: exp.nome,
-        data: hor.data,
-        horario: hor.horario,
-        pessoas,
-        nome,
-        total: exp.preco * pessoas,
-        criadaEm: Date.now(),
-        cancelada: false,
-    };
-    const reservas = loadReservas();
-    reservas.push(reserva);
-    saveReservas(reservas);
-
-    const seedH = HORARIOS.find(x => x.id === hor.id);
-    if (seedH) seedH.vagas = Math.max(0, seedH.vagas - pessoas);
-    const customH = customHorarios.find(x => x.id === hor.id);
-    if (customH) {
-        customH.vagas = Math.max(0, customH.vagas - pessoas);
-        saveCustomHorarios(customHorarios);
+    if (!window.UvaViaApi?.user) {
+        showToast('Faça login para confirmar sua reserva.', 'error');
+        document.dispatchEvent(new CustomEvent('uvaevia:require-login'));
+        return;
     }
+    // Horarios custom (id >= 1000) sao locais — nao existem no backend.
+    const isHorarioLocal = Number(hor.id) >= 1000;
 
-    btnReservar.classList.add('is-success');
-    setTimeout(() => btnReservar.classList.remove('is-success'), 900);
+    btnReservar.disabled = true;
+    try {
+        let reserva;
+        if (!isHorarioLocal) {
+            // Caminho principal: persiste no backend, recebe a reserva canonica de volta.
+            const apiResp = await UvaViaApi.criarReserva({
+                horario_id: Number(hor.id),
+                num_pessoas: pessoas,
+            });
+            reserva = mapReservaApi(apiResp);
+        } else {
+            // Fallback p/ horarios locais (criados via Gestao). Continua so em memoria.
+            reserva = {
+                id: 'r_' + Date.now(),
+                vinicola: vin.nome,
+                cidade: vin.cidade,
+                experiencia: exp.nome,
+                data: hor.data,
+                horario: hor.horario,
+                pessoas,
+                nome,
+                total: exp.preco * pessoas,
+                criadaEm: Date.now(),
+                cancelada: false,
+            };
+        }
+        reservasCache.push(reserva);
 
-    showToast(`Reserva confirmada em ${vin.nome}!`);
-    renderReservas();
-    renderSugestoes();
-    renderExperiencias();
+        // Decremento otimista de vagas (UI imediata; backend ja decrementou).
+        const seedH = HORARIOS.find(x => x.id === hor.id);
+        if (seedH) seedH.vagas = Math.max(0, seedH.vagas - pessoas);
+        const customH = customHorarios.find(x => x.id === hor.id);
+        if (customH) {
+            customH.vagas = Math.max(0, customH.vagas - pessoas);
+            saveCustomHorarios(customHorarios);
+        }
 
-    selectedHorarioId = null;
-    refreshSlots();
-    inpNome.value = '';
-    refreshSummary();
+        btnReservar.classList.add('is-success');
+        setTimeout(() => btnReservar.classList.remove('is-success'), 900);
+        showToast(`Reserva confirmada em ${vin.nome}!`);
 
-    document.getElementById('minhas-reservas').scrollIntoView({ behavior: 'smooth' });
-    renderManageTable();
+        renderReservas();
+        if (typeof renderSugestoes === 'function') renderSugestoes();
+        renderExperiencias();
+
+        selectedHorarioId = null;
+        refreshSlots();
+        inpNome.value = '';
+        refreshSummary();
+
+        document.getElementById('minhas-reservas').scrollIntoView({ behavior: 'smooth' });
+        if (typeof renderManageTable === 'function') renderManageTable();
+    } catch (err) {
+        showToast(err.message || 'Não foi possível confirmar a reserva.', 'error');
+    } finally {
+        btnReservar.disabled = false;
+    }
 });
 
 // =================== Catalogo de Experiencias ===================
@@ -2695,3 +2762,51 @@ setInterval(setMinDateInputs, 30 * 60 * 1000);
 
 // Inicia o tick de disponibilidade em tempo real (45s) com pausa quando aba oculta
 startLiveTick();
+
+// =================== Sincronizacao com backend ===================
+// Reservas vivem no servidor — sempre que o auth muda, re-busca pra refletir
+// o estado canonico (incl. reservas feitas em outro dispositivo).
+document.addEventListener('uvaevia:auth-change', (e) => {
+    const user = e.detail?.user;
+    if (user) {
+        fetchReservasFromAPI();
+    } else {
+        reservasCache = [];
+        renderReservas();
+    }
+});
+
+// Mapeamento perfil/interesse slug -> id (segue ordem do install.mysql.sql).
+const PERFIL_SLUG_TO_ID = { casal: 1, amigos: 2, familia: 3, solo: 4 };
+const TAG_SLUG_TO_ID = {
+    'degustacao-classica': 1, 'degustacao-premium': 2, 'harmonizado': 3,
+    'piquenique': 4, 'visita-tecnica': 5, 'boutique': 6, 'raros': 7,
+    'sommelier': 8, 'por-do-sol': 9, 'vindima': 10, 'familiar': 11,
+    'arquitetura': 12, 'rapida': 13, 'completa': 14,
+};
+
+// Persiste o roteiro no backend depois que o client gerou. Fire-and-forget — o
+// algoritmo do backend gera a sua propria versao (pode divergir do client);
+// aqui o objetivo e historico/auditoria, nao espelhar 1-1 a visualizacao.
+async function persistirRoteiroNoBackend(input) {
+    if (!window.UvaViaApi?.user) return;
+    const tagIds = (input.interests || [])
+        .map(slug => TAG_SLUG_TO_ID[slug])
+        .filter(Boolean);
+    if (!tagIds.length) return;  // backend exige ao menos 1 tag
+    const perfilId = PERFIL_SLUG_TO_ID[input.profile];
+    if (!perfilId) return;
+    try {
+        await UvaViaApi.gerarRoteiro({
+            num_dias: input.days,
+            num_pessoas: input.pessoas,
+            orcamento_total: input.budget || 1000,
+            perfil_id: perfilId,
+            tag_ids: tagIds,
+            data_inicio: input.startDate || null,
+            nome: `Roteiro ${input.days}d (${input.pessoas}p)`,
+        });
+    } catch (err) {
+        console.warn('[Uva&Via] Roteiro nao persistido no backend:', err.message);
+    }
+}

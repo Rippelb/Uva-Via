@@ -110,6 +110,30 @@ body.auth-locked .auth-modal-foot { background: rgba(245,236,217,.6); }
 .auth-form .auth-error { color: var(--status-cheio); font-size: .85rem; margin-top: .7rem; min-height: 1.1em; }
 .auth-form .auth-actions { display: flex; gap: .6rem; margin-top: 1.2rem; align-items: center; }
 .auth-form .auth-actions .btn { flex: 1; justify-content: center; }
+.auth-form .auth-link {
+    display: inline-block; margin-top: .9rem; font-size: .85rem;
+    color: var(--vinho); text-decoration: none; cursor: pointer;
+    background: none; border: 0; padding: 0; font-family: inherit;
+}
+.auth-form .auth-link:hover { text-decoration: underline; }
+.auth-notice {
+    background: rgba(201,142,62,.15); color: #6b4d1a;
+    padding: .7rem .9rem; border-radius: 10px; font-size: .82rem;
+    margin-top: .8rem; border-left: 3px solid #c98e3e;
+}
+.auth-token-display {
+    background: var(--bege); border: 1px dashed var(--vinho-claro);
+    padding: .7rem; border-radius: 10px; margin-top: .8rem;
+    font-family: ui-monospace, 'Cascadia Code', Menlo, monospace;
+    font-size: .8rem; word-break: break-all; color: var(--texto);
+    position: relative;
+}
+.auth-token-display button {
+    position: absolute; top: .4rem; right: .4rem;
+    background: var(--vinho); color: var(--branco); border: 0;
+    padding: .2rem .55rem; border-radius: 6px; font-size: .7rem;
+    cursor: pointer; font-weight: 600;
+}
 .auth-modal-foot {
     border-top: 1px solid var(--borda); padding: .9rem 1.5rem;
     font-size: .82rem; color: rgba(44,26,31,.6); background: rgba(245,236,217,.4);
@@ -160,6 +184,33 @@ body.auth-locked .auth-modal-foot { background: rgba(245,236,217,.6); }
                 <div class="auth-actions">
                     <button type="submit" class="btn btn-primary">Entrar</button>
                 </div>
+                <button type="button" class="auth-link" data-go="forgot">Esqueci minha senha</button>
+            </form>
+            <form class="auth-form" data-form="forgot" novalidate>
+                <p style="color: rgba(44,26,31,.7); font-size:.9rem; margin-bottom:.3rem;">
+                    Digite o email da sua conta. Vamos gerar um token de recuperação válido por 1 hora.
+                </p>
+                <label for="auth-fp-email">Email</label>
+                <input id="auth-fp-email" type="email" autocomplete="email" required>
+                <p class="auth-error" data-error></p>
+                <div class="auth-actions">
+                    <button type="submit" class="btn btn-primary">Gerar token</button>
+                </div>
+                <button type="button" class="auth-link" data-go="login">&larr; Voltar ao login</button>
+            </form>
+            <form class="auth-form" data-form="reset" novalidate>
+                <p style="color: rgba(44,26,31,.7); font-size:.9rem; margin-bottom:.3rem;">
+                    Cole o token recebido e defina uma nova senha (mínimo 8 caracteres).
+                </p>
+                <label for="auth-rp-token">Token</label>
+                <input id="auth-rp-token" type="text" autocomplete="one-time-code" required spellcheck="false">
+                <label for="auth-rp-senha">Nova senha</label>
+                <input id="auth-rp-senha" type="password" autocomplete="new-password" minlength="8" required>
+                <p class="auth-error" data-error></p>
+                <div class="auth-actions">
+                    <button type="submit" class="btn btn-primary">Redefinir senha</button>
+                </div>
+                <button type="button" class="auth-link" data-go="login">&larr; Voltar ao login</button>
             </form>
             <form class="auth-form" data-form="register" novalidate>
                 <label for="auth-reg-nome">Nome completo</label>
@@ -227,18 +278,29 @@ body.auth-locked .auth-modal-foot { background: rgba(245,236,217,.6); }
         const title = modal.querySelector('#auth-title');
         const head = modal.querySelector('.auth-modal-head p');
         const tabsBar = modal.querySelector('.auth-tabs');
-        if (tab === 'change-password') {
-            title.textContent = 'Atualize sua senha';
-            head.textContent = 'Por segurança, defina uma nova senha antes de continuar.';
-            tabsBar.style.display = 'none';
-        } else {
-            title.textContent = tab === 'login' ? 'Bem-vindo de volta' : 'Crie sua conta';
-            head.textContent = tab === 'login'
-                ? 'Entre para acessar suas reservas e roteiros.'
-                : 'Em segundos você tem acesso a tudo.';
-            tabsBar.style.display = '';
-        }
+
+        const titulos = {
+            login:             ['Bem-vindo de volta',  'Entre para acessar suas reservas e roteiros.'],
+            register:          ['Crie sua conta',       'Em segundos você tem acesso a tudo.'],
+            'change-password': ['Atualize sua senha',   'Por segurança, defina uma nova senha antes de continuar.'],
+            forgot:            ['Recuperar senha',      'Não se preocupa — vamos gerar um token de recuperação.'],
+            reset:             ['Redefinir senha',      'Use o token gerado para criar uma nova senha.'],
+        };
+        const [t, p] = titulos[tab] || titulos.login;
+        title.textContent = t;
+        head.textContent = p;
+        // Tabs Entrar/Criar conta so aparecem nas duas primeiras telas.
+        tabsBar.style.display = (tab === 'login' || tab === 'register') ? '' : 'none';
     }
+
+    // Links internos entre forms (Esqueci minha senha / Voltar ao login).
+    overlay.addEventListener('click', (e) => {
+        const link = e.target.closest('[data-go]');
+        if (!link) return;
+        e.preventDefault();
+        switchTab(link.dataset.go);
+        setTimeout(() => modal.querySelector('.auth-form.is-active input:not([type=hidden])')?.focus(), 50);
+    });
 
     overlay.addEventListener('click', (e) => {
         if (e.target === overlay) closeModal();
@@ -288,6 +350,65 @@ body.auth-locked .auth-modal-foot { background: rgba(245,236,217,.6); }
             window.showToast?.(`Conta criada. Bem-vindo, ${user.nome_completo.split(' ')[0]}!`);
         } catch (ex) {
             err.textContent = ex.message || 'Erro ao cadastrar';
+        }
+    });
+
+    overlay.querySelector('[data-form="forgot"]').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const err = e.target.querySelector('[data-error]');
+        err.textContent = '';
+        try {
+            const r = await UvaViaApi.forgotPassword(
+                document.getElementById('auth-fp-email').value.trim(),
+            );
+            if (!r.token) {
+                err.textContent = 'Se o email existir, geramos um token. Cheque com o administrador.';
+                return;
+            }
+            // Pre-popula o form de reset com o token + mostra aviso de dev.
+            switchTab('reset');
+            const resetForm = overlay.querySelector('[data-form="reset"]');
+            const tokenField = resetForm.querySelector('#auth-rp-token');
+            tokenField.value = r.token;
+
+            // Notice + token display antes do campo (uma vez por sessao).
+            resetForm.querySelectorAll('.auth-notice, .auth-token-display').forEach(el => el.remove());
+            const notice = document.createElement('div');
+            notice.className = 'auth-notice';
+            notice.innerHTML = `<strong>Modo desenvolvimento:</strong> em produção, este token iria por email. Aqui mostramos direto. Válido por ${r.ttl_minutos || 60} minutos.`;
+            const display = document.createElement('div');
+            display.className = 'auth-token-display';
+            display.innerHTML = `<span data-token>${r.token}</span><button type="button" data-copy>Copiar</button>`;
+            display.querySelector('[data-copy]').addEventListener('click', async () => {
+                try {
+                    await navigator.clipboard.writeText(r.token);
+                    display.querySelector('[data-copy]').textContent = 'Copiado!';
+                    setTimeout(() => display.querySelector('[data-copy]').textContent = 'Copiar', 1500);
+                } catch {}
+            });
+            tokenField.parentNode.insertBefore(notice, tokenField.previousElementSibling);
+            tokenField.parentNode.insertBefore(display, tokenField.previousElementSibling);
+            setTimeout(() => resetForm.querySelector('#auth-rp-senha').focus(), 50);
+        } catch (ex) {
+            err.textContent = ex.message || 'Erro ao gerar token';
+        }
+    });
+
+    overlay.querySelector('[data-form="reset"]').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const err = e.target.querySelector('[data-error]');
+        err.textContent = '';
+        try {
+            await UvaViaApi.resetPassword(
+                document.getElementById('auth-rp-token').value.trim(),
+                document.getElementById('auth-rp-senha').value,
+            );
+            // Limpa notice/display do dev mode antes de voltar pro login.
+            e.target.querySelectorAll('.auth-notice, .auth-token-display').forEach(el => el.remove());
+            switchTab('login');
+            window.showToast?.('Senha redefinida. Entre com a nova senha.');
+        } catch (ex) {
+            err.textContent = ex.message || 'Erro ao redefinir senha';
         }
     });
 
