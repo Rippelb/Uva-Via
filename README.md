@@ -185,10 +185,11 @@ cd C:\xampp\htdocs
 git clone https://github.com/Rippelb/Uva-Via.git uvaevia
 
 # 2. Criar o banco e popular
-# Via phpMyAdmin (importar) ou linha de comando:
-mysql -u root -e "CREATE DATABASE uvaevia CHARACTER SET utf8mb4;"
-mysql -u root uvaevia < uvaevia/db/schema.mysql.sql
-mysql -u root uvaevia < uvaevia/db/seed.mysql.sql
+# O instalador cria o banco `uva&via` (nome esperado por api/config/db.php),
+# todas as tabelas, o seed e o admin supremo (admin@uvaevia.local / trocar123).
+# Via phpMyAdmin: importe db/install.mysql.sql
+# Ou via linha de comando:
+mysql -u root < uvaevia/db/install.mysql.sql
 
 # 3. Abrir
 # http://localhost/uvaevia

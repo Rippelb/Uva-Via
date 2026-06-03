@@ -182,10 +182,20 @@ function repopularSelect(selectEl, items, valueKey, labelFn, placeholder) {
 }
 
 async function bootstrap() {
+    // 1) Sessao primeiro (define o csrf token). Se o backend estiver inacessivel,
+    //    libera o modo convidado offline com os dados embutidos em vez de deixar
+    //    a pagina travada para sempre atras do gate de login (body.auth-locked).
     try {
-        // Sessao primeiro (define csrf token disponivel a todos).
         await UvaViaApi.refreshSession();
+    } catch (err) {
+        console.warn('[Uva&Via] Backend inacessivel — modo convidado offline (dados embutidos).', err);
+        window.UvaViaAuthUI?.unlock?.();
+        window.UvaViaAuthUI?.close?.();
+        return;
+    }
 
+    // 2) Catalogo: substitui os arrays de fallback pelos dados reais do backend.
+    try {
         const [vinicolas, experiencias, horarios] = await Promise.all([
             UvaViaApi.vinicolas(),
             UvaViaApi.experiencias(),
@@ -214,7 +224,7 @@ async function bootstrap() {
 
         console.info(`[Uva&Via] API carregada: ${(window.VINICOLAS||[]).length} vinicolas, ${(window.EXPERIENCIAS||[]).length} experiencias, ${(window.HORARIOS||[]).length} horarios. user=${authState.user ? authState.user.email : 'anon'}`);
     } catch (err) {
-        console.warn('[Uva&Via] Falha ao carregar API, usando dados embutidos.', err);
+        console.warn('[Uva&Via] Falha ao carregar catalogo da API, usando dados embutidos.', err);
     }
 }
 
