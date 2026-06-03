@@ -8,7 +8,7 @@
     <title>Uva & Via — Concierge do Vale dos Vinhedos</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500;1,600&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer">
     <link rel="stylesheet" href="style.css">
     <style>
@@ -22,9 +22,9 @@
 
     <header class="nav">
         <div class="nav-inner">
-            <a href="#home" class="nav-brand" aria-label="Uva e Via — voltar para o início">
-                <span class="brand-mark" aria-hidden="true"><i class="fa-solid fa-wine-glass"></i></span>
-                <span class="brand-text">Uva <em>&amp;</em> Via</span>
+            <a href="#home" class="nav-brand" aria-label="Uva e Via — Vale dos Vinhedos">
+                <span class="brand-mark">Uva<span class="amp">&amp;</span>Via</span>
+                <span class="brand-sub">Vale dos Vinhedos</span>
             </a>
             <button class="nav-toggle" aria-label="Abrir menu de navegação" aria-expanded="false" aria-controls="nav-menu">
                 <span></span><span></span><span></span>
@@ -44,51 +44,90 @@
     </header>
     <div class="nav-backdrop" id="nav-backdrop" aria-hidden="true"></div>
 
-    <!-- =================== HERO =================== -->
-    <section id="home" class="hero">
-        <div class="hero-content">
-            <span class="hero-eyebrow">Vale dos Vinhedos · Serra Gaúcha</span>
-            <h1 class="hero-title">Monte seu roteiro<br><em>ideal</em> em minutos</h1>
-            <p class="hero-subtitle">
-                Concierge digital que cruza suas preferências com disponibilidade real das vinícolas
-                — você só se preocupa em brindar.
-            </p>
-            <div class="hero-actions">
-                <a href="#planejar" class="btn btn-primary btn-lg">
-                    <i class="fa-solid fa-wand-magic-sparkles btn-icon" aria-hidden="true"></i>
-                    Planejar meu roteiro
-                </a>
-                <a href="#mapa" class="btn btn-outline btn-lg" id="cta-mapa">
-                    <i class="fa-solid fa-map-location-dot btn-icon" aria-hidden="true"></i>
-                    Ver mapa do dia
-                </a>
+    <!-- =================== HERO — "Crepúsculo no vinhedo" =================== -->
+    <section id="home" class="hero" data-screen-label="01 Hero">
+        <div class="hero-sky" aria-hidden="true"></div>
+        <div class="hero-sun" aria-hidden="true"></div>
+        <div class="hero-grain" aria-hidden="true"></div>
+        <div class="hero-vignette" aria-hidden="true"></div>
+
+        <div class="hero-inner">
+            <div class="hero-content">
+                <span class="hero-eyebrow">Concierge de enoturismo · Vale dos Vinhedos · RS</span>
+                <h1 class="hero-title">
+                    <span class="shimmer">Roteiros</span>
+                    <span class="accent">desenhados</span><br>
+                    <span class="shimmer">à sua</span>
+                    <span class="accent">medida</span>
+                </h1>
+                <p class="hero-sub">
+                    Diga ao concierge quantos dias tem, com quem viaja e o ritmo que prefere.
+                    Em poucos segundos, recebe uma rota pelas vinícolas boutique da serra —
+                    horários sugeridos, reservas centralizadas, sem planilhas e sem suspense.
+                </p>
+
+                <div class="hero-ctas">
+                    <a href="#planejar" class="btn btn-primary">
+                        Montar meu roteiro
+                        <span aria-hidden="true">→</span>
+                    </a>
+                    <a href="#sugestoes" class="btn btn-ghost">Ver sugestões do dia</a>
+                </div>
+
+                <form class="hero-search" role="search" aria-label="Busca rápida" id="hero-search-form">
+                    <label class="visually-hidden" for="hero-search-input">Buscar vinícola ou experiência</label>
+                    <input
+                        type="search"
+                        id="hero-search-input"
+                        name="q"
+                        placeholder="Buscar vinícola, experiência ou data…"
+                        autocomplete="off"
+                        inputmode="search"
+                    >
+                    <button type="submit">
+                        <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+                        Buscar
+                    </button>
+                    <ul class="hero-search-results" id="hero-search-results" hidden role="listbox"></ul>
+                </form>
+
+                <div class="hero-stats" data-reveal>
+                    <div class="stat">
+                        <span class="stat-num"><span id="hero-stat-vinicolas">10</span><span class="dot">.</span></span>
+                        <span class="stat-label">Vinícolas parceiras</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-num"><span id="hero-stat-exp">26</span><span class="dot">.</span></span>
+                        <span class="stat-label">Experiências curadas</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-num"><span id="hero-rating">4,9</span><span class="dot">.</span></span>
+                        <span class="stat-label">Avaliação concierge</span>
+                    </div>
+                </div>
             </div>
 
-            <form class="hero-search" role="search" aria-label="Busca rápida" id="hero-search-form">
-                <label class="visually-hidden" for="hero-search-input">Buscar vinícola ou experiência</label>
-                <span class="hero-search-icon" aria-hidden="true"><i class="fa-solid fa-magnifying-glass"></i></span>
-                <input
-                    type="search"
-                    id="hero-search-input"
-                    name="q"
-                    placeholder="Buscar vinícola ou experiência…"
-                    autocomplete="off"
-                    inputmode="search"
-                >
-                <button type="submit" class="hero-search-btn">Buscar</button>
-                <ul class="hero-search-results" id="hero-search-results" hidden role="listbox"></ul>
-            </form>
-
-            <div class="hero-stats" data-reveal>
-                <div class="stat"><strong>10</strong><span>vinícolas parceiras</span></div>
-                <div class="stat"><strong>26</strong><span>experiências curadas</span></div>
-                <div class="stat"><strong id="hero-rating">4.9</strong><span>nota média</span></div>
+            <!-- 3D wine glass (Three.js LatheGeometry + PhysicalMaterial) -->
+            <div class="glass-stage hero-stage-slot" aria-hidden="true">
+                <canvas id="glass-canvas"></canvas>
             </div>
         </div>
-        <div class="hero-scroll" aria-hidden="true">
-            <span></span>
+
+        <div class="hero-cue" aria-hidden="true">
+            <span>Role</span>
+            <span class="line"></span>
         </div>
     </section>
+
+    <!-- =================== SEAM hero → sugestões =================== -->
+    <div class="seam seam-hero" aria-hidden="true">
+        <svg viewBox="0 0 1200 56" preserveAspectRatio="none">
+            <path d="M0,28 C200,52 380,4 600,30 C820,56 980,8 1200,32 L1200,56 L0,56 Z" fill="#f5ecd9"/>
+        </svg>
+        <div class="hairline">
+            <span class="dots"><span></span><span></span><span></span></span>
+        </div>
+    </div>
 
     <!-- =================== SUGESTÕES DO DIA =================== -->
     <section id="sugestoes" class="sugestoes" aria-labelledby="sugestoes-title">
@@ -291,6 +330,16 @@
         </div>
     </section>
 
+    <!-- =================== SEAM bege → branco (antes do catálogo) =================== -->
+    <div class="seam seam-bege-branco" aria-hidden="true">
+        <svg viewBox="0 0 1200 56" preserveAspectRatio="none">
+            <path d="M0,30 C220,8 420,50 600,28 C780,6 960,48 1200,26 L1200,56 L0,56 Z" fill="#fbf8f1"/>
+        </svg>
+        <div class="hairline">
+            <span class="dots"><span></span><span></span><span></span></span>
+        </div>
+    </div>
+
     <!-- =================== EXPERIÊNCIAS =================== -->
     <section id="experiencias" class="experiences">
         <div class="experiences-inner">
@@ -407,6 +456,16 @@
             </form>
         </div>
     </section>
+
+    <!-- =================== SEAM branco → bege (antes das reservas) =================== -->
+    <div class="seam seam-branco-bege" aria-hidden="true">
+        <svg viewBox="0 0 1200 56" preserveAspectRatio="none">
+            <path d="M0,26 C200,50 380,4 600,28 C820,54 980,6 1200,30 L1200,56 L0,56 Z" fill="#f5ecd9"/>
+        </svg>
+        <div class="hairline">
+            <span class="dots"><span></span><span></span><span></span></span>
+        </div>
+    </div>
 
     <!-- =================== MINHAS RESERVAS =================== -->
     <section id="minhas-reservas" class="reservations">
@@ -792,5 +851,8 @@
     <!-- Integracao backend (dependem dos globais window.* acima) -->
     <script src="api-client.js"></script>
     <script src="auth-ui.js"></script>
+    <!-- Landing "Crepúsculo no vinhedo": nav scroll, taça 3D (Three.js), ripple -->
+    <script src="https://unpkg.com/three@0.148.0/build/three.min.js" defer></script>
+    <script src="js/landing.js" defer></script>
 </body>
 </html>
