@@ -363,7 +363,8 @@
                 <span class="planner-eyebrow">Agendamento</span>
                 <h2 class="planner-title">Reserve seu horário</h2>
                 <p class="planner-subtitle">
-                    Escolha a vinícola, a experiência e o melhor horário disponível. Confirmamos sua reserva na hora.
+                    Escolha a vinícola, a experiência e o horário. Enviamos sua solicitação e a vinícola
+                    confirma o agendamento — sem surpresas no dia da visita.
                 </p>
             </header>
 
@@ -392,6 +393,12 @@
                         <label for="b-nome">Nome do responsável</label>
                         <input type="text" id="b-nome" placeholder="Como devemos chamar?" required autocomplete="name">
                     </div>
+
+                    <div class="form-field form-field--full">
+                        <label for="b-contato">E-mail ou WhatsApp para confirmação <span class="label-opt">(recomendado)</span></label>
+                        <input type="text" id="b-contato" placeholder="seu@email.com ou (54) 9 9999-0000" autocomplete="email">
+                        <small class="form-help">A vinícola usa este contato para confirmar sua solicitação.</small>
+                    </div>
                 </div>
 
                 <div class="slots-block" id="slots-block" hidden>
@@ -402,6 +409,7 @@
                         </span>
                     </div>
                     <div class="slots" id="slots"></div>
+                    <small class="slots-note"><i class="fa-solid fa-circle-info" aria-hidden="true"></i> Vagas estimadas — confirmadas pela vinícola após a solicitação.</small>
                 </div>
 
                 <div class="summary" id="summary" hidden>
@@ -426,7 +434,7 @@
 
                 <div class="form-actions">
                     <button type="submit" class="btn btn-primary btn-lg" id="btn-reservar" disabled>
-                        Reservar horário
+                        Solicitar reserva
                     </button>
                 </div>
             </form>

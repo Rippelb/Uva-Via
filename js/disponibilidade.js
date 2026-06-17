@@ -65,6 +65,7 @@ document.getElementById('booking-form').addEventListener('submit', (e) => {
     const vin = VINICOLAS.find(v => v.id === Number(selVinicola.value));
     const pessoas = Math.max(1, Number(inpPessoas.value) || 0);
     const nome = inpNome.value.trim();
+    const contato = (document.getElementById('b-contato')?.value || '').trim();
     if (!exp || !hor || !vin || !nome) {
         showToast('Preencha todos os campos antes de reservar.', 'error');
         return;
@@ -83,6 +84,7 @@ document.getElementById('booking-form').addEventListener('submit', (e) => {
         horario: hor.horario,
         pessoas,
         nome,
+        contato,
         total: exp.preco * pessoas,
         cancelamento: (typeof getCancelamento === 'function' ? getCancelamento(exp).key : 'flex'),
         criadaEm: Date.now(),
@@ -103,7 +105,7 @@ document.getElementById('booking-form').addEventListener('submit', (e) => {
     btnReservar.classList.add('is-success');
     setTimeout(() => btnReservar.classList.remove('is-success'), 900);
 
-    showToast(`Reserva confirmada em ${vin.nome}!`);
+    showToast(`Solicitação enviada para ${vin.nome}! Você recebe a confirmação em breve.`);
     renderReservas();
     renderSugestoes();
     renderExperiencias();
@@ -111,6 +113,8 @@ document.getElementById('booking-form').addEventListener('submit', (e) => {
     selectedHorarioId = null;
     refreshSlots();
     inpNome.value = '';
+    const contatoEl = document.getElementById('b-contato');
+    if (contatoEl) contatoEl.value = '';
     refreshSummary();
 
     document.getElementById('minhas-reservas').scrollIntoView({ behavior: 'smooth' });

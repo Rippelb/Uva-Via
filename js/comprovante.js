@@ -67,6 +67,7 @@ function openComprovante(reservaId) {
             </div>
             <h2 id="comprovante-title" class="comprovante-titulo">${r.experiencia}</h2>
             <p class="comprovante-vin">${r.vinicola} · ${r.cidade || ''}</p>
+            ${status.cls === 'is-pendente' ? '<p class="comprovante-aguardando"><i class="fa-regular fa-clock" aria-hidden="true"></i> Solicitação recebida — aguardando confirmação da vinícola. Avisaremos no seu contato.</p>' : ''}
 
             <div class="comprovante-codigo">
                 <span>Código da reserva</span>
@@ -84,6 +85,7 @@ function openComprovante(reservaId) {
 
             ${endereco ? `<div class="comprovante-linha"><i class="fa-solid fa-location-dot" aria-hidden="true"></i> <div><span>Endereço</span><p>${endereco}</p></div></div>` : ''}
             ${telefone ? `<div class="comprovante-linha"><i class="fa-solid fa-phone" aria-hidden="true"></i> <div><span>Contato da vinícola</span><p><a href="tel:${telLink}">${telefone}</a></p></div></div>` : ''}
+            ${r.contato ? `<div class="comprovante-linha"><i class="fa-solid fa-paper-plane" aria-hidden="true"></i> <div><span>Seu contato para confirmação</span><p>${r.contato}</p></div></div>` : ''}
 
             ${inclui.length ? `<div class="comprovante-sec"><h4><i class="fa-solid fa-circle-check" aria-hidden="true"></i> O que está incluído</h4><ul>${inclui.map(i => `<li>${i}</li>`).join('')}</ul></div>` : ''}
             ${levar.length ? `<div class="comprovante-sec"><h4><i class="fa-solid fa-bag-shopping" aria-hidden="true"></i> Leve com você / saiba antes</h4><ul>${levar.map(i => `<li>${i}</li>`).join('')}</ul></div>` : ''}

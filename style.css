@@ -4005,3 +4005,17 @@ body.modal-open { overflow: hidden; }
     transition: background var(--t-fast), color var(--t-fast);
 }
 .pwa-install-btn:hover { background: var(--bege); color: var(--vinho); }
+
+/* ============================================================
+   RESERVA HONESTA — solicitação pendente + contato de confirmação
+   ============================================================ */
+.label-opt { font-weight: 400; color: rgba(44, 26, 31, .5); font-size: .85em; }
+.slots-note { display: block; margin-top: .6rem; font-size: .78rem; color: rgba(44, 26, 31, .6); }
+.slots-note i { color: var(--oliva); margin-right: .3rem; }
+.comprovante-aguardando {
+    background: rgba(201, 142, 62, .12);
+    border-left: 3px solid var(--status-quase);
+    border-radius: 8px; padding: .6rem .8rem;
+    font-size: .83rem; color: var(--texto); margin-bottom: 1rem;
+}
+.comprovante-aguardando i { color: var(--status-quase); margin-right: .35rem; }
