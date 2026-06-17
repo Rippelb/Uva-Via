@@ -51,6 +51,23 @@ baseados em:
 
 ## ✨ O que o MVP entrega
 
+### 🆕 Repaginação 2026 (guiada por pesquisa de mercado)
+- 🚗 **Logística & "motorista da rodada"** — plano de transporte por modo (carro,
+  app, transfer) no roteiro. Diferencial: trata a maior dor real do Vale.
+- 🧾 **Comprovante/voucher** com código, endereço, contato, inclusões e
+  **política de cancelamento clara** (flex 24h / moderada 48h).
+- 🤝 **Reserva honesta** — "solicitação" pendente de confirmação da vinícola, com
+  captura de e-mail/WhatsApp (evita o "passeio vendido e não entregue").
+- ❤️ **Favoritos**, ⚡ **roteiros prontos (1 clique)**, 🗺️ **rota no Google Maps**,
+  🔔 **lembrete da visita**.
+- ⭐ **Reviews verificadas + voto "útil"**; 🔎 **filtros por comodidade** (pet,
+  crianças, acessível, vegetariano…).
+- 📲 **PWA** instalável e offline (útil na estrada, onde o sinal é fraco).
+- 💼 **Seção "Para vinícolas" (B2B)** + **newsletter** — modelo de receita visível.
+- 📚 Docs: [pesquisa-mercado.md](pesquisa-mercado.md) ·
+  [pesquisa-mercado-extensiva.md](pesquisa-mercado-extensiva.md) ·
+  [analise-negocio.md](analise-negocio.md).
+
 ### 🏠 Home
 - Hero com **CTA duplo** ("Planejar meu roteiro" / "Ver mapa do dia")
 - 🔍 **Busca global** (vinícolas + experiências em tempo real)
@@ -205,8 +222,16 @@ mysql -u root < uvaevia/db/install.mysql.sql
 uvaevia/
 ├── index.html              # Estrutura principal (SPA com seções ancoradas)
 ├── style.css               # CSS mobile-first com tokens e breakpoints progressivos
-├── script.js               # Lógica do front, algoritmo de roteiro, mapa/rota
+├── js/                     # Lógica do front, dividida por domínio (ordem importa):
+│   ├── data.js · dados-extra.js · utils.js · navegacao.js
+│   ├── destaques.js · roteiro.js · transporte.js · mapa.js
+│   ├── reserva.js · reservas.js · comprovante.js · avaliacoes.js
+│   ├── disponibilidade.js · experiencias.js · gestao.js
+│   ├── favoritos.js · lembrete.js · roteiros-prontos.js · parcerias.js
+│   └── pwa.js · init.js (bootstrap por último)
+├── manifest.webmanifest · sw.js · icon.svg   # PWA (instalável + offline)
 ├── api-client.js           # Cliente fetch → /api/*.php (com fallback)
+├── auth-ui.js              # UI de login/sessão (gate de autenticação)
 ├── api/                    # Backend PHP
 │   ├── vinicolas.php
 │   ├── experiencias.php
@@ -261,6 +286,18 @@ Miolo Wine Group · Casa Valduga · Salton
 - [x] Reservas em localStorage
 - [x] Mobile-first responsive
 - [x] Disponibilidade em tempo real (front)
+
+### v1.1 (atual) — Repaginação 2026
+- [x] Logística & "motorista da rodada" no roteiro
+- [x] Comprovante/voucher + política de cancelamento transparente
+- [x] Reserva como "solicitação" + captura de contato
+- [x] Favoritos / lista de desejos
+- [x] Roteiros prontos (curadoria 1 clique)
+- [x] Rota no Google Maps + lembrete da visita
+- [x] Reviews verificadas + voto "útil"
+- [x] Filtros de catálogo por comodidade
+- [x] PWA instalável e offline
+- [x] Seção B2B "Para vinícolas" + newsletter
 
 ### v2 — Plataforma
 - [ ] Login social (Google/Apple)

@@ -196,9 +196,15 @@ Dois storages no `localStorage`:
 
 | Chave                       | Conteúdo                                     |
 |-----------------------------|----------------------------------------------|
-| `uvaevia.reservas`          | Lista de reservas confirmadas                |
+| `uvaevia.reservas`          | Lista de reservas/solicitações               |
 | `uvaevia.horarios.custom`   | Horários criados via Gestão                  |
 | `uvaevia.plano.atual`       | Último roteiro gerado (alimenta o Mapa)      |
+| `uvaevia.avaliacoes`        | Avaliações enviadas pelo usuário             |
+| `uvaevia.avaliacoes.uteis`  | Votos de "útil" nas avaliações               |
+| `uvaevia.favoritos`         | Vinícolas e experiências favoritadas         |
+| `uvaevia.transporte.modo`   | Modo de transporte escolhido no roteiro      |
+| `uvaevia.leads.vinicolas`   | Leads B2B da seção "Para vinícolas"          |
+| `uvaevia.newsletter`        | Inscrições da newsletter                     |
 
 Sincronização entre abas via evento `storage`.
 

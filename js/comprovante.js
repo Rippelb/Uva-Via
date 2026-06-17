@@ -21,7 +21,7 @@ function abrirModal(innerHTML, { labelledby } = {}) {
     document.querySelectorAll('.uv-modal-overlay').forEach(o => o.remove());
     const overlay = document.createElement('div');
     overlay.className = 'uv-modal-overlay';
-    overlay.innerHTML = `<div class="uv-modal" role="dialog" aria-modal="true" ${labelledby ? `aria-labelledby="${labelledby}"` : ''}>${innerHTML}</div>`;
+    overlay.innerHTML = `<div class="uv-modal" role="dialog" aria-modal="true" tabindex="-1" ${labelledby ? `aria-labelledby="${labelledby}"` : ''}>${innerHTML}</div>`;
     document.body.appendChild(overlay);
     document.body.classList.add('modal-open');
     requestAnimationFrame(() => overlay.classList.add('is-open'));

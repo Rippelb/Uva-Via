@@ -5,6 +5,59 @@ e versionamento semântico [SemVer](https://semver.org/lang/pt-BR/).
 
 ---
 
+## [0.5.0] — 2026-06-17 — Repaginação: confiança, logística, favoritos e PWA
+
+Repaginação guiada por pesquisa de mercado (concorrentes BR/intl., Reclame Aqui)
+e por uma análise de risco de negócio. Evolução da base — sem reescrita. Docs de
+apoio: `pesquisa-mercado.md`, `pesquisa-mercado-extensiva.md`, `analise-negocio.md`.
+
+### Adicionado
+- **Logística & transporte com "motorista da rodada"** (`js/transporte.js`): bloco
+  no roteiro com 3 modos (carro próprio, motorista por app, transfer/agência),
+  orientação de motorista sóbrio, rodízio entre dias, estimativa de custo de app e
+  faixa de transfer. Diferencial nascido da pesquisa (dirigir após degustar é a
+  maior dor do passeio) — nenhum concorrente trata bem.
+- **Favoritos / lista de desejos** (`js/favoritos.js`): coração nos cards
+  (boutique, sugestões, catálogo, perfil), seção dedicada, contador no menu e sync
+  entre abas.
+- **Comprovante/voucher de reserva** (`js/comprovante.js`): modal com código,
+  endereço, contato, o que está incluído, o que levar e política de cancelamento;
+  abre na confirmação. Modal genérico reutilizável.
+- **Política de cancelamento transparente** (flex 24h / moderada 48h): visível
+  antes de reservar, no perfil da vinícola e no comprovante; cancelamento informa
+  o reembolso conforme o prazo. Ataca a reclamação nº1 do setor.
+- **Rota real no Google Maps** + "Como chegar" por parada no mapa.
+- **Lembrete da próxima visita** (`js/lembrete.js`): banner para reservas de
+  hoje/amanhã com link ao comprovante.
+- **Roteiros prontos** (`js/roteiros-prontos.js`): 6 temas que pré-preenchem o
+  wizard e geram o roteiro em 1 clique.
+- **Reviews turbinadas**: selo "visita verificada", voto "útil" com contador e
+  filtro "Mais úteis".
+- **Filtros de catálogo por comodidade** (pet, crianças, acessível, vegetariano,
+  restaurante, grupos) + chip "Favoritos".
+- **PWA**: `manifest.webmanifest`, `icon.svg`, `sw.js` (offline) e `js/pwa.js`
+  (instalar o app).
+- **Reserva honesta**: enquadrada como "solicitação" pendente de confirmação da
+  vinícola, com captura de e-mail/WhatsApp e nota de "vagas estimadas".
+- **Seção "Para vinícolas" (B2B)** + **newsletter** no rodapé (`js/parcerias.js`):
+  torna o modelo de receita visível e captura leads/inscrições.
+- **Dados enriquecidos** (`js/dados-extra.js`): endereço, telefone e comodidades
+  por vinícola; inclusões e "o que levar" derivados das tags.
+
+### Mudado
+- Mappers do `api-client.js` preservam enriquecimento por lookup no seed
+  (`SEED_VINICOLAS`/`SEED_EXPERIENCIAS`), corrigindo a perda de `tipo`/`tone`/
+  comodidades quando o backend carrega o catálogo.
+- Reserva agora guarda `codigo`, `vinicola_id`, `experiencia_id`, `endereco`,
+  `telefone`, `contato` e `cancelamento`.
+- Copy do agendamento ajustada de "confirmamos na hora" para o fluxo de solicitação.
+
+### Novos storages
+- `uvaevia.favoritos`, `uvaevia.transporte.modo`, `uvaevia.avaliacoes.uteis`,
+  `uvaevia.leads.vinicolas`, `uvaevia.newsletter`.
+
+---
+
 ## [0.4.1] — 2026-05-22 (noite) — Algoritmo v2 e Timeline v2
 
 ### Adicionado

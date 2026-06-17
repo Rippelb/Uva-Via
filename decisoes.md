@@ -259,3 +259,83 @@ O modo faixa gera vários slots numa submissão (data início/fim × hora iníci
 **Trade-off:** Aumenta complexidade do form (mais campos visíveis). Mitigado pelo toggle
 visual no topo do form — quando "Único" está ativo, os campos do modo faixa ficam `hidden`
 e `disabled` (não bloqueiam o submit por `required`).
+
+---
+
+## D-17. Repaginação 2026: evoluir a base, não reescrever
+
+**Decisão:** Toda a repaginação foi feita como **módulos novos em `js/`** e edições
+cirúrgicas nos existentes, mantendo arquitetura, design (hero/taça 3D) e stack.
+
+**Por quê:** o código-base é limpo e o design está coerente; o ROI está em fechar
+lacunas de produto (confiança, logística, descoberta) e de negócio, não em trocar
+fundação. Cada feature virou commit independente para revisão e rollback fáceis.
+
+---
+
+## D-18. "Motorista da rodada" como diferencial de logística
+
+**Decisão:** Adicionar um bloco de transporte no roteiro (`js/transporte.js`) com
+modos carro/app/transfer e orientação de motorista sóbrio, em vez de só calcular km.
+
+**Por quê:** a pesquisa de campo mostrou que **dirigir após degustar** e a distância
+entre vinícolas (3–8 km) são a maior dor do passeio — e nenhum concorrente trata.
+É barato de implementar (client-side) e alto em diferenciação/marca.
+
+---
+
+## D-19. Política de cancelamento derivada e sempre visível
+
+**Decisão:** Política por experiência (`flex` 24h / `moderada` 48h) derivada das
+tags/preço em `js/dados-extra.js`, exibida antes de reservar, no perfil e no
+comprovante; o cancelamento informa o reembolso conforme o prazo.
+
+**Por quê:** a reclamação nº1 contra plataformas de passeio (Reclame Aqui) é
+cancelamento opaco/assimétrico. Transparência é feature de confiança — e confiança
+é o nosso valor central.
+
+---
+
+## D-20. Reserva como "solicitação", não confirmação instantânea
+
+**Decisão:** Reenquadrar a reserva como **solicitação** pendente de confirmação da
+vinícola, capturando e-mail/WhatsApp, em vez de afirmar "confirmado na hora".
+
+**Por quê:** sem integração real de agenda, prometer confirmação instantânea cria o
+risco do "passeio vendido e não entregue" (maior risco de negócio em 6 meses, ver
+`analise-negocio.md`). Honestidade preserva a confiança; o status já evolui
+Pendente → Confirmada.
+
+---
+
+## D-21. PWA com service worker (offline na estrada)
+
+**Decisão:** Tornar o app instalável (`manifest.webmanifest` + `icon.svg`) e
+offline (`sw.js`): navegação network-first, estáticos cache-first, nunca cacheia
+`/api/*` nem CDNs.
+
+**Por quê:** a persona usa o celular durante a viagem e algumas vinícolas têm sinal
+fraco (achado da pesquisa). Cache-first nos estáticos pode servir versão levemente
+defasada — mitigado pela versão do cache (`uvaevia-vN`) a cada release.
+
+---
+
+## D-22. Mappers da API preservam o enriquecimento do seed
+
+**Decisão:** `api-client.js` mescla `window.SEED_*` por id ao mapear, preservando
+`tipo`, `tone`, `comodidades`, `endereco`, `telefone`, `inclui` e `cancelamento`.
+
+**Por quê:** o backend ainda não expõe esses campos; sem o merge, ao carregar a API
+o site **perdia** o filtro de boutique e as comodidades. Dados reais da API sempre
+têm prioridade sobre o seed.
+
+---
+
+## D-23. Seção B2B e newsletter no próprio produto
+
+**Decisão:** Expor o modelo de receita com a seção "Para vinícolas" e capturar
+e-mail via newsletter (`js/parcerias.js`), persistindo leads em localStorage (demo).
+
+**Por quê:** mitiga os riscos nº2 (receita nunca ativada) e nº4/5 (retenção/
+distribuição) de `analise-negocio.md`. Mantém a porta aberta para o backend assumir
+os leads quando houver operação comercial.

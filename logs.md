@@ -7,6 +7,33 @@ Registro cronológico das mudanças significativas no projeto.
 
 ---
 
+## 2026-06-17 — Repaginação guiada por pesquisa (confiança, logística, favoritos, PWA)
+
+Repaginação evolutiva (sem reescrita) a partir de pesquisa de mercado e análise de
+risco de negócio. Documentos: `pesquisa-mercado.md`, `pesquisa-mercado-extensiva.md`
+(dados/fontes/experts + output em 11 skills) e `analise-negocio.md`.
+
+### Produto / persona
+- **Motorista da rodada / transporte** — atende a maior dor real do Vale (vinícolas
+  distantes + Lei Seca). Bloco no roteiro com 3 modos e dicas práticas.
+- **Confiança na reserva** — comprovante com código/endereço/contato/inclusões,
+  política de cancelamento clara (flex/moderada) e reserva enquadrada como
+  "solicitação" pendente de confirmação. Ataca a reclamação nº1 do setor.
+- **Favoritos**, **roteiros prontos (1 clique)**, **rota no Google Maps**,
+  **lembrete da visita**, **reviews verificadas + voto útil**, **filtros por
+  comodidade** e **PWA instalável/offline**.
+
+### Negócio
+- **Seção "Para vinícolas" (B2B)** e **newsletter** mitigam os riscos de receita e
+  retenção apontados em `analise-negocio.md`.
+
+### Técnico
+- Novos módulos em `js/`: `dados-extra`, `favoritos`, `transporte`, `comprovante`,
+  `lembrete`, `roteiros-prontos`, `parcerias`, `pwa`. Mappers do `api-client`
+  passam a preservar campos de enriquecimento via snapshot do seed.
+
+---
+
 ## 2026-05-22 (noite) — Algoritmo v2 e Timeline v2
 
 ### Algoritmo de geração de roteiro v2
