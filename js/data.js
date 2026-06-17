@@ -12,17 +12,21 @@
 // O api-client.js substitui esses arrays via splice() quando a API responde.
 // Mantemos campos extras para a UI funcionar mesmo offline.
 
+// Cada vinícola carrega, além do básico, dados que dão CONFIANÇA ao visitante
+// (endereço, telefone) e COMODIDADES filtráveis (pet, crianças, acessível,
+// vegetariano, estacionamento, restaurante) — diferencial inspirado nos filtros
+// de GetYourGuide/Wanderlog e nas reclamações de "falta de informação".
 let VINICOLAS = [
-    { id: 1, nome: 'Vinícola Pizzato',  cidade: 'Bento Gonçalves',     tipo: 'boutique', tone: 'a', latitude: -29.226, longitude: -51.535, descricao: 'Pioneira em Merlot no Brasil, produção autoral em pequenas safras.', duracao_media_min: 75, preco_min: 60,  preco_max: 320 },
-    { id: 2, nome: 'Vinícola Torcello', cidade: 'Monte Belo do Sul',   tipo: 'boutique', tone: 'b', latitude: -29.156, longitude: -51.626, descricao: 'Espumantes premiados entre vinhedos com vista privilegiada.', duracao_media_min: 70, preco_min: 90,  preco_max: 180 },
-    { id: 3, nome: 'Vinícola Larentis', cidade: 'Monte Belo do Sul',   tipo: 'boutique', tone: 'c', latitude: -29.163, longitude: -51.635, descricao: 'Família italiana com tradição em vinhos de guarda e vindima participativa.', duracao_media_min: 90, preco_min: 40,  preco_max: 220 },
-    { id: 4, nome: 'Lídio Carraro',     cidade: 'Bento Gonçalves',     tipo: 'boutique', tone: 'd', latitude: -29.249, longitude: -51.553, descricao: 'Boutique de vinhos ícone, sem usar barricas de carvalho.', duracao_media_min: 80, preco_min: 70,  preco_max: 380 },
-    { id: 5, nome: 'Miolo Wine Group',  cidade: 'Bento Gonçalves',     tipo: 'grande',   tone: 'a', latitude: -29.255, longitude: -51.518, descricao: 'Maior vinícola brasileira, tour completo e gastronomia harmonizada.', duracao_media_min: 110, preco_min: 80, preco_max: 450 },
-    { id: 6, nome: 'Casa Valduga',      cidade: 'Bento Gonçalves',     tipo: 'grande',   tone: 'd', latitude: -29.234, longitude: -51.501, descricao: 'Tradição com pousada, restaurante Maria e jantares assinados.', duracao_media_min: 120, preco_min: 70, preco_max: 420 },
-    { id: 7, nome: 'Cave Geisse',       cidade: 'Pinto Bandeira',      tipo: 'boutique', tone: 'e', latitude: -29.103, longitude: -51.426, descricao: 'Espumantes méthode champenoise envelhecidos em caves na rocha.', duracao_media_min: 85, preco_min: 120, preco_max: 250 },
-    { id: 8, nome: 'Vinícola Salton',   cidade: 'Bento Gonçalves',     tipo: 'grande',   tone: 'a', latitude: -29.182, longitude: -51.518, descricao: 'Centenária, com museu e tour histórico do vinho gaúcho.', duracao_media_min: 75, preco_min: 45,  preco_max: 90 },
-    { id: 9, nome: 'Don Giovanni',      cidade: 'Bento Gonçalves',     tipo: 'boutique', tone: 'b', latitude: -29.207, longitude: -51.541, descricao: 'Castelo italiano com almoço toscano entre os vinhedos.', duracao_media_min: 95, preco_min: 70,  preco_max: 260 },
-    { id: 10, nome: 'Dom Cândido',      cidade: 'Garibaldi',           tipo: 'boutique', tone: 'c', latitude: -29.255, longitude: -51.532, descricao: 'Especializada em moscatéis e vinhos de mesa, com cave subterrânea.', duracao_media_min: 55, preco_min: 45,  preco_max: 55 },
+    { id: 1, nome: 'Vinícola Pizzato',  cidade: 'Bento Gonçalves',     tipo: 'boutique', tone: 'a', latitude: -29.226, longitude: -51.535, descricao: 'Pioneira em Merlot no Brasil, produção autoral em pequenas safras.', duracao_media_min: 75, preco_min: 60,  preco_max: 320, endereco: 'Via dos Vinhedos, s/n — Linha Pizzato, Vale dos Vinhedos', telefone: '+55 54 3459-1144', comodidades: ['estacionamento', 'criancas', 'vegetariano'] },
+    { id: 2, nome: 'Vinícola Torcello', cidade: 'Monte Belo do Sul',   tipo: 'boutique', tone: 'b', latitude: -29.156, longitude: -51.626, descricao: 'Espumantes premiados entre vinhedos com vista privilegiada.', duracao_media_min: 70, preco_min: 90,  preco_max: 180, endereco: 'Linha Paese, s/n — Monte Belo do Sul', telefone: '+55 54 3457-2200', comodidades: ['estacionamento', 'pet', 'vegetariano', 'acessivel'] },
+    { id: 3, nome: 'Vinícola Larentis', cidade: 'Monte Belo do Sul',   tipo: 'boutique', tone: 'c', latitude: -29.163, longitude: -51.635, descricao: 'Família italiana com tradição em vinhos de guarda e vindima participativa.', duracao_media_min: 90, preco_min: 40,  preco_max: 220, endereco: 'Linha Amadeu, s/n — Monte Belo do Sul', telefone: '+55 54 3457-3110', comodidades: ['estacionamento', 'criancas', 'pet', 'grupos'] },
+    { id: 4, nome: 'Lídio Carraro',     cidade: 'Bento Gonçalves',     tipo: 'boutique', tone: 'd', latitude: -29.249, longitude: -51.553, descricao: 'Boutique de vinhos ícone, sem usar barricas de carvalho.', duracao_media_min: 80, preco_min: 70,  preco_max: 380, endereco: 'RS-444, Km 21 — Vale dos Vinhedos', telefone: '+55 54 3045-5005', comodidades: ['estacionamento', 'acessivel', 'vegetariano'] },
+    { id: 5, nome: 'Miolo Wine Group',  cidade: 'Bento Gonçalves',     tipo: 'grande',   tone: 'a', latitude: -29.255, longitude: -51.518, descricao: 'Maior vinícola brasileira, tour completo e gastronomia harmonizada.', duracao_media_min: 110, preco_min: 80, preco_max: 450, endereco: 'RS-444, Km 21 — Vale dos Vinhedos', telefone: '+55 54 2102-7000', comodidades: ['estacionamento', 'restaurante', 'acessivel', 'criancas', 'grupos', 'vegetariano'] },
+    { id: 6, nome: 'Casa Valduga',      cidade: 'Bento Gonçalves',     tipo: 'grande',   tone: 'd', latitude: -29.234, longitude: -51.501, descricao: 'Tradição com pousada, restaurante Maria e jantares assinados.', duracao_media_min: 120, preco_min: 70, preco_max: 420, endereco: 'Via Trento, 2355 — Linha Leopoldina', telefone: '+55 54 2105-3122', comodidades: ['estacionamento', 'restaurante', 'acessivel', 'grupos', 'vegetariano'] },
+    { id: 7, nome: 'Cave Geisse',       cidade: 'Pinto Bandeira',      tipo: 'boutique', tone: 'e', latitude: -29.103, longitude: -51.426, descricao: 'Espumantes méthode champenoise envelhecidos em caves na rocha.', duracao_media_min: 85, preco_min: 120, preco_max: 250, endereco: 'Linha Jansen, s/n — Pinto Bandeira', telefone: '+55 54 3455-7575', comodidades: ['estacionamento', 'pet', 'vegetariano'] },
+    { id: 8, nome: 'Vinícola Salton',   cidade: 'Bento Gonçalves',     tipo: 'grande',   tone: 'a', latitude: -29.182, longitude: -51.518, descricao: 'Centenária, com museu e tour histórico do vinho gaúcho.', duracao_media_min: 75, preco_min: 45,  preco_max: 90, endereco: 'Rota do Sol, Distrito de Tuiuty — Bento Gonçalves', telefone: '+55 54 2105-1000', comodidades: ['estacionamento', 'restaurante', 'acessivel', 'criancas', 'grupos'] },
+    { id: 9, nome: 'Don Giovanni',      cidade: 'Bento Gonçalves',     tipo: 'boutique', tone: 'b', latitude: -29.207, longitude: -51.541, descricao: 'Castelo italiano com almoço toscano entre os vinhedos.', duracao_media_min: 95, preco_min: 70,  preco_max: 260, endereco: 'RS-444, Km 7 — Vale dos Vinhedos', telefone: '+55 54 3055-2200', comodidades: ['estacionamento', 'restaurante', 'criancas', 'vegetariano'] },
+    { id: 10, nome: 'Dom Cândido',      cidade: 'Garibaldi',           tipo: 'boutique', tone: 'c', latitude: -29.255, longitude: -51.532, descricao: 'Especializada em moscatéis e vinhos de mesa, com cave subterrânea.', duracao_media_min: 55, preco_min: 45,  preco_max: 55, endereco: 'Av. Rio Branco, 1200 — Garibaldi', telefone: '+55 54 3462-1010', comodidades: ['estacionamento', 'pet', 'criancas'] },
 ];
 
 let EXPERIENCIAS = [
@@ -106,6 +110,14 @@ const AVALIACOES_SEED = [
     { id: 'av_seed_11', vinicola_id: 8,  experiencia_id: 21, nota: 4, autor: 'Sofia D.',      perfil: 'Família adulta',  comentario: 'Tour histórico Salton é uma aula de enologia gaúcha. Recomendo para quem ama história.',                data: '2026-04-25' },
     { id: 'av_seed_12', vinicola_id: 2,  experiencia_id: 4,  nota: 5, autor: 'Rafael G.',     perfil: 'Casal',           comentario: 'Espumantes Torcello: sabor, brilho e uma vista de tirar o fôlego. Top!',                                 data: '2026-05-08' },
 ];
+
+// Snapshot imutavel do seed. Os mappers do api-client.js usam isto para
+// preservar campos de enriquecimento que o backend nao envia (tipo, tone,
+// comodidades, endereco, telefone, inclui, cancelamento) fazendo lookup por id —
+// sem isto, ao carregar a API o site perdia o filtro de boutique e as
+// comodidades. Congelado raso para nao ser mutado pelo tick de disponibilidade.
+window.SEED_VINICOLAS = VINICOLAS.map(v => ({ ...v }));
+window.SEED_EXPERIENCIAS = EXPERIENCIAS.map(e => ({ ...e, tags: [...(e.tags || [])] }));
 
 // Expoe os arrays no window para o api-client.js poder substituir o conteudo
 // quando a API responde. `let`/`const` no escopo global de um <script> classico

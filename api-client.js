@@ -130,31 +130,53 @@ const UvaViaApi = {
 window.UvaViaApi = UvaViaApi;
 
 // --- Mapeamento campos API -> frontend legado
+// Os mappers mesclam o snapshot do seed (window.SEED_*) por id para preservar
+// campos de enriquecimento que o backend ainda nao expoe (tipo, tone,
+// comodidades, endereco, telefone, inclui, cancelamento). Sem isto, ao carregar
+// a API o site perdia o filtro de boutique, as comodidades e a politica de
+// cancelamento. Dados reais da API sempre tem prioridade sobre o seed.
+function seedVinicola(id) {
+    return (window.SEED_VINICOLAS || []).find(v => Number(v.id) === Number(id)) || {};
+}
+function seedExperiencia(id) {
+    return (window.SEED_EXPERIENCIAS || []).find(e => Number(e.id) === Number(id)) || {};
+}
 function mapVinicola(v) {
+    const seed = seedVinicola(v.id);
     return {
         id: Number(v.id),
         nome: v.nome,
         cidade: v.cidade,
-        descricao: v.descricao,
+        descricao: v.descricao || seed.descricao,
         foto_url: v.foto_url,
-        latitude: v.latitude != null ? Number(v.latitude) : null,
-        longitude: v.longitude != null ? Number(v.longitude) : null,
-        duracao_media_min: v.duracao_media_min != null ? Number(v.duracao_media_min) : null,
-        preco_min: v.preco_min != null ? Number(v.preco_min) : null,
-        preco_max: v.preco_max != null ? Number(v.preco_max) : null,
+        latitude: v.latitude != null ? Number(v.latitude) : (seed.latitude ?? null),
+        longitude: v.longitude != null ? Number(v.longitude) : (seed.longitude ?? null),
+        duracao_media_min: v.duracao_media_min != null ? Number(v.duracao_media_min) : (seed.duracao_media_min ?? null),
+        preco_min: v.preco_min != null ? Number(v.preco_min) : (seed.preco_min ?? null),
+        preco_max: v.preco_max != null ? Number(v.preco_max) : (seed.preco_max ?? null),
+        // Enriquecimento preservado do seed
+        tipo: v.tipo || seed.tipo || 'boutique',
+        tone: v.tone || seed.tone || 'a',
+        endereco: v.endereco || seed.endereco || '',
+        telefone: v.telefone || seed.telefone || '',
+        comodidades: Array.isArray(v.comodidades) ? v.comodidades : (seed.comodidades || []),
     };
 }
 function mapExperiencia(e) {
+    const seed = seedExperiencia(e.id);
     return {
         id: Number(e.id),
         vinicola_id: Number(e.vinicola_id),
         categoria_id: e.categoria_id != null ? Number(e.categoria_id) : null,
         nome: e.nome,
-        descricao: e.descricao,
+        descricao: e.descricao || seed.descricao,
         preco: Number(e.preco_por_pessoa),
         duracao: Number(e.duracao_minutos),
         categoria: e.categoria,
-        tags: Array.isArray(e.tags) ? e.tags : [],
+        tags: Array.isArray(e.tags) && e.tags.length ? e.tags : (seed.tags || []),
+        // Enriquecimento preservado do seed
+        inclui: Array.isArray(e.inclui) ? e.inclui : seed.inclui,
+        cancelamento: e.cancelamento || seed.cancelamento,
     };
 }
 function mapHorario(h) {
