@@ -397,6 +397,8 @@ function renderRoteiro(plano) {
         });
     });
 
+    if (typeof renderTransporte === 'function') renderTransporte(plano);
+
     savePlan(plano);
     renderMapa(plano);
 

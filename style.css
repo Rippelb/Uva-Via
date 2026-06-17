@@ -3686,3 +3686,84 @@ body.nav-open {
 @media (min-width: 960px) {
     .fav-cards { grid-template-columns: repeat(3, 1fr); }
 }
+
+/* ============================================================
+   LOGÍSTICA & TRANSPORTE (motorista da rodada) — diferencial
+   ============================================================ */
+.transporte-bloco {
+    background: linear-gradient(135deg, rgba(107, 122, 58, .08), rgba(74, 13, 31, .05));
+    border: 1px solid var(--borda);
+    border-radius: 14px;
+    padding: var(--space-5);
+    margin: var(--space-5) 0;
+}
+.transporte-head h3 {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: 1.45rem;
+    color: var(--vinho);
+    display: flex; align-items: center; gap: .55rem;
+}
+.transporte-head h3 i { color: var(--oliva); font-size: .9em; }
+.transporte-head p { color: rgba(44, 26, 31, .7); font-size: .9rem; margin-top: .2rem; }
+.transporte-modos {
+    display: flex; gap: .5rem; flex-wrap: wrap;
+    margin: var(--space-4) 0;
+}
+.transporte-modo {
+    flex: 1 1 auto;
+    min-height: var(--touch);
+    padding: .6rem 1rem;
+    border-radius: 999px;
+    border: 1.5px solid var(--borda);
+    background: var(--branco);
+    color: var(--texto);
+    cursor: pointer;
+    font-weight: 600;
+    font-size: .85rem;
+    display: inline-flex; align-items: center; justify-content: center; gap: .45rem;
+    transition: all var(--t-fast);
+}
+.transporte-modo i { color: var(--oliva); }
+.transporte-modo:hover { border-color: var(--oliva); }
+.transporte-modo.is-active {
+    background: var(--vinho); color: var(--bege); border-color: var(--vinho);
+}
+.transporte-modo.is-active i { color: var(--bege-escuro); }
+.transporte-lead { font-size: .95rem; color: var(--texto); margin-bottom: .75rem; }
+.transporte-dicas { list-style: none; display: flex; flex-direction: column; gap: .6rem; margin: .5rem 0; }
+.transporte-dicas li {
+    display: flex; gap: .6rem; align-items: flex-start;
+    font-size: .88rem; color: rgba(44, 26, 31, .82); line-height: 1.45;
+}
+.transporte-dicas li i { color: var(--oliva); margin-top: .15rem; flex-shrink: 0; }
+.transporte-check {
+    display: flex; gap: .55rem; align-items: flex-start;
+    background: rgba(107, 122, 58, .1);
+    border: 1px dashed var(--oliva);
+    border-radius: 10px; padding: .75rem .9rem;
+    font-size: .88rem; cursor: pointer; margin-top: .5rem;
+}
+.transporte-check input { margin-top: .2rem; width: 18px; height: 18px; accent-color: var(--oliva); }
+.transporte-aviso {
+    background: rgba(168, 50, 71, .08);
+    border-left: 3px solid var(--status-cheio);
+    padding: .7rem .9rem; border-radius: 8px;
+    font-size: .85rem; color: var(--texto); margin-top: .5rem;
+}
+.transporte-aviso i { color: var(--status-cheio); margin-right: .35rem; }
+.link-modo {
+    background: none; border: 0; padding: 0;
+    color: var(--vinho); font: inherit; font-weight: 700;
+    text-decoration: underline; cursor: pointer;
+}
+.transporte-custo {
+    display: flex; flex-direction: column; gap: .15rem;
+    background: var(--branco);
+    border: 1px solid var(--borda);
+    border-radius: 12px; padding: var(--space-4);
+    margin: .6rem 0;
+}
+.transporte-custo span { font-size: .78rem; text-transform: uppercase; letter-spacing: .08em; color: rgba(44, 26, 31, .6); }
+.transporte-custo strong { font-family: var(--font-serif); font-style: italic; font-size: 1.6rem; color: var(--vinho); }
+.transporte-custo small { font-size: .75rem; color: rgba(44, 26, 31, .55); }
