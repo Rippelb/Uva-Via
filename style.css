@@ -3961,3 +3961,30 @@ body.modal-open { overflow: hidden; }
 .aval-util.is-voted { background: rgba(107, 122, 58, .14); border-color: var(--oliva); color: var(--oliva); }
 .aval-util.is-voted i { font-weight: 900; }
 .aval-util-count { font-weight: 700; }
+
+/* ============================================================
+   FILTROS DE CATÁLOGO por comodidade
+   ============================================================ */
+.exp-comodidade-filters {
+    display: flex; flex-wrap: wrap; gap: .5rem;
+    margin-bottom: var(--space-5);
+}
+.exp-comod-chip {
+    display: inline-flex; align-items: center; gap: .4rem;
+    min-height: 40px;
+    padding: .45rem .85rem;
+    border-radius: 999px;
+    border: 1.5px solid var(--borda);
+    background: var(--branco);
+    color: var(--texto);
+    font: inherit; font-size: .82rem; font-weight: 600;
+    cursor: pointer;
+    transition: all var(--t-fast);
+}
+.exp-comod-chip i { color: var(--oliva); }
+.exp-comod-chip:hover { border-color: var(--oliva); }
+.exp-comod-chip.is-active { background: var(--oliva); color: var(--branco); border-color: var(--oliva); }
+.exp-comod-chip.is-active i { color: var(--branco); }
+.exp-comod-fav i { color: var(--status-cheio); }
+.exp-comod-fav.is-active { background: var(--status-cheio); border-color: var(--status-cheio); }
+.exp-comod-fav.is-active i { color: var(--branco); }

@@ -9,6 +9,10 @@ const expGrid = document.getElementById('exp-grid');
 const expEmpty = document.getElementById('exp-empty');
 const expCount = document.getElementById('exp-count');
 
+// Filtros por comodidade (da vinícola) + "só favoritos" — descoberta ao estilo
+// dos filtros de GetYourGuide/Wanderlog.
+const expComodFilters = new Set();
+
 // VINICOLAS são populadas em populateVinicolaSelects() durante o Init
 
 function renderExperiencias() {
@@ -25,6 +29,20 @@ function renderExperiencias() {
         });
     }
     if (vid) lista = lista.filter(e => e.vinicola_id === vid);
+
+    if (expComodFilters.size) {
+        const wantFav = expComodFilters.has('__fav');
+        const comods = [...expComodFilters].filter(c => c !== '__fav');
+        lista = lista.filter(e => {
+            if (wantFav && typeof isFavExp === 'function' && !isFavExp(e.id)) return false;
+            if (comods.length) {
+                const vin = getAllVinicolas().find(v => v.id === e.vinicola_id);
+                const vc = window.getComodidades ? getComodidades(vin) : (vin?.comodidades || []);
+                return comods.every(c => vc.includes(c));
+            }
+            return true;
+        });
+    }
 
     const sorters = {
         'nome':       (a, b) => a.nome.localeCompare(b.nome),
@@ -82,4 +100,15 @@ window.renderExperiencias = renderExperiencias;
 expSearch.addEventListener('input', renderExperiencias);
 expVinicolaSel.addEventListener('change', renderExperiencias);
 expSort.addEventListener('change', renderExperiencias);
+
+document.querySelectorAll('.exp-comod-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+        const c = chip.dataset.comod;
+        if (expComodFilters.has(c)) expComodFilters.delete(c); else expComodFilters.add(c);
+        const ativo = expComodFilters.has(c);
+        chip.classList.toggle('is-active', ativo);
+        chip.setAttribute('aria-pressed', String(ativo));
+        renderExperiencias();
+    });
+});
 
