@@ -162,6 +162,7 @@ function renderReservas() {
                         <span class="reserva-status ${status.cls}">${isNext ? 'Próxima' : status.label}</span>
                         <strong class="reserva-total">${fmtBRL(r.total)}</strong>
                         <div class="reserva-actions">
+                            <button type="button" class="reserva-action" data-action="comprovante" data-id="${r.id}"><i class="fa-regular fa-rectangle-list"></i> Comprovante</button>
                             ${!r.cancelada && diasAte(r.data) >= 0 ? `<button type="button" class="reserva-action" data-action="ics" data-id="${r.id}" title="Adicionar à agenda"><i class="fa-regular fa-calendar-plus"></i> Agenda</button>` : ''}
                             ${podeAvaliar ? `<button type="button" class="reserva-action is-primary" data-action="avaliar" data-id="${r.id}"><i class="fa-regular fa-star"></i> Avaliar</button>` : ''}
                             ${!r.cancelada && diasAte(r.data) >= 0 ? `<button type="button" class="reserva-action is-danger" data-action="cancelar" data-id="${r.id}"><i class="fa-regular fa-circle-xmark"></i> Cancelar</button>` : ''}
@@ -176,11 +177,31 @@ function renderReservas() {
         listEl.appendChild(groupLi);
     });
 
+    listEl.querySelectorAll('[data-action="comprovante"]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            if (typeof openComprovante === 'function') openComprovante(btn.dataset.id);
+        });
+    });
     listEl.querySelectorAll('[data-action="cancelar"]').forEach(btn => {
         btn.addEventListener('click', () => {
             const id = btn.dataset.id;
-            if (!confirm('Cancelar esta reserva? A vaga será liberada para outros visitantes.')) return;
-            const updated = loadReservas().filter(r => r.id !== id);
+            const r = loadReservas().find(x => x.id === id);
+            if (!r) return;
+            // Mensagem ciente da política de cancelamento — transparência total.
+            const exp = (window.EXPERIENCIAS || []).find(e => e.id === r.experiencia_id || e.nome === r.experiencia);
+            const policy = (r.cancelamento && window.CANCELAMENTO?.[r.cancelamento])
+                || (typeof getCancelamento === 'function' && exp ? getCancelamento(exp) : { prazoHoras: 24, key: 'flex' });
+            const horas = (new Date(r.data + 'T' + (r.horario || '00:00') + ':00') - Date.now()) / 3.6e6;
+            let msg;
+            if (horas >= policy.prazoHoras) {
+                msg = `Cancelar esta reserva?\n\nVocê está dentro do prazo de ${policy.prazoHoras}h — reembolso integral. A vaga será liberada para outros visitantes.`;
+            } else if (policy.key === 'moderada' && horas >= 24) {
+                msg = `Atenção: faltam menos de ${policy.prazoHoras}h.\n\nO reembolso será de 50% conforme a política desta experiência. Deseja cancelar mesmo assim?`;
+            } else {
+                msg = `Atenção: faltam menos de 24h para a visita.\n\nEsta reserva não é reembolsável. Deseja cancelar mesmo assim?`;
+            }
+            if (!confirm(msg)) return;
+            const updated = loadReservas().filter(x => x.id !== id);
             saveReservas(updated);
             renderReservas();
             showToast('Reserva cancelada.');

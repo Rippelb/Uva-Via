@@ -292,6 +292,11 @@ function renderVinicolaPerfil(vin, focusExpId) {
                     </div>
                 </div>
 
+                ${(window.getComodidades && getComodidades(vin).length) ? `
+                <div class="vin-comodidades">
+                    ${getComodidades(vin).map(c => { const m = COMODIDADE_LABEL[c]; return m ? `<span class="vin-comodidade"><i class="fa-solid ${m.icon}" aria-hidden="true"></i> ${m.label}</span>` : ''; }).join('')}
+                </div>` : ''}
+
                 <div>
                     <h3 class="vin-section-title">Experiências</h3>
                     <ul class="vin-exp-list" id="vin-exp-list">
@@ -302,6 +307,9 @@ function renderVinicolaPerfil(vin, focusExpId) {
                                 .filter(h => h.experiencia_id === e.id && h.vagas > 0)
                                 .sort((a, b) => (a.data + a.horario).localeCompare(b.data + b.horario))
                                 .slice(0, 6);
+                            const policy = window.getCancelamento ? getCancelamento(e) : null;
+                            const inclui = window.getInclusoes ? getInclusoes(e) : [];
+                            const levar = window.getLevar ? getLevar(e) : [];
                             return `
                                 <li class="vin-exp-card" data-exp="${e.id}">
                                     ${window.favBtnHTML ? favBtnHTML('exp', e.id) : ''}
@@ -310,7 +318,16 @@ function renderVinicolaPerfil(vin, focusExpId) {
                                         <span><i class="fa-regular fa-clock" aria-hidden="true"></i> <strong>${e.duracao} min</strong></span>
                                         <span><i class="fa-solid fa-tag" aria-hidden="true"></i> <strong>${fmtBRL(e.preco)}</strong>/pessoa</span>
                                         <span><span class="av-badge ${status.cls}">${status.label}</span></span>
+                                        ${policy ? `<span class="pol-badge pol-${policy.cls}" title="${policy.desc}"><i class="fa-solid fa-shield-halved" aria-hidden="true"></i> ${policy.curto}</span>` : ''}
                                     </div>
+                                    ${(inclui.length || levar.length) ? `
+                                    <details class="exp-details">
+                                        <summary>O que está incluído &amp; o que levar</summary>
+                                        <div class="exp-details-body">
+                                            ${inclui.length ? `<div><strong><i class="fa-solid fa-circle-check" aria-hidden="true"></i> Incluído</strong><ul>${inclui.map(i => `<li>${i}</li>`).join('')}</ul></div>` : ''}
+                                            ${levar.length ? `<div><strong><i class="fa-solid fa-bag-shopping" aria-hidden="true"></i> Leve / saiba</strong><ul>${levar.map(i => `<li>${i}</li>`).join('')}</ul></div>` : ''}
+                                        </div>
+                                    </details>` : ''}
                                     <div class="vin-horarios">
                                         ${horarios.length > 0
                                             ? horarios.map(h => `<button type="button" class="vin-horario" data-hor="${h.id}">${h.horario}<br><small style="font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;opacity:.7">${fmtDataCurta(h.data)}</small></button>`).join('')

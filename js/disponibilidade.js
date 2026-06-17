@@ -71,14 +71,20 @@ document.getElementById('booking-form').addEventListener('submit', (e) => {
     }
     const reserva = {
         id: 'r_' + Date.now(),
+        codigo: (typeof gerarCodigoReserva === 'function' ? gerarCodigoReserva() : 'UV-' + Date.now().toString(36).toUpperCase().slice(-6)),
         vinicola: vin.nome,
+        vinicola_id: vin.id,
         cidade: vin.cidade,
+        endereco: vin.endereco || '',
+        telefone: vin.telefone || '',
         experiencia: exp.nome,
+        experiencia_id: exp.id,
         data: hor.data,
         horario: hor.horario,
         pessoas,
         nome,
         total: exp.preco * pessoas,
+        cancelamento: (typeof getCancelamento === 'function' ? getCancelamento(exp).key : 'flex'),
         criadaEm: Date.now(),
         cancelada: false,
     };
@@ -109,5 +115,8 @@ document.getElementById('booking-form').addEventListener('submit', (e) => {
 
     document.getElementById('minhas-reservas').scrollIntoView({ behavior: 'smooth' });
     renderManageTable();
+
+    // Confirmação imediata: abre o comprovante/voucher com código e instruções.
+    if (typeof openComprovante === 'function') openComprovante(reserva.id);
 });
 

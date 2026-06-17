@@ -3767,3 +3767,111 @@ body.nav-open {
 .transporte-custo span { font-size: .78rem; text-transform: uppercase; letter-spacing: .08em; color: rgba(44, 26, 31, .6); }
 .transporte-custo strong { font-family: var(--font-serif); font-style: italic; font-size: 1.6rem; color: var(--vinho); }
 .transporte-custo small { font-size: .75rem; color: rgba(44, 26, 31, .55); }
+
+/* ============================================================
+   MODAL genérico + COMPROVANTE/VOUCHER + política de cancelamento
+   ============================================================ */
+body.modal-open { overflow: hidden; }
+.uv-modal-overlay {
+    position: fixed; inset: 0; z-index: 200;
+    background: rgba(30, 8, 15, .55);
+    backdrop-filter: blur(3px);
+    display: flex; align-items: flex-end; justify-content: center;
+    opacity: 0; transition: opacity var(--t-base);
+}
+.uv-modal-overlay.is-open { opacity: 1; }
+.uv-modal {
+    background: var(--branco);
+    width: 100%; max-width: 520px; max-height: 92vh;
+    overflow-y: auto;
+    border-radius: 18px 18px 0 0;
+    padding: var(--space-5);
+    position: relative;
+    transform: translateY(28px);
+    transition: transform var(--t-base);
+    box-shadow: var(--shadow-lg);
+}
+.uv-modal:focus { outline: none; }
+.uv-modal-overlay.is-open .uv-modal { transform: translateY(0); }
+@media (min-width: 600px) {
+    .uv-modal-overlay { align-items: center; }
+    .uv-modal { border-radius: 18px; }
+}
+.uv-modal-close {
+    position: absolute; top: .8rem; right: .8rem;
+    width: 38px; height: 38px; border-radius: 50%;
+    border: 0; background: rgba(74, 13, 31, .06); color: var(--vinho);
+    cursor: pointer; font-size: 1.05rem; display: grid; place-items: center;
+    transition: background var(--t-fast);
+}
+.uv-modal-close:hover { background: rgba(74, 13, 31, .12); }
+
+.comprovante-head { display: flex; justify-content: space-between; align-items: center; gap: .5rem; padding-right: 2.5rem; }
+.comprovante-marca { font-family: var(--font-serif); font-style: italic; font-size: 1.2rem; color: var(--vinho); display: inline-flex; align-items: center; gap: .4rem; }
+.comprovante-titulo { font-family: var(--font-serif); font-style: italic; font-size: 1.7rem; color: var(--texto); margin-top: .6rem; line-height: 1.15; }
+.comprovante-vin { color: rgba(44, 26, 31, .7); font-size: .9rem; margin-bottom: .8rem; }
+.comprovante-codigo {
+    display: flex; align-items: center; gap: .6rem; flex-wrap: wrap;
+    background: linear-gradient(135deg, rgba(74, 13, 31, .06), rgba(107, 122, 58, .06));
+    border: 1px dashed var(--vinho);
+    border-radius: 12px; padding: .8rem 1rem; margin-bottom: 1rem;
+}
+.comprovante-codigo span { font-size: .72rem; text-transform: uppercase; letter-spacing: .1em; color: rgba(44, 26, 31, .6); width: 100%; }
+.comprovante-codigo strong { font-family: var(--font-serif); font-size: 1.8rem; letter-spacing: .08em; color: var(--vinho); }
+.comprovante-codigo .btn { margin-left: auto; }
+.comprovante-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: .7rem 1rem; margin-bottom: 1rem; }
+.comprovante-grid > div { display: flex; flex-direction: column; }
+.comprovante-grid span { font-size: .72rem; text-transform: uppercase; letter-spacing: .06em; color: rgba(44, 26, 31, .55); }
+.comprovante-grid strong { font-size: 1rem; color: var(--texto); }
+.comprovante-linha { display: flex; gap: .7rem; align-items: flex-start; padding: .6rem 0; border-top: 1px solid var(--borda); }
+.comprovante-linha i { color: var(--oliva); margin-top: .2rem; }
+.comprovante-linha span { font-size: .72rem; text-transform: uppercase; letter-spacing: .06em; color: rgba(44, 26, 31, .55); display: block; }
+.comprovante-linha p { font-size: .92rem; }
+.comprovante-linha a { color: var(--vinho); font-weight: 600; }
+.comprovante-sec { margin-top: 1rem; }
+.comprovante-sec h4 { font-size: .85rem; color: var(--vinho); display: flex; align-items: center; gap: .4rem; margin-bottom: .4rem; }
+.comprovante-sec ul { list-style: none; display: flex; flex-direction: column; gap: .3rem; }
+.comprovante-sec li { font-size: .88rem; padding-left: 1rem; position: relative; color: rgba(44, 26, 31, .85); }
+.comprovante-sec li::before { content: "·"; position: absolute; left: .2rem; color: var(--oliva); font-weight: 700; }
+.comprovante-cancel { margin-top: 1rem; border-radius: 12px; padding: .85rem 1rem; }
+.comprovante-cancel strong { display: flex; align-items: center; gap: .45rem; font-size: .92rem; }
+.comprovante-cancel p { font-size: .82rem; margin-top: .3rem; color: rgba(44, 26, 31, .8); }
+.comprovante-actions { display: flex; gap: .6rem; margin-top: 1.2rem; flex-wrap: wrap; }
+.comprovante-actions .btn { flex: 1; }
+.comprovante-rodape { text-align: center; font-size: .78rem; color: rgba(44, 26, 31, .55); margin-top: .9rem; }
+
+/* Selo de política de cancelamento */
+.pol-badge { display: inline-flex; align-items: center; gap: .35rem; font-size: .72rem; font-weight: 600; padding: .25rem .55rem; border-radius: 999px; }
+.pol-badge i { font-size: .85em; }
+.pol-flex { background: rgba(45, 122, 79, .12); color: var(--status-livre); }
+.pol-moderada { background: rgba(201, 142, 62, .15); color: #9a6a1f; }
+.comprovante-cancel.pol-flex { background: rgba(45, 122, 79, .08); border: 1px solid rgba(45, 122, 79, .3); }
+.comprovante-cancel.pol-flex strong { color: var(--status-livre); }
+.comprovante-cancel.pol-moderada { background: rgba(201, 142, 62, .1); border: 1px solid rgba(201, 142, 62, .4); }
+.comprovante-cancel.pol-moderada strong { color: #9a6a1f; }
+
+.summary-policy { display: flex; flex-direction: column; gap: .35rem; margin-top: .6rem; padding-top: .7rem; border-top: 1px dashed var(--borda); }
+.summary-policy small { font-size: .78rem; color: rgba(44, 26, 31, .65); }
+
+/* <details> de inclusões/o-que-levar no perfil da vinícola */
+.exp-details { margin: .5rem 0; border: 1px solid var(--borda); border-radius: 10px; overflow: hidden; }
+.exp-details summary {
+    cursor: pointer; padding: .6rem .8rem; font-size: .83rem; font-weight: 600;
+    color: var(--vinho); list-style: none; display: flex; align-items: center; gap: .45rem;
+}
+.exp-details summary::-webkit-details-marker { display: none; }
+.exp-details summary::before {
+    content: "\f078"; font-family: "Font Awesome 6 Free"; font-weight: 900;
+    font-size: .7em; transition: transform var(--t-fast);
+}
+.exp-details[open] summary::before { transform: rotate(180deg); }
+.exp-details-body { padding: 0 .8rem .8rem; display: grid; gap: .7rem; }
+.exp-details-body strong { font-size: .8rem; color: var(--oliva); display: flex; align-items: center; gap: .35rem; margin-bottom: .25rem; }
+.exp-details-body ul { list-style: none; display: flex; flex-direction: column; gap: .25rem; }
+.exp-details-body li { font-size: .83rem; padding-left: .9rem; position: relative; color: rgba(44, 26, 31, .82); }
+.exp-details-body li::before { content: "·"; position: absolute; left: .15rem; color: var(--oliva); }
+@media (min-width: 600px) { .exp-details-body { grid-template-columns: 1fr 1fr; } }
+
+/* Comodidades no perfil da vinícola */
+.vin-comodidades { display: flex; flex-wrap: wrap; gap: .5rem; margin-bottom: var(--space-4); }
+.vin-comodidade { display: inline-flex; align-items: center; gap: .4rem; font-size: .8rem; background: rgba(107, 122, 58, .1); color: var(--oliva); padding: .35rem .7rem; border-radius: 999px; font-weight: 600; }

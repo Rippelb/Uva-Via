@@ -160,6 +160,15 @@ function refreshSummary() {
     sumWhen.textContent = `${fmtData(hor.data)} · ${hor.horario}`;
     sumCalc.textContent = `${pessoas} × ${fmtBRL(exp.preco)}`;
     sumTotal.textContent = fmtBRL(total);
+
+    // Política de cancelamento visível ANTES de reservar — transparência que
+    // ataca a reclamação nº1 de plataformas de passeio.
+    const polEl = document.getElementById('summary-policy');
+    if (polEl && typeof getCancelamento === 'function') {
+        const policy = getCancelamento(exp);
+        polEl.innerHTML = `<span class="pol-badge pol-${policy.cls}"><i class="fa-solid fa-shield-halved" aria-hidden="true"></i> ${policy.label}</span><small>${policy.desc}</small>`;
+    }
+
     btnReservar.disabled = !inpNome.value.trim();
 }
 
