@@ -5,6 +5,37 @@
 const STORAGE_AVAL = 'uvaevia.avaliacoes';
 let avalFilter = 'todas';
 
+// --- Votos de "útil" (helpful) — confiança ao estilo GetYourGuide/Tripadvisor.
+const STORAGE_AVAL_UTEIS = 'uvaevia.avaliacoes.uteis';
+function loadUteis() {
+    try { return JSON.parse(localStorage.getItem(STORAGE_AVAL_UTEIS)) || {}; }
+    catch { return {}; }
+}
+function saveUteis(o) { try { localStorage.setItem(STORAGE_AVAL_UTEIS, JSON.stringify(o)); } catch { /* ignore */ } }
+function hashId(s) { let h = 0; s = String(s); for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0; return Math.abs(h); }
+// Baseline para a comunidade não nascer com tudo zerado (apenas para reviews seed).
+function baselineUteis(a) {
+    if (a.local) return 0;
+    return 3 + (hashId(a.id) % 9) + (a.nota >= 5 ? 4 : 0);
+}
+function getUteisTotal(a) {
+    const stored = loadUteis()[a.id];
+    return baselineUteis(a) + (stored?.count || 0);
+}
+function jaVotouUtil(a) { return !!loadUteis()[a.id]?.voted; }
+function voteUtil(id) {
+    const o = loadUteis();
+    const cur = o[id] || { count: 0, voted: false };
+    if (cur.voted) { cur.count = Math.max(0, (cur.count || 0) - 1); cur.voted = false; }
+    else { cur.count = (cur.count || 0) + 1; cur.voted = true; }
+    o[id] = cur; saveUteis(o);
+    return cur.voted;
+}
+// Visita verificada: review veio de uma reserva real (local) ou é curada (seed).
+function avalVerificada(a) {
+    return !!(a.verificada || a.local || a.reserva_id || String(a.id).startsWith('av_seed'));
+}
+
 function loadAvaliacoes() {
     try { return JSON.parse(localStorage.getItem(STORAGE_AVAL)) || []; }
     catch { return []; }
@@ -56,6 +87,9 @@ function avalCardHTML(a, opts = {}) {
     const exp = EXPERIENCIAS.find(e => e.id === a.experiencia_id);
     const initial = (a.autor || '?').charAt(0).toUpperCase();
     const showVin = opts.showVin !== false;
+    const verificada = avalVerificada(a);
+    const uteis = getUteisTotal(a);
+    const votou = jaVotouUtil(a);
     return `
         <article class="aval-card" data-id="${a.id}">
             <div class="aval-card-header">
@@ -63,7 +97,7 @@ function avalCardHTML(a, opts = {}) {
                     <span class="aval-avatar" aria-hidden="true">${initial}</span>
                     <div class="aval-author-info">
                         <strong>${a.autor}</strong>
-                        <small>${a.perfil || 'Visitante'}</small>
+                        <small>${a.perfil || 'Visitante'}${verificada ? ' · <span class="aval-verif"><i class="fa-solid fa-circle-check" aria-hidden="true"></i> visita verificada</span>' : ''}</small>
                     </div>
                 </div>
                 ${renderEstrelas(a.nota, 'sm')}
@@ -74,6 +108,9 @@ function avalCardHTML(a, opts = {}) {
             <footer class="aval-card-foot">
                 <span><i class="fa-regular fa-calendar" aria-hidden="true"></i> ${fmtDataAval(a.data)}</span>
                 ${a.local ? '<span><i class="fa-solid fa-circle-check" aria-hidden="true"></i> Sua avaliação</span>' : ''}
+                <button type="button" class="aval-util${votou ? ' is-voted' : ''}" data-util="${a.id}" aria-pressed="${votou}" title="Esta avaliação foi útil?">
+                    <i class="fa-regular fa-thumbs-up" aria-hidden="true"></i> Útil <span class="aval-util-count">${uteis}</span>
+                </button>
             </footer>
         </article>
     `;
@@ -105,8 +142,12 @@ function renderAvaliacoes() {
     let lista = all.slice();
     if (avalFilter === '5')      lista = lista.filter(a => a.nota === 5);
     else if (avalFilter === '4') lista = lista.filter(a => a.nota >= 4);
-    // ordenacao padrao: recentes primeiro
-    lista.sort((a, b) => (b.data || '').localeCompare(a.data || ''));
+    if (avalFilter === 'uteis') {
+        lista.sort((a, b) => getUteisTotal(b) - getUteisTotal(a));
+    } else {
+        // ordenacao padrao: recentes primeiro
+        lista.sort((a, b) => (b.data || '').localeCompare(a.data || ''));
+    }
     lista = lista.slice(0, avalFilter === 'recentes' ? 9 : 12);
 
     if (lista.length === 0) {
@@ -128,6 +169,23 @@ document.querySelectorAll('.aval-filter').forEach(btn => {
             b.setAttribute('aria-selected', String(on));
         });
         renderAvaliacoes();
+    });
+});
+
+// Voto "útil" — delegação global, funciona em qualquer card de avaliação.
+document.addEventListener('click', (e) => {
+    const btn = e.target.closest('.aval-util');
+    if (!btn) return;
+    const id = btn.dataset.util;
+    const voted = voteUtil(id);
+    document.querySelectorAll(`.aval-util[data-util="${id}"]`).forEach(b => {
+        b.classList.toggle('is-voted', voted);
+        b.setAttribute('aria-pressed', String(voted));
+        const c = b.querySelector('.aval-util-count');
+        if (c) {
+            const n = Number(c.textContent) || 0;
+            c.textContent = voted ? n + 1 : Math.max(0, n - 1);
+        }
     });
 });
 

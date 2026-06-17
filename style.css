@@ -3938,3 +3938,26 @@ body.modal-open { overflow: hidden; }
 .rp-meta { font-size: .74rem; text-transform: uppercase; letter-spacing: .05em; color: var(--oliva); font-weight: 600; margin-top: .15rem; }
 @media (min-width: 600px) { .rp-grid { grid-template-columns: repeat(2, 1fr); } }
 @media (min-width: 960px) { .rp-grid { grid-template-columns: repeat(3, 1fr); } }
+
+/* ============================================================
+   REVIEWS turbinadas — selo verificado + voto "útil"
+   ============================================================ */
+.aval-verif { color: var(--status-livre); font-weight: 600; white-space: nowrap; }
+.aval-verif i { font-size: .9em; }
+.aval-card-foot { display: flex; align-items: center; gap: .75rem; flex-wrap: wrap; }
+.aval-util {
+    margin-left: auto;
+    background: transparent;
+    border: 1px solid var(--borda);
+    border-radius: 999px;
+    padding: .35rem .7rem;
+    font: inherit; font-size: .76rem; font-weight: 600;
+    color: var(--texto);
+    cursor: pointer;
+    display: inline-flex; align-items: center; gap: .35rem;
+    transition: all var(--t-fast);
+}
+.aval-util:hover { border-color: var(--oliva); color: var(--oliva); }
+.aval-util.is-voted { background: rgba(107, 122, 58, .14); border-color: var(--oliva); color: var(--oliva); }
+.aval-util.is-voted i { font-weight: 900; }
+.aval-util-count { font-weight: 700; }
