@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Uva & Via">
+  <rect width="512" height="512" rx="104" fill="#4a0d1f"/>
+  <path d="M170 134 H342 C342 214 307 268 256 268 C205 268 170 214 170 134 Z" fill="#f5ecd9"/>
+  <path d="M256 268 V374" stroke="#f5ecd9" stroke-width="16" stroke-linecap="round"/>
+  <path d="M198 388 H314" stroke="#f5ecd9" stroke-width="16" stroke-linecap="round"/>
+  <circle cx="256" cy="188" r="30" fill="#6b7a3a"/>
+</svg>
