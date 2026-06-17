@@ -53,6 +53,7 @@ renderManageVinList();
 renderSugestoes();
 renderBoutique();
 renderAvaliacoes();
+if (typeof renderFavoritos === 'function') renderFavoritos();
 
 // Tenta restaurar plano via hash compartilhado antes de cair pro localStorage
 const restauradoDoHash = tryRestorePlanoFromHash();

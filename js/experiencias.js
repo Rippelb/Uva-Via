@@ -46,6 +46,7 @@ function renderExperiencias() {
         const card = document.createElement('article');
         card.className = 'exp-card';
         card.innerHTML = `
+            ${window.favBtnHTML ? favBtnHTML('exp', e.id) : ''}
             <span class="exp-vinicola">${vin?.nome ?? '—'} · ${vin?.cidade ?? ''}</span>
             <h3>${e.nome}</h3>
             <div class="exp-meta">

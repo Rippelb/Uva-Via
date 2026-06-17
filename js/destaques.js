@@ -117,6 +117,7 @@ function renderSugestoes() {
             : '';
         return `
             <article class="sug-card">
+                ${window.favBtnHTML ? favBtnHTML('exp', s.exp.id) : ''}
                 <span class="sug-badge">${tagLabel[s.tag] || s.tag}</span>
                 <h3>${s.exp.nome}</h3>
                 <span class="sug-vin">${vin?.nome ?? ''} · ${vin?.cidade ?? ''}</span>
@@ -174,26 +175,34 @@ function renderBoutique() {
         const ratingTag = rating.total > 0
             ? `<span><i class="fa-solid fa-star" aria-hidden="true" style="color:var(--status-quase)"></i> <strong>${rating.media.toFixed(1)}</strong> (${rating.total})</span>`
             : '';
+        const comodHtml = (window.getComodidades ? getComodidades(v) : []).slice(0, 4).map(c => {
+            const meta = COMODIDADE_LABEL[c];
+            return meta ? `<span class="bout-comodidade" title="${meta.label}"><i class="fa-solid ${meta.icon}" aria-hidden="true"></i></span>` : '';
+        }).join('');
         return `
-            <button class="bout-card" type="button" data-vin="${v.id}" aria-label="Abrir ${v.nome}">
-                <div class="bout-cover tone-${v.tone || 'a'}" aria-hidden="true">${initial}</div>
-                <div class="bout-body">
-                    <span class="bout-eyebrow">Boutique · ${v.cidade}</span>
-                    <h3>${v.nome.replace(/^Vin[íi]cola\s+/i, '')}</h3>
-                    <p>${v.descricao || 'Experiência intimista entre os vinhedos.'}</p>
-                    <div class="bout-meta">
-                        <span><i class="fa-solid fa-wine-glass" aria-hidden="true"></i> <strong>${expCount}</strong> experiências</span>
-                        <span><i class="fa-regular fa-clock" aria-hidden="true"></i> <strong>${v.duracao_media_min || 75}</strong> min</span>
-                        <span><i class="fa-solid fa-tag" aria-hidden="true"></i> ${preco}</span>
-                        ${ratingTag}
+            <div class="bout-card-wrap">
+                <button class="bout-card" type="button" data-vin="${v.id}" aria-label="Abrir ${v.nome}">
+                    <div class="bout-cover tone-${v.tone || 'a'}" aria-hidden="true">${initial}</div>
+                    <div class="bout-body">
+                        <span class="bout-eyebrow">Boutique · ${v.cidade}</span>
+                        <h3>${v.nome.replace(/^Vin[íi]cola\s+/i, '')}</h3>
+                        <p>${v.descricao || 'Experiência intimista entre os vinhedos.'}</p>
+                        <div class="bout-meta">
+                            <span><i class="fa-solid fa-wine-glass" aria-hidden="true"></i> <strong>${expCount}</strong> experiências</span>
+                            <span><i class="fa-regular fa-clock" aria-hidden="true"></i> <strong>${v.duracao_media_min || 75}</strong> min</span>
+                            <span><i class="fa-solid fa-tag" aria-hidden="true"></i> ${preco}</span>
+                            ${ratingTag}
+                        </div>
+                        ${comodHtml ? `<div class="bout-comodidades">${comodHtml}</div>` : ''}
+                        <span class="btn btn-ghost">Ver perfil</span>
                     </div>
-                    <span class="btn btn-ghost">Ver perfil</span>
-                </div>
-            </button>
+                </button>
+                ${window.favBtnHTML ? favBtnHTML('vin', v.id) : ''}
+            </div>
         `;
     }).join('');
 
-    grid.querySelectorAll('button[data-vin]').forEach(btn => {
+    grid.querySelectorAll('button.bout-card[data-vin]').forEach(btn => {
         btn.addEventListener('click', () => openVinicola(Number(btn.dataset.vin)));
     });
 }
@@ -259,6 +268,7 @@ function renderVinicolaPerfil(vin, focusExpId) {
                     <span class="vin-cidade">${vin.cidade}${vin.tipo === 'boutique' ? ' · Boutique' : ''}</span>
                     <h2>${vin.nome}</h2>
                 </div>
+                ${window.favBtnHTML ? favBtnHTML('vin', vin.id) : ''}
             </header>
             <div class="vin-body">
                 <p class="vin-desc">${vin.descricao || 'Vinícola do Vale dos Vinhedos.'}</p>
@@ -294,6 +304,7 @@ function renderVinicolaPerfil(vin, focusExpId) {
                                 .slice(0, 6);
                             return `
                                 <li class="vin-exp-card" data-exp="${e.id}">
+                                    ${window.favBtnHTML ? favBtnHTML('exp', e.id) : ''}
                                     <h4>${e.nome}</h4>
                                     <div class="vin-exp-meta">
                                         <span><i class="fa-regular fa-clock" aria-hidden="true"></i> <strong>${e.duracao} min</strong></span>

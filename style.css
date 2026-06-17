@@ -3568,3 +3568,121 @@ body.nav-open {
     /* No modo impressao mostra todos os dias da timeline empilhados */
     .mapa-tabs { display: none !important; }
 }
+
+/* ============================================================
+   FAVORITOS — coração nos cards, badge no menu e seção dedicada
+   ============================================================ */
+.nav-badge {
+    display: inline-grid;
+    place-items: center;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    margin-left: .45rem;
+    border-radius: 999px;
+    background: var(--status-cheio);
+    color: #fff;
+    font-size: .65rem;
+    font-weight: 700;
+    line-height: 1;
+}
+
+/* Botão de coração reutilizável */
+.fav-btn {
+    position: absolute;
+    top: .6rem;
+    right: .6rem;
+    z-index: 3;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    border: 1px solid var(--borda);
+    background: rgba(251, 248, 241, .92);
+    color: var(--vinho);
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+    font-size: 1rem;
+    backdrop-filter: blur(2px);
+    box-shadow: var(--shadow-sm);
+    transition: transform var(--t-fast), background var(--t-fast), color var(--t-fast);
+}
+.fav-btn:hover { transform: scale(1.1); background: #fff; }
+.fav-btn:active { transform: scale(.94); }
+.fav-btn.is-fav { color: var(--status-cheio); border-color: rgba(168, 50, 71, .35); }
+.fav-btn.is-fav i { animation: fav-pop .32s ease; }
+@keyframes fav-pop { 0% { transform: scale(.6); } 60% { transform: scale(1.25); } 100% { transform: scale(1); } }
+
+/* Garante âncora de posicionamento nos cards que recebem o coração */
+.sug-card, .exp-card, .vin-exp-card, .bout-card-wrap { position: relative; }
+
+.bout-card-wrap { display: flex; }
+.bout-card-wrap .bout-card { flex: 1; }
+
+/* Comodidades nos cards boutique */
+.bout-comodidades { display: flex; gap: .4rem; margin: .35rem 0 .25rem; flex-wrap: wrap; }
+.bout-comodidade {
+    width: 26px; height: 26px;
+    display: grid; place-items: center;
+    border-radius: 8px;
+    background: rgba(107, 122, 58, .12);
+    color: var(--oliva);
+    font-size: .72rem;
+}
+
+/* Seção Favoritos */
+.favoritos { padding: var(--space-7) var(--space-4); background: var(--branco); }
+.favoritos-inner { max-width: 1100px; margin: 0 auto; }
+.fav-subtitle {
+    font-family: var(--font-sans);
+    font-size: .8rem;
+    text-transform: uppercase;
+    letter-spacing: .1em;
+    color: var(--vinho);
+    margin: var(--space-5) 0 var(--space-3);
+    display: flex; align-items: center; gap: .5rem;
+}
+.fav-cards { display: grid; grid-template-columns: 1fr; gap: var(--space-4); }
+.fav-card {
+    position: relative;
+    display: flex;
+    gap: var(--space-3);
+    background: #fff;
+    border: 1px solid var(--borda);
+    border-radius: 12px;
+    padding: var(--space-3);
+    box-shadow: var(--shadow-sm);
+    transition: box-shadow var(--t-base), transform var(--t-base);
+}
+.fav-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
+.fav-card--exp { flex-direction: column; }
+.fav-cover {
+    flex-shrink: 0;
+    width: 64px; height: 64px;
+    border-radius: 10px;
+    display: grid; place-items: center;
+    color: var(--bege);
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: 1.8rem;
+    background: linear-gradient(135deg, var(--vinho), var(--vinho-claro));
+}
+.fav-card-body { display: flex; flex-direction: column; gap: .25rem; flex: 1; min-width: 0; }
+.fav-card-body strong { font-size: 1.02rem; color: var(--texto); }
+.fav-card-sub { font-size: .82rem; color: rgba(44, 26, 31, .68); display: flex; align-items: center; gap: .5rem; flex-wrap: wrap; }
+.fav-card-actions { display: flex; gap: .5rem; align-items: center; margin-top: .5rem; flex-wrap: wrap; }
+.fav-card-actions .fav-btn { position: static; margin-left: auto; }
+.fav-empty {
+    text-align: center;
+    color: rgba(44, 26, 31, .6);
+    padding: var(--space-6) var(--space-4);
+    font-size: .95rem;
+}
+.fav-empty i { color: var(--status-cheio); }
+
+@media (min-width: 720px) {
+    .fav-cards { grid-template-columns: repeat(2, 1fr); }
+}
+@media (min-width: 960px) {
+    .fav-cards { grid-template-columns: repeat(3, 1fr); }
+}

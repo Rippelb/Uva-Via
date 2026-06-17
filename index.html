@@ -38,6 +38,7 @@
                 <a href="#experiencias" class="nav-link"><i class="fa-solid fa-wine-glass" aria-hidden="true"></i><span>Experiências</span></a>
                 <a href="#reservar" class="nav-link"><i class="fa-regular fa-calendar-plus" aria-hidden="true"></i><span>Reservar</span></a>
                 <a href="#minhas-reservas" class="nav-link"><i class="fa-regular fa-calendar-check" aria-hidden="true"></i><span>Reservas</span></a>
+                <a href="#favoritos" class="nav-link"><i class="fa-regular fa-heart" aria-hidden="true"></i><span>Favoritos</span><span class="nav-badge" id="fav-count" hidden>0</span></a>
                 <a href="#avaliacoes" class="nav-link"><i class="fa-regular fa-star" aria-hidden="true"></i><span>Avaliações</span></a>
             </nav>
         </div>
@@ -449,6 +450,24 @@
         </div>
     </section>
 
+    <!-- =================== FAVORITOS =================== -->
+    <section id="favoritos" class="favoritos" aria-labelledby="favoritos-title">
+        <div class="favoritos-inner">
+            <header class="planner-header" data-reveal>
+                <span class="planner-eyebrow">Sua curadoria</span>
+                <h2 id="favoritos-title" class="planner-title">Seus favoritos</h2>
+                <p class="planner-subtitle">
+                    Vinícolas e experiências que você salvou para decidir depois — toque no coração em qualquer card.
+                </p>
+            </header>
+            <div class="fav-grid" id="fav-grid"></div>
+            <p class="fav-empty" id="fav-empty" hidden>
+                Você ainda não salvou nada. Toque no <i class="fa-regular fa-heart" aria-hidden="true"></i>
+                em qualquer vinícola ou experiência para guardá-la aqui.
+            </p>
+        </div>
+    </section>
+
     <!-- =================== AVALIAÇÕES =================== -->
     <section id="avaliacoes" class="avaliacoes" aria-labelledby="avaliacoes-title">
         <div class="avaliacoes-inner">
@@ -789,6 +808,7 @@
     <script src="js/disponibilidade.js"></script>
     <script src="js/experiencias.js"></script>
     <script src="js/gestao.js"></script>
+    <script src="js/favoritos.js"></script>
     <script src="js/init.js"></script><!-- init por ultimo: roda o bootstrap -->
     <!-- Integracao backend (dependem dos globais window.* acima) -->
     <script src="api-client.js"></script>

@@ -50,7 +50,7 @@ desktopMQ.addEventListener('change', (e) => {
 
 // Active link no scroll
 const spySections = ['home', 'planejar', 'roteiro', 'vinicola', 'mapa',
-                     'experiencias', 'reservar', 'minhas-reservas', 'avaliacoes']
+                     'experiencias', 'reservar', 'minhas-reservas', 'favoritos', 'avaliacoes']
     .map(id => document.getElementById(id))
     .filter(Boolean);
 
