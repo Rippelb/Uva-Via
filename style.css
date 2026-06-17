@@ -3910,3 +3910,31 @@ body.modal-open { overflow: hidden; }
     .lembrete-inner { flex-wrap: wrap; }
     .lembrete-inner p { flex-basis: 100%; order: -1; }
 }
+
+/* ============================================================
+   ROTEIROS PRONTOS (curadoria 1-clique)
+   ============================================================ */
+.roteiros-prontos { margin-bottom: var(--space-6); }
+.rp-eyebrow { display: inline-flex; align-items: center; gap: .4rem; font-size: .8rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--oliva); }
+.rp-eyebrow i { color: var(--status-quase); }
+.rp-help { font-size: .9rem; color: rgba(44, 26, 31, .7); margin: .25rem 0 var(--space-4); }
+.rp-grid { display: grid; grid-template-columns: 1fr; gap: .8rem; }
+.rp-card {
+    display: flex; gap: .85rem; text-align: left; align-items: flex-start;
+    background: #fff; border: 1px solid var(--borda); border-radius: 12px;
+    padding: var(--space-4); cursor: pointer; font: inherit; color: inherit;
+    transition: transform var(--t-base), box-shadow var(--t-base), border-color var(--t-base);
+}
+.rp-card:hover { border-color: var(--vinho); transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.rp-icon {
+    flex-shrink: 0; width: 42px; height: 42px; border-radius: 10px;
+    display: grid; place-items: center;
+    background: linear-gradient(135deg, var(--vinho), var(--vinho-claro));
+    color: var(--bege); font-size: 1.05rem;
+}
+.rp-body { display: flex; flex-direction: column; gap: .2rem; }
+.rp-body strong { font-size: 1rem; color: var(--texto); }
+.rp-desc { font-size: .84rem; color: rgba(44, 26, 31, .7); line-height: 1.4; }
+.rp-meta { font-size: .74rem; text-transform: uppercase; letter-spacing: .05em; color: var(--oliva); font-weight: 600; margin-top: .15rem; }
+@media (min-width: 600px) { .rp-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 960px) { .rp-grid { grid-template-columns: repeat(3, 1fr); } }

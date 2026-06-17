@@ -55,6 +55,7 @@ renderBoutique();
 renderAvaliacoes();
 if (typeof renderFavoritos === 'function') renderFavoritos();
 if (typeof renderLembrete === 'function') renderLembrete();
+if (typeof renderRoteirosProntos === 'function') renderRoteirosProntos();
 
 // Tenta restaurar plano via hash compartilhado antes de cair pro localStorage
 const restauradoDoHash = tryRestorePlanoFromHash();
