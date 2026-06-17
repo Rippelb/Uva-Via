@@ -585,6 +585,45 @@
         </div>
     </section>
 
+    <!-- =================== PARA VINÍCOLAS (B2B) =================== -->
+    <section id="parceiros" class="parceiros" aria-labelledby="parceiros-title">
+        <div class="parceiros-inner">
+            <div class="parceiros-copy" data-reveal>
+                <span class="planner-eyebrow">Para vinícolas</span>
+                <h2 id="parceiros-title" class="planner-title">Encha sua agenda com os visitantes certos</h2>
+                <p class="planner-subtitle">
+                    O Uva &amp; Via leva enoturistas que já sabem o que querem — roteiro montado,
+                    orçamento definido e data marcada. Você controla horários e capacidade;
+                    nós cuidamos da descoberta e da reserva.
+                </p>
+                <ul class="parceiros-beneficios">
+                    <li><i class="fa-solid fa-users-viewfinder" aria-hidden="true"></i> Visitante qualificado — perfil, orçamento e interesses já mapeados</li>
+                    <li><i class="fa-regular fa-calendar-check" aria-hidden="true"></i> Agenda e capacidade sob o seu controle</li>
+                    <li><i class="fa-solid fa-coins" aria-hidden="true"></i> Sem mensalidade — você paga apenas por reserva concretizada</li>
+                    <li><i class="fa-solid fa-chart-line" aria-hidden="true"></i> Painel de ocupação em tempo real (aba Gestão)</li>
+                </ul>
+            </div>
+            <form class="parceiros-form" id="parceiros-form" data-reveal novalidate>
+                <h3>Seja parceiro</h3>
+                <div class="form-field">
+                    <label for="p-nome">Nome da vinícola</label>
+                    <input type="text" id="p-nome" required maxlength="80" placeholder="Ex.: Vinícola Vale Encantado">
+                </div>
+                <div class="form-field">
+                    <label for="p-cidade">Cidade</label>
+                    <input type="text" id="p-cidade" maxlength="60" placeholder="Bento Gonçalves">
+                </div>
+                <div class="form-field">
+                    <label for="p-contato">E-mail ou telefone</label>
+                    <input type="text" id="p-contato" required placeholder="parcerias@suavinicola.com.br">
+                </div>
+                <small class="form-error" id="p-error"></small>
+                <button type="submit" class="btn btn-primary">Quero receber o contato</button>
+                <p class="parceiros-nota">Sem compromisso. Retornamos em até 2 dias úteis.</p>
+            </form>
+        </div>
+    </section>
+
     <!-- =================== GESTÃO =================== -->
     <section id="gestao" class="manage">
         <div class="manage-inner">
@@ -823,6 +862,15 @@
                 <a href="tel:+5554999990000">+55 54 99999-0000</a>
                 <span>Bento Gonçalves · RS</span>
             </div>
+            <div class="footer-col footer-news">
+                <h4>Receba roteiros</h4>
+                <p>Novas experiências, roteiros e dicas do Vale — sem spam.</p>
+                <form id="news-form" class="news-form" novalidate>
+                    <input type="email" id="news-email" placeholder="seu@email.com" required aria-label="Seu e-mail">
+                    <button type="submit" class="btn btn-primary btn-sm">Assinar</button>
+                </form>
+                <small id="news-msg" class="news-msg" hidden></small>
+            </div>
         </div>
         <div class="footer-bottom">
             <span>© <span id="year"></span> Uva &amp; Via — Beba com moderação.</span>
@@ -848,6 +896,7 @@
     <script src="js/favoritos.js"></script>
     <script src="js/lembrete.js"></script>
     <script src="js/roteiros-prontos.js"></script>
+    <script src="js/parcerias.js"></script>
     <script src="js/init.js"></script><!-- init por ultimo: roda o bootstrap -->
     <script src="js/pwa.js"></script>
     <!-- Integracao backend (dependem dos globais window.* acima) -->

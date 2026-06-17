@@ -4019,3 +4019,38 @@ body.modal-open { overflow: hidden; }
     font-size: .83rem; color: var(--texto); margin-bottom: 1rem;
 }
 .comprovante-aguardando i { color: var(--status-quase); margin-right: .35rem; }
+
+/* ============================================================
+   PARA VINÍCOLAS (B2B) + NEWSLETTER
+   ============================================================ */
+.parceiros { padding: var(--space-7) var(--space-4); background: linear-gradient(135deg, var(--bege), var(--branco)); }
+.parceiros-inner { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: 1fr; gap: var(--space-6); }
+.parceiros-beneficios { list-style: none; display: flex; flex-direction: column; gap: .7rem; margin-top: var(--space-4); }
+.parceiros-beneficios li { display: flex; gap: .65rem; align-items: flex-start; font-size: .92rem; color: var(--texto); }
+.parceiros-beneficios li i { color: var(--oliva); margin-top: .2rem; flex-shrink: 0; }
+.parceiros-form {
+    background: #fff; border: 1px solid var(--borda); border-radius: 16px;
+    padding: var(--space-5); box-shadow: var(--shadow-md);
+    display: flex; flex-direction: column; gap: var(--space-3);
+    align-self: start;
+}
+.parceiros-form h3 { font-family: var(--font-serif); font-style: italic; font-size: 1.5rem; color: var(--vinho); }
+.parceiros-form .btn { width: 100%; margin-top: .3rem; }
+.parceiros-nota { font-size: .78rem; color: rgba(44, 26, 31, .6); text-align: center; }
+@media (min-width: 860px) {
+    .parceiros-inner { grid-template-columns: 1.2fr .8fr; align-items: center; }
+}
+
+.footer-news p { font-size: .85rem; opacity: .8; margin-bottom: .6rem; }
+.news-form { display: flex; gap: .4rem; flex-wrap: wrap; }
+.news-form input {
+    flex: 1; min-width: 0;
+    background: rgba(255, 255, 255, .12); border: 1.5px solid var(--bege-escuro);
+    color: var(--bege); border-radius: 999px; padding: .55rem .9rem; font-size: .85rem;
+}
+.news-form input::placeholder { color: rgba(245, 236, 217, .55); }
+.news-form input.is-invalid { border-color: var(--status-cheio); }
+.news-form .btn { white-space: nowrap; }
+.news-msg { display: block; margin-top: .5rem; font-size: .8rem; }
+.news-msg.is-ok { color: var(--oliva-claro); }
+.news-msg.is-error { color: #e8a0a0; }
