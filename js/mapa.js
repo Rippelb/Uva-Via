@@ -4,6 +4,30 @@
 // =================== Mapa / Rota ===================
 let mapaActiveDay = 0;
 
+// Ponto navegável de uma vinícola: usa coordenadas quando há, senão cai no
+// nome+cidade. Usado para abrir a rota real no Google Maps / Waze — funcionalidade
+// que o Wanderlog tem e que faltava aqui.
+function pontoMaps(v) {
+    if (!v) return '';
+    if (v.latitude != null && v.longitude != null) return `${v.latitude},${v.longitude}`;
+    return encodeURIComponent(`${v.nome}, ${v.cidade || ''}, RS`);
+}
+function gmapsDirUrl(vins) {
+    const pts = (vins || []).map(pontoMaps).filter(Boolean);
+    if (pts.length === 0) return null;
+    if (pts.length === 1) return `https://www.google.com/maps/search/?api=1&query=${pts[0]}`;
+    const origin = pts[0];
+    const destination = pts[pts.length - 1];
+    const waypoints = pts.slice(1, -1).join('%7C');
+    let url = `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}&travelmode=driving`;
+    if (waypoints) url += `&waypoints=${waypoints}`;
+    return url;
+}
+function gmapsStopUrl(v) {
+    const p = pontoMaps(v);
+    return p ? `https://www.google.com/maps/search/?api=1&query=${p}` : '#';
+}
+
 // Detecta se uma parada deve ser precedida por sugestao de almoco —
 // quando o gap (chegada da proxima vs saida da atual) cruza 12h-14h
 // e nenhuma das duas paradas eh harmonizada.
@@ -73,7 +97,12 @@ function renderMapa(plano) {
         const resumo = document.getElementById('mapa-resumo');
         resumo.parentNode.insertBefore(actionsEl, resumo.nextSibling);
     }
+    const vinsDoDia = (plano.dias[mapaActiveDay] || plano.dias[0] || []).map(s => s.vin);
+    const rotaUrl = gmapsDirUrl(vinsDoDia);
     actionsEl.innerHTML = `
+        ${rotaUrl ? `<a class="btn btn-primary btn-sm" id="btn-mapa-rota" href="${rotaUrl}" target="_blank" rel="noopener">
+            <i class="fa-solid fa-diamond-turn-right btn-icon" aria-hidden="true"></i> Abrir rota no Maps
+        </a>` : ''}
         <button type="button" class="btn btn-ghost btn-sm" id="btn-mapa-print">
             <i class="fa-solid fa-print btn-icon" aria-hidden="true"></i> Imprimir
         </button>
@@ -162,6 +191,7 @@ function renderMapa(plano) {
                     <span class="mapa-stop-vin">${stop.vin.nome} · ${stop.vin.cidade || ''}</span>
                     <span class="mapa-stop-exp">${stop.exp.nome}</span>
                     ${motivos.length ? `<span class="mapa-stop-motivo"><i class="fa-regular fa-lightbulb" aria-hidden="true"></i> ${motivos.join(' · ')}</span>` : ''}
+                    <a class="mapa-stop-nav" href="${gmapsStopUrl(stop.vin)}" target="_blank" rel="noopener"><i class="fa-solid fa-location-arrow" aria-hidden="true"></i> Como chegar</a>
                 </div>
             </div>
         `);

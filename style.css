@@ -3875,3 +3875,38 @@ body.modal-open { overflow: hidden; }
 /* Comodidades no perfil da vinícola */
 .vin-comodidades { display: flex; flex-wrap: wrap; gap: .5rem; margin-bottom: var(--space-4); }
 .vin-comodidade { display: inline-flex; align-items: center; gap: .4rem; font-size: .8rem; background: rgba(107, 122, 58, .1); color: var(--oliva); padding: .35rem .7rem; border-radius: 999px; font-weight: 600; }
+
+/* ============================================================
+   EXPORT DE ROTA (Maps) + LEMBRETE da próxima visita
+   ============================================================ */
+.mapa-stop-nav {
+    display: inline-flex; align-items: center; gap: .35rem;
+    margin-top: .45rem; font-size: .8rem; font-weight: 600;
+    color: var(--vinho); text-decoration: none; width: fit-content;
+}
+.mapa-stop-nav i { color: var(--oliva); }
+.mapa-stop-nav:hover { text-decoration: underline; }
+
+.lembrete-banner {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 150;
+    background: var(--vinho); color: var(--bege);
+    box-shadow: 0 -4px 20px rgba(74, 13, 31, .28);
+    animation: lembrete-up .4s ease;
+}
+@keyframes lembrete-up { from { transform: translateY(100%); } to { transform: translateY(0); } }
+.lembrete-inner { max-width: 1100px; margin: 0 auto; display: flex; align-items: center; gap: .75rem; padding: .75rem 1rem; }
+.lembrete-icone { font-size: 1.15rem; color: var(--bege-escuro); }
+.lembrete-inner p { font-size: .9rem; flex: 1; }
+.lembrete-inner p strong { color: #fff; }
+.lembrete-ver {
+    background: var(--bege); color: var(--vinho); border: 0; border-radius: 999px;
+    padding: .55rem 1.05rem; font: inherit; font-weight: 700; font-size: .82rem;
+    cursor: pointer; white-space: nowrap; min-height: var(--touch);
+}
+.lembrete-ver:hover { background: #fff; }
+.lembrete-fechar { background: transparent; border: 0; color: var(--bege-escuro); cursor: pointer; font-size: 1.15rem; padding: .35rem; }
+.lembrete-fechar:hover { color: #fff; }
+@media (max-width: 560px) {
+    .lembrete-inner { flex-wrap: wrap; }
+    .lembrete-inner p { flex-basis: 100%; order: -1; }
+}

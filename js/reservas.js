@@ -96,6 +96,7 @@ function renderReservas() {
         statsEl.hidden = true;
         actionsEl.hidden = true;
         listEl.innerHTML = '';
+        if (typeof renderLembrete === 'function') renderLembrete();
         return;
     }
     emptyEl.hidden = true;
@@ -229,5 +230,7 @@ function renderReservas() {
             if (r) container.appendChild(buildAvalForm(r));
         });
     });
+
+    if (typeof renderLembrete === 'function') renderLembrete();
 }
 
