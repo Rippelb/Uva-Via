@@ -45,8 +45,10 @@ function getAllVinicolas() {
 // Aceita `seed` opcional para gerar variacoes do mesmo input ("regenerar").
 function generateRoteiro(input) {
     const expsPerDay = { tranquilo: 2, equilibrado: 3, explorador: 4 }[input.pace] || 3;
-    const totalExps = input.days * expsPerDay;
-    const budgetPerExp = input.budget > 0 ? input.budget / totalExps / input.pessoas : Infinity;
+    // Guards: days/pessoas vindos do hash compartilhado podem ser 0 — evita
+    // divisao por zero (budget/0 = Infinity corrompe o scoring).
+    const totalExps = Math.max(1, (Number(input.days) || 1) * expsPerDay);
+    const budgetPerExp = input.budget > 0 ? input.budget / totalExps / Math.max(1, Number(input.pessoas) || 1) : Infinity;
     const seed = Number(input.seed || 0);
 
     // PRNG simples com seed — Mulberry32. Permite reproduzir / variar o roteiro
@@ -116,7 +118,7 @@ function generateRoteiro(input) {
         score += rand() * 1.5;
 
         return { exp: e, vin, score, vagas, motivos };
-    });
+    }).filter(item => item.vin); // descarta experiencias orfas (vinicola_id sem vinicola) — evita crash no render
 
     scored.sort((a, b) => b.score - a.score || a.exp.preco - b.exp.preco);
 
@@ -262,6 +264,21 @@ function renderRoteiro(plano) {
     section.hidden = false;
     document.querySelector('[data-roteiro-link]')?.removeAttribute('hidden');
     document.querySelector('[data-mapa-link]')?.removeAttribute('hidden');
+
+    // Estado vazio amigavel: se nao deu pra montar nenhum dia (ex.: catalogo
+    // vazio vindo da API, ou filtros impossiveis), explica em vez de mostrar
+    // uma secao quebrada/confusa. Protege o fluxo critico.
+    if (!plano || !plano.dias || plano.dias.length === 0) {
+        const sub = document.getElementById('roteiro-subtitle');
+        if (sub) sub.textContent = 'Não encontramos experiências para esses critérios.';
+        document.getElementById('roteiro-meta').innerHTML = '';
+        document.getElementById('roteiro-tags').innerHTML = '';
+        document.getElementById('roteiro-budget').innerHTML = '';
+        document.getElementById('roteiro-days').innerHTML = '<p class="exp-empty">Tente ampliar o orçamento, aumentar os dias ou escolher outros interesses para gerar um roteiro.</p>';
+        document.getElementById('roteiro-transporte')?.remove();
+        section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        return;
+    }
 
     const overBudget = plano.total > plano.budget && plano.budget > 0;
     const budgetPct = plano.budget > 0

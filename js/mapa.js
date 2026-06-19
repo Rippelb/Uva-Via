@@ -36,8 +36,8 @@ function sugerirAlmoco(stopAtual, stopProx) {
     const fim = timeToMin(stopAtual.saida);
     const inicio = timeToMin(stopProx.chegada);
     if (fim >= 12 * 60 && fim <= 14 * 60 && (inicio - fim) >= 30) {
-        const jaHarmonizada = (stopAtual.exp.tags || []).includes('harmonizado')
-            || (stopProx.exp.tags || []).includes('harmonizado');
+        const jaHarmonizada = (stopAtual.exp?.tags || []).includes('harmonizado')
+            || (stopProx.exp?.tags || []).includes('harmonizado');
         if (jaHarmonizada) return null;
         return {
             tipo: 'almoço',
@@ -97,7 +97,7 @@ function renderMapa(plano) {
         const resumo = document.getElementById('mapa-resumo');
         resumo.parentNode.insertBefore(actionsEl, resumo.nextSibling);
     }
-    const vinsDoDia = (plano.dias[mapaActiveDay] || plano.dias[0] || []).map(s => s.vin);
+    const vinsDoDia = (plano.dias[mapaActiveDay] || plano.dias[0] || []).filter(s => s && s.vin).map(s => s.vin);
     const rotaUrl = gmapsDirUrl(vinsDoDia);
     actionsEl.innerHTML = `
         ${rotaUrl ? `<a class="btn btn-primary btn-sm" id="btn-mapa-rota" href="${rotaUrl}" target="_blank" rel="noopener">
@@ -132,8 +132,9 @@ function renderMapa(plano) {
         });
     });
 
-    // Cabecalho do dia ativo — km do dia, paradas do dia, primeiro e ultimo horario
-    const dia = plano.dias[mapaActiveDay] || plano.dias[0];
+    // Cabecalho do dia ativo — km do dia, paradas do dia, primeiro e ultimo horario.
+    // Filtra paradas malformadas (defesa contra plano antigo/corrompido no storage).
+    const dia = (plano.dias[mapaActiveDay] || plano.dias[0] || []).filter(s => s && s.vin && s.exp);
     const kmDia = dia.reduce((s, x) => s + (x.distanciaKm || 0), 0);
     const tempoDia = dia.reduce((s, x) => s + x.exp.duracao + (x.deslocamentoMin || 0), 0);
     const inicioDia = dia[0]?.chegada || dia[0]?.horario_sugerido || '—';

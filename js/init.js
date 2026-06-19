@@ -57,12 +57,19 @@ if (typeof renderFavoritos === 'function') renderFavoritos();
 if (typeof renderLembrete === 'function') renderLembrete();
 if (typeof renderRoteirosProntos === 'function') renderRoteirosProntos();
 
-// Tenta restaurar plano via hash compartilhado antes de cair pro localStorage
-const restauradoDoHash = tryRestorePlanoFromHash();
-const planoSalvo = restauradoDoHash ? null : loadPlan();
-if (planoSalvo) {
-    renderMapa(planoSalvo);
-    document.querySelector('[data-mapa-link]')?.removeAttribute('hidden');
+// Tenta restaurar plano via hash compartilhado antes de cair pro localStorage.
+// Envolto em try/catch: um plano antigo/corrompido jamais pode quebrar o boot
+// e deixar a pagina em branco numa demo.
+try {
+    const restauradoDoHash = tryRestorePlanoFromHash();
+    const planoSalvo = restauradoDoHash ? null : loadPlan();
+    if (planoSalvo) {
+        renderMapa(planoSalvo);
+        document.querySelector('[data-mapa-link]')?.removeAttribute('hidden');
+    }
+} catch (e) {
+    console.warn('[Uva&Via] Plano salvo invalido — descartando.', e);
+    try { clearPlan(); } catch {}
 }
 
 // Re-aplica min={today} a cada meia hora caso o usuario deixe a aba aberta

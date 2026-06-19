@@ -92,8 +92,11 @@ document.querySelectorAll('input[name="manage-mode"]').forEach(r => {
 });
 
 function timeToMin(t) {
-    const [h, m] = t.split(':').map(Number);
-    return h * 60 + m;
+    // Defensivo: t pode vir undefined/malformado de um plano antigo no
+    // localStorage — sem isto, .split quebraria o render do roteiro/mapa ao
+    // revisitar a pagina. Default seguro para 00:00.
+    const parts = String(t || '00:00').split(':').map(Number);
+    return (parts[0] || 0) * 60 + (parts[1] || 0);
 }
 function minToTime(min) {
     const h = Math.floor(min / 60);
