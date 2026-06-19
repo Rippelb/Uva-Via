@@ -71,9 +71,9 @@ function downloadICS(r) {
         `DTSTAMP:${toICS(new Date())}`,
         `DTSTART:${toICS(dt)}`,
         `DTEND:${toICS(dtEnd)}`,
-        `SUMMARY:${r.experiencia} — ${r.vinicola}`,
-        `LOCATION:${r.vinicola}, ${r.cidade}`,
-        `DESCRIPTION:Reserva Uva & Via — ${r.pessoas} pessoa(s). Responsável: ${r.nome}.`,
+        `SUMMARY:${escapeICS(r.experiencia)} — ${escapeICS(r.vinicola)}`,
+        `LOCATION:${escapeICS(r.vinicola)}, ${escapeICS(r.cidade)}`,
+        `DESCRIPTION:${escapeICS(`Reserva Uva & Via — ${r.pessoas} pessoa(s). Responsável: ${r.nome}.`)}`,
         'END:VEVENT',
         'END:VCALENDAR',
     ].join('\r\n');
@@ -81,7 +81,7 @@ function downloadICS(r) {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `reserva-${r.vinicola.replace(/\s+/g, '-').toLowerCase()}-${r.data}.ics`;
+    a.download = `reserva-${(r.vinicola || 'uvaevia').replace(/\s+/g, '-').toLowerCase()}-${r.data}.ics`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);

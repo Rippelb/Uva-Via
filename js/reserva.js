@@ -105,6 +105,11 @@ function refreshSlots(opts = {}) {
         return;
     }
     const horarios = getAllHorarios().filter(h => h.experiencia_id === exp.id && h.vagas > 0);
+    // Se o horario selecionado sumiu (vagas zeradas pelo tick em tempo real),
+    // limpa a selecao para o resumo nao apontar um slot inexistente.
+    if (selectedHorarioId && !horarios.some(h => h.id === selectedHorarioId)) {
+        selectedHorarioId = null;
+    }
     slotsBlock.hidden = false;
     updateSlotsTimestamp();
     if (horarios.length === 0) {

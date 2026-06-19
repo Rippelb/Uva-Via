@@ -280,8 +280,8 @@ function downloadICSRoteiro(plano) {
             linhas.push(`DTSTAMP:${toICS(new Date())}`);
             linhas.push(`DTSTART:${toICS(dt)}`);
             linhas.push(`DTEND:${toICS(dtEnd)}`);
-            linhas.push(`SUMMARY:${stop.exp.nome} — ${stop.vin.nome}`);
-            linhas.push(`LOCATION:${stop.vin.nome}, ${stop.vin.cidade || ''}`);
+            linhas.push(`SUMMARY:${escapeICS(stop.exp.nome)} — ${escapeICS(stop.vin.nome)}`);
+            linhas.push(`LOCATION:${escapeICS(stop.vin.nome)}, ${escapeICS(stop.vin.cidade || '')}`);
             linhas.push(`DESCRIPTION:Parada ${idx + 1} do dia ${i + 1} no roteiro Uva & Via.`);
             linhas.push('END:VEVENT');
         });

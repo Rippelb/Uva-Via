@@ -70,6 +70,13 @@ document.getElementById('booking-form').addEventListener('submit', (e) => {
         showToast('Preencha todos os campos antes de reservar.', 'error');
         return;
     }
+    // Defesa contra "overbooking": o tick em tempo real pode ter reduzido as
+    // vagas abaixo do nº de pessoas entre a selecao e o envio.
+    if (hor.vagas < pessoas) {
+        showToast('Não há vagas suficientes nesse horário para essa quantidade. Escolha outro.', 'error');
+        refreshSlots({ preserveSelection: true });
+        return;
+    }
     const reserva = {
         id: 'r_' + Date.now(),
         codigo: (typeof gerarCodigoReserva === 'function' ? gerarCodigoReserva() : 'UV-' + Date.now().toString(36).toUpperCase().slice(-6)),

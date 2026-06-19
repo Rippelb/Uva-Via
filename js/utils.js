@@ -37,6 +37,10 @@ const addDays = (isoDate, days) => {
     d.setDate(d.getDate() + days);
     return d.toISOString().slice(0, 10);
 };
+// Escapa texto para iCalendar (RFC 5545): barra invertida, ponto-e-virgula,
+// virgula e quebra de linha. Sem isto, nomes com virgula truncam o evento .ics.
+const escapeICS = (s) => String(s == null ? '' : s)
+    .replace(/\\/g, '\\\\').replace(/;/g, '\\;').replace(/,/g, '\\,').replace(/\r?\n/g, '\\n');
 const minutosParaHHMM = (mins) => {
     const h = Math.floor(mins / 60);
     const m = mins % 60;
