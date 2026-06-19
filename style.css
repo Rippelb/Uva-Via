@@ -4054,3 +4054,24 @@ body.modal-open { overflow: hidden; }
 .news-msg { display: block; margin-top: .5rem; font-size: .8rem; }
 .news-msg.is-ok { color: var(--oliva-claro); }
 .news-msg.is-error { color: #e8a0a0; }
+
+/* ============================================================
+   COMO FUNCIONA (onboarding em 3 passos)
+   ============================================================ */
+.como-funciona { padding: var(--space-7) var(--space-4); background: var(--branco); }
+.cf-inner { max-width: 1000px; margin: 0 auto; }
+.cf-steps { list-style: none; display: grid; grid-template-columns: 1fr; gap: var(--space-4); margin-top: var(--space-5); }
+.cf-step {
+    display: flex; gap: var(--space-3); align-items: flex-start;
+    background: linear-gradient(135deg, var(--bege), #fff);
+    border: 1px solid var(--borda); border-radius: 14px; padding: var(--space-4);
+}
+.cf-num {
+    flex-shrink: 0; width: 40px; height: 40px; border-radius: 50%;
+    display: grid; place-items: center;
+    background: var(--vinho); color: var(--bege);
+    font-family: var(--font-serif); font-style: italic; font-size: 1.3rem; font-weight: 600;
+}
+.cf-step strong { display: block; color: var(--texto); font-size: 1.05rem; margin-bottom: .2rem; }
+.cf-step p { font-size: .9rem; color: rgba(44, 26, 31, .72); line-height: 1.5; }
+@media (min-width: 760px) { .cf-steps { grid-template-columns: repeat(3, 1fr); } }
