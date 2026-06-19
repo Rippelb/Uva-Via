@@ -175,7 +175,7 @@ function mapExperiencia(e) {
         categoria: e.categoria,
         tags: Array.isArray(e.tags) && e.tags.length ? e.tags : (seed.tags || []),
         // Enriquecimento preservado do seed
-        inclui: Array.isArray(e.inclui) ? e.inclui : seed.inclui,
+        inclui: Array.isArray(e.inclui) ? e.inclui : (seed.inclui || []),
         cancelamento: e.cancelamento || seed.cancelamento,
     };
 }
@@ -187,7 +187,7 @@ function mapHorario(h) {
         data: h.data,
         horario: typeof h.horario === 'string' ? h.horario.slice(0, 5) : h.horario,
         vagas: Number(h.vagas_disponiveis),
-        capacidade: Number(h.capacidade_maxima),
+        capacidade: Number(h.capacidade_maxima || h.vagas_disponiveis),
         status: h.status,
     };
 }
@@ -200,6 +200,9 @@ function repopularSelect(selectEl, items, valueKey, labelFn, placeholder) {
     items.forEach(it => selectEl.appendChild(new Option(labelFn(it), it[valueKey])));
     if (previous && items.some(it => String(it[valueKey]) === previous)) {
         selectEl.value = previous;
+    } else if (selectEl.value && !items.some(it => String(it[valueKey]) === selectEl.value)) {
+        // Backend trouxe IDs divergentes do seed: garante value valido/vazio.
+        selectEl.value = '';
     }
 }
 

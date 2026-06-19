@@ -13,8 +13,12 @@ window.gerarCodigoReserva = gerarCodigoReserva;
 function fecharModal(overlay) {
     if (!overlay) return;
     overlay.classList.remove('is-open');
+    if (overlay.__onKey) document.removeEventListener('keydown', overlay.__onKey);
+    const last = overlay.__lastFocused;
     setTimeout(() => overlay.remove(), 200);
     document.body.classList.remove('modal-open');
+    // Devolve o foco a quem abriu o modal (a11y de teclado).
+    if (last && typeof last.focus === 'function') { try { last.focus(); } catch { /* ignore */ } }
 }
 
 function abrirModal(innerHTML, { labelledby } = {}) {
@@ -22,15 +26,33 @@ function abrirModal(innerHTML, { labelledby } = {}) {
     const overlay = document.createElement('div');
     overlay.className = 'uv-modal-overlay';
     overlay.innerHTML = `<div class="uv-modal" role="dialog" aria-modal="true" tabindex="-1" ${labelledby ? `aria-labelledby="${labelledby}"` : ''}>${innerHTML}</div>`;
+    overlay.__lastFocused = document.activeElement;
     document.body.appendChild(overlay);
     document.body.classList.add('modal-open');
     requestAnimationFrame(() => overlay.classList.add('is-open'));
 
+    const modalEl = overlay.querySelector('.uv-modal');
+    const focusables = () => [...modalEl.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])')]
+        .filter(el => !el.disabled && el.offsetParent !== null);
+
     overlay.addEventListener('click', (e) => { if (e.target === overlay) fecharModal(overlay); });
     overlay.querySelectorAll('[data-modal-close]').forEach(b => b.addEventListener('click', () => fecharModal(overlay)));
-    const onEsc = (e) => { if (e.key === 'Escape') { fecharModal(overlay); document.removeEventListener('keydown', onEsc); } };
-    document.addEventListener('keydown', onEsc);
-    overlay.querySelector('.uv-modal')?.focus?.();
+
+    // Foco preso dentro do modal + Esc fecha. Tab cicla; Shift+Tab volta.
+    const onKey = (e) => {
+        if (e.key === 'Escape') { fecharModal(overlay); return; }
+        if (e.key === 'Tab') {
+            const f = focusables();
+            if (f.length === 0) { e.preventDefault(); modalEl.focus(); return; }
+            const first = f[0], lastEl = f[f.length - 1];
+            if (e.shiftKey && document.activeElement === first) { e.preventDefault(); lastEl.focus(); }
+            else if (!e.shiftKey && document.activeElement === lastEl) { e.preventDefault(); first.focus(); }
+        }
+    };
+    overlay.__onKey = onKey;
+    document.addEventListener('keydown', onKey);
+
+    (focusables()[0] || modalEl)?.focus?.();
     return overlay;
 }
 window.abrirModal = abrirModal;

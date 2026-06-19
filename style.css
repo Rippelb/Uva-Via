@@ -954,7 +954,10 @@ body.nav-open {
     will-change: transform;
 }
 .btn-lg { padding: 1.05rem 2.25rem; font-size: 0.92rem; }
-.btn:disabled { opacity: .5; cursor: not-allowed; }
+.btn:disabled { opacity: .55; cursor: not-allowed; }
+/* Estado desabilitado mais legivel no mobile: troca o bordo apagado por um bege
+   claro com texto atenuado (sinaliza "indisponivel/ainda nao" com clareza). */
+.btn-primary:disabled { background-color: var(--bege-escuro); color: rgba(44, 26, 31, .55); border-color: var(--bege-escuro); opacity: .9; }
 .btn:not(:disabled):hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
 .btn:not(:disabled):active { transform: translateY(0); box-shadow: var(--shadow-sm); }
 .btn::after {
@@ -3950,7 +3953,8 @@ body.modal-open { overflow: hidden; }
     background: transparent;
     border: 1px solid var(--borda);
     border-radius: 999px;
-    padding: .35rem .7rem;
+    padding: .5rem .85rem;
+    min-height: 44px;
     font: inherit; font-size: .76rem; font-weight: 600;
     color: var(--texto);
     cursor: pointer;
@@ -4075,3 +4079,17 @@ body.modal-open { overflow: hidden; }
 .cf-step strong { display: block; color: var(--texto); font-size: 1.05rem; margin-bottom: .2rem; }
 .cf-step p { font-size: .9rem; color: rgba(44, 26, 31, .72); line-height: 1.5; }
 @media (min-width: 760px) { .cf-steps { grid-template-columns: repeat(3, 1fr); } }
+
+/* ============================================================
+   Ajustes finos mobile/a11y (revisao adversarial)
+   ============================================================ */
+/* Coração não encosta na borda em telas estreitas */
+@media (max-width: 380px) {
+    .sug-card .fav-btn, .exp-card .fav-btn { top: .45rem; right: .45rem; }
+}
+/* Dica visual de scroll nas abas de dia do mapa (3+ dias) no mobile */
+@media (max-width: 600px) {
+    .mapa-tabs { scrollbar-width: thin; }
+    .mapa-tabs::-webkit-scrollbar { display: block; height: 4px; }
+    .mapa-tabs::-webkit-scrollbar-thumb { background: var(--bege-escuro); border-radius: 999px; }
+}
