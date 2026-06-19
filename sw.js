@@ -4,7 +4,7 @@
 // Estratégia: navegação network-first (mostra updates), estáticos cache-first.
 // Nunca cacheia /api/* (dinâmico) nem outras origens (CDN de fontes/ícones).
 
-const CACHE = 'uvaevia-v1';
+const CACHE = 'uvaevia-v2';
 const CORE = [
   './', 'index.html', 'style.css', 'manifest.webmanifest', 'icon.svg',
   'js/data.js', 'js/dados-extra.js', 'js/utils.js', 'js/navegacao.js', 'js/destaques.js',
@@ -38,22 +38,15 @@ self.addEventListener('fetch', (e) => {
   if (url.origin !== self.location.origin) return;   // CDN de fontes/FA segue normal
   if (url.pathname.includes('/api/')) return;          // API nunca é cacheada
 
-  if (req.mode === 'navigate') {
-    e.respondWith(
-      fetch(req)
-        .then(res => { const copy = res.clone(); caches.open(CACHE).then(c => c.put(req, copy)); return res; })
-        .catch(() => caches.match(req).then(r => r || caches.match('index.html')))
-    );
-    return;
-  }
-
+  // Network-first para TUDO (mesma origem): garante que o app sempre carrega a
+  // versão mais nova quando online — sem bug de asset velho após deploy — e cai
+  // no cache só quando offline. Trade-off de velocidade irrelevante para o porte.
   e.respondWith(
-    caches.match(req).then(cached => {
-      const network = fetch(req).then(res => {
+    fetch(req)
+      .then(res => {
         if (res && res.status === 200) { const copy = res.clone(); caches.open(CACHE).then(c => c.put(req, copy)); }
         return res;
-      }).catch(() => cached);
-      return cached || network;
-    })
+      })
+      .catch(() => caches.match(req).then(r => r || (req.mode === 'navigate' ? caches.match('index.html') : undefined)))
   );
 });

@@ -250,10 +250,11 @@ body.auth-locked .auth-modal-foot { background: rgba(245,236,217,.6); }
     const tabBtns = overlay.querySelectorAll('.auth-tabs button');
     const forms = overlay.querySelectorAll('.auth-form');
 
-    // Locked: modal nao fecha (sem X, ESC ou clique fora). Usado quando o
-    // sistema inteiro esta gated atras do login ou exige troca de senha.
-    let locked = true;
-    document.body.classList.add('auth-locked');
+    // Locked: modal nao fecha (sem X, ESC ou clique fora). Guest-first: o app NAO
+    // nasce travado — o visitante usa o fluxo central (gerar roteiro, explorar,
+    // reservar) sem login. So travamos em casos especificos (troca de senha
+    // obrigatoria de admin). Login segue disponivel pelo botao "Entrar".
+    let locked = false;
 
     function setLocked(value) {
         locked = !!value;
@@ -513,9 +514,12 @@ body.auth-locked .auth-modal-foot { background: rgba(245,236,217,.6); }
         applyRoleVisibility(user);
 
         if (!user) {
-            // Sessao perdida ou logout: re-trava tudo.
-            setLocked(true);
-            openModal('login');
+            // Guest-first: sem usuario (visitante, logout ou backend fora) o app
+            // continua liberado como convidado. Nada de muro de login na frente
+            // do fluxo central. "Entrar" fica no header; areas protegidas (Gestao)
+            // somem via applyRoleVisibility e pedem login sob demanda.
+            setLocked(false);
+            closeModal(true);
         } else if (user.must_change_password) {
             setLocked(true);
             openModal('change-password');
@@ -530,10 +534,14 @@ body.auth-locked .auth-modal-foot { background: rgba(245,236,217,.6); }
         openModal('login');
     });
 
-    // Estado inicial: travado ate o primeiro refreshSession resolver.
+    // Estado inicial guest-first: widget "Entrar" e conteudo visivel. NAO abrimos
+    // login automaticamente. Safety: se algum codigo travar a pagina e nao for
+    // troca de senha obrigatoria, libera apos 4s para nunca ficar em branco.
     renderWidget(null);
     applyRoleVisibility(null);
-    openModal('login');
+    setTimeout(() => {
+        if (document.body.classList.contains('auth-locked') && !modal.classList.contains('auth-modal--locked')) setLocked(false);
+    }, 4000);
 
     window.UvaViaAuthUI = { open: openModal, close: () => closeModal(true), lock: () => setLocked(true), unlock: () => setLocked(false) };
 })();
