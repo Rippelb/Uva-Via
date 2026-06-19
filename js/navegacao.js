@@ -1,5 +1,5 @@
 // Navegacao mobile (drawer, scroll spy, reveal) + Hero search global
-// Dividido de script.js — carregado como <script> classico, ordem importa.
+// Dividido de script.js - carregado como <script> classico, ordem importa.
 
 // =================== Navegacao mobile (drawer lateral) ===================
 const navToggle = document.querySelector('.nav-toggle');

@@ -1,4 +1,4 @@
-// Parcerias (B2B) + newsletter — mitigações dos riscos de negócio nº2 (receita)
+// Parcerias (B2B) + newsletter - mitigações dos riscos de negócio nº2 (receita)
 // e nº4/5 (retenção/distribuição). Sem backend de e-mail, os leads ficam em
 // localStorage (demo); o que importa aqui é tornar o MODELO visível e capturar
 // intenção. Carregado antes do init.js; os forms são estáticos no HTML.

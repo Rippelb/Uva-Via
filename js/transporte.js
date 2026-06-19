@@ -1,5 +1,5 @@
-// Logística & transporte — o diferencial nascido da pesquisa de campo: no Vale
-// dos Vinhedos as vinícolas ficam a 3–8 km umas das outras e DIRIGIR APÓS
+// Logística & transporte - o diferencial nascido da pesquisa de campo: no Vale
+// dos Vinhedos as vinícolas ficam a 3-8 km umas das outras e DIRIGIR APÓS
 // DEGUSTAR é o maior problema do passeio. Nenhum concorrente trata isso.
 // Renderizado dentro do roteiro, abaixo do orçamento.
 
@@ -18,7 +18,7 @@ function setModoTransporte(m) {
     try { localStorage.setItem(STORAGE_TRANSPORTE, m); } catch { /* ignore */ }
 }
 
-// Estimativa de custo por app (Uber/99) — heurística simples e transparente:
+// Estimativa de custo por app (Uber/99) - heurística simples e transparente:
 // bandeirada + R$/km, multiplicada pelo número de trechos (paradas).
 // Devolvido como faixa para deixar claro que é estimativa.
 function estimativaApp(km, paradas) {
@@ -63,13 +63,13 @@ function renderTransporte(plano) {
             : '';
         const motoristaCheck = pessoas > 1
             ? `<label class="transporte-check"><input type="checkbox" id="check-motorista"> Já temos um <strong>motorista da rodada</strong> definido (quem dirige não degusta).</label>`
-            : `<p class="transporte-aviso"><i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i> Viajando só? Se for degustar, considere <button type="button" class="link-modo" data-modo="app">motorista por app</button> ou <button type="button" class="link-modo" data-modo="transfer">transfer</button> — Lei Seca é tolerância zero.</p>`;
+            : `<p class="transporte-aviso"><i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i> Viajando só? Se for degustar, considere <button type="button" class="link-modo" data-modo="app">motorista por app</button> ou <button type="button" class="link-modo" data-modo="transfer">transfer</button> - Lei Seca é tolerância zero.</p>`;
         painel = `
-            <p class="transporte-lead">As vinícolas ficam a <strong>3–8 km</strong> umas das outras. São <strong>${km} km</strong> e cerca de <strong>${desloc}</strong> ao volante neste roteiro.</p>
+            <p class="transporte-lead">As vinícolas ficam a <strong>3-8 km</strong> umas das outras. São <strong>${km} km</strong> e cerca de <strong>${desloc}</strong> ao volante neste roteiro.</p>
             <ul class="transporte-dicas">
                 <li><i class="fa-solid fa-user-shield" aria-hidden="true"></i> <strong>Motorista da rodada:</strong> defina quem não vai beber. Quase toda vinícola oferece suco/água e cospideiras na degustação.</li>
                 ${rodizio}
-                <li><i class="fa-solid fa-square-parking" aria-hidden="true"></i> Todas as paradas têm estacionamento próprio — chegue com folga nos fins de semana.</li>
+                <li><i class="fa-solid fa-square-parking" aria-hidden="true"></i> Todas as paradas têm estacionamento próprio - chegue com folga nos fins de semana.</li>
             </ul>
             ${motoristaCheck}
         `;
@@ -79,24 +79,24 @@ function renderTransporte(plano) {
             <p class="transporte-lead">Ideal quando <strong>todos querem degustar</strong>. Estimativa de <strong>Uber/99</strong> para os ${paradas} trechos:</p>
             <div class="transporte-custo">
                 <span>Custo aproximado (ida, paradas e volta)</span>
-                <strong>${fmtBRL(est.baixa)} – ${fmtBRL(est.alta)}</strong>
+                <strong>${fmtBRL(est.baixa)} - ${fmtBRL(est.alta)}</strong>
                 <small>por dia · estimativa, não cobrança</small>
             </div>
             <ul class="transporte-dicas">
-                <li><i class="fa-solid fa-signal" aria-hidden="true"></i> Algumas vinícolas têm <strong>sinal fraco</strong> — peça o carro com antecedência ou combine retorno com o anfitrião.</li>
+                <li><i class="fa-solid fa-signal" aria-hidden="true"></i> Algumas vinícolas têm <strong>sinal fraco</strong> - peça o carro com antecedência ou combine retorno com o anfitrião.</li>
                 <li><i class="fa-solid fa-clock" aria-hidden="true"></i> Em horário de pico pode faltar carro na zona rural; tenha um plano B.</li>
             </ul>
         `;
     } else {
         painel = `
-            <p class="transporte-lead">Transfer/agência <strong>leva e busca com motorista</strong> — beba sem preocupação e sem perder tempo dirigindo.</p>
+            <p class="transporte-lead">Transfer/agência <strong>leva e busca com motorista</strong> - beba sem preocupação e sem perder tempo dirigindo.</p>
             <div class="transporte-custo">
                 <span>Faixa de mercado (motorista o dia todo)</span>
-                <strong>${fmtBRL(150)} – ${fmtBRL(350)}</strong>
+                <strong>${fmtBRL(150)} - ${fmtBRL(350)}</strong>
                 <small>por pessoa/dia · varia com o grupo e o roteiro</small>
             </div>
             <ul class="transporte-dicas">
-                <li><i class="fa-solid fa-people-group" aria-hidden="true"></i> Compensa mais em <strong>grupos</strong> — o custo se dilui entre os participantes.</li>
+                <li><i class="fa-solid fa-people-group" aria-hidden="true"></i> Compensa mais em <strong>grupos</strong> - o custo se dilui entre os participantes.</li>
                 <li><i class="fa-solid fa-calendar-check" aria-hidden="true"></i> Reserve com antecedência na alta temporada (vindima, feriados).</li>
             </ul>
         `;

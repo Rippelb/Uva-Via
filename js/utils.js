@@ -1,5 +1,5 @@
 // Utils (formatadores, datas, distancia) + Toast
-// Dividido de script.js — carregado como <script> classico, ordem importa.
+// Dividido de script.js - carregado como <script> classico, ordem importa.
 
 // =================== Utils ===================
 const fmtBRL = (n) => (n || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });

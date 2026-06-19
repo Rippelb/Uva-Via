@@ -1,4 +1,4 @@
-// Comprovante / voucher de reserva — combate a reclamação nº1 de plataformas de
+// Comprovante / voucher de reserva - combate a reclamação nº1 de plataformas de
 // passeio ("desencontro de informações, perdi o passeio"). Mostra código,
 // endereço, contato, o que está incluído, o que levar e a política de
 // cancelamento num único lugar, no celular. Inspirado no voucher mobile do
@@ -89,7 +89,7 @@ function openComprovante(reservaId) {
             </div>
             <h2 id="comprovante-title" class="comprovante-titulo">${r.experiencia}</h2>
             <p class="comprovante-vin">${r.vinicola} · ${r.cidade || ''}</p>
-            ${status.cls === 'is-pendente' ? '<p class="comprovante-aguardando"><i class="fa-regular fa-clock" aria-hidden="true"></i> Solicitação recebida — aguardando confirmação da vinícola. Avisaremos no seu contato.</p>' : ''}
+            ${status.cls === 'is-pendente' ? '<p class="comprovante-aguardando"><i class="fa-regular fa-clock" aria-hidden="true"></i> Solicitação recebida, aguardando confirmação da vinícola. Avisaremos no seu contato.</p>' : ''}
 
             <div class="comprovante-codigo">
                 <span>Código da reserva</span>

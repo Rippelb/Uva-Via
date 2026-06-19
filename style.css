@@ -1,5 +1,5 @@
 /* =============================================================
-   Uva & Via — Stylesheet mobile-first
+   Uva & Via - Stylesheet mobile-first
    Estrutura: base (mobile) -> @media (min-width: ...) progressivo
    ============================================================= */
 
@@ -81,7 +81,7 @@ body {
 img { max-width: 100%; height: auto; display: block; }
 button, input, select, textarea { font: inherit; color: inherit; }
 
-/* Fix: o atributo hidden deve sempre ocultar — display: flex/grid em
+/* Fix: o atributo hidden deve sempre ocultar - display: flex/grid em
    .summary, .slots-block, .nav-menu etc estava sobrescrevendo o default. */
 [hidden] { display: none !important; }
 
@@ -206,7 +206,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
     transform: scale(1.1);
 }
 
-/* Drawer lateral mobile — slide-in da direita */
+/* Drawer lateral mobile - slide-in da direita */
 .nav-menu {
     position: fixed;
     top: 0;
@@ -377,7 +377,7 @@ body.nav-open {
 }
 
 /* ============================================================
-   HERO — Animada e em camadas
+   HERO - Animada e em camadas
    ============================================================ */
 .hero {
     min-height: 92vh;
@@ -425,7 +425,7 @@ body.nav-open {
     z-index: -1;
 }
 
-/* Hero limpa — só gradientes radiais animados (sem icones decorativos) */
+/* Hero limpa - só gradientes radiais animados (sem icones decorativos) */
 .hero-content {
     max-width: 820px;
     text-align: center;
@@ -480,7 +480,7 @@ body.nav-open {
     50%      { background-position: -50% 0; }
 }
 
-/* Brand mark — taca animada na nav */
+/* Brand mark - taca animada na nav */
 .brand-mark i {
     animation: brandTilt 4s ease-in-out infinite;
     transform-origin: 50% 80%;
@@ -691,7 +691,7 @@ body.nav-open {
     }
 }
 
-/* Backgrounds das secoes — gradientes verticais com transicao suave nas bordas.
+/* Backgrounds das secoes - gradientes verticais com transicao suave nas bordas.
    Cada secao começa com um fade da cor da secao anterior (top ~100px) e
    termina com um fade para a proxima cor (bottom ~100px). */
 
@@ -737,7 +737,7 @@ body.nav-open {
     background: linear-gradient(180deg, #f1e4cc 0%, var(--bege) 100%);
 }
 
-/* Divisor sutil oliva — aparece como um shimmer entre algumas secoes */
+/* Divisor sutil oliva - aparece como um shimmer entre algumas secoes */
 .section-divider {
     height: 1px;
     background: linear-gradient(90deg, transparent, var(--oliva-claro), transparent);
@@ -1573,7 +1573,7 @@ body.nav-open {
 }
 
 /* ============================================================
-   ROTEIRO v2 — sumario narrativo, motivos por parada, btn pequeno
+   ROTEIRO v2 - sumario narrativo, motivos por parada, btn pequeno
    ============================================================ */
 .roteiro-sumario {
     background-color: var(--bege);
@@ -1649,7 +1649,7 @@ body.nav-open {
 }
 
 /* ============================================================
-   MAPA v2 — actions bar, cabecalho do dia, pausa de almoco, motivo
+   MAPA v2 - actions bar, cabecalho do dia, pausa de almoco, motivo
    ============================================================ */
 .mapa-actions {
     display: flex;
@@ -2353,7 +2353,7 @@ body.nav-open {
 }
 
 /* ============================================================
-   SUGESTOES — filtros + live timestamp
+   SUGESTOES - filtros + live timestamp
    ============================================================ */
 .sugestoes-controls {
     display: flex;
@@ -2805,7 +2805,7 @@ body.nav-open {
 }
 
 /* ============================================================
-   RESERVAS — status pills + groups + acoes extras
+   RESERVAS - status pills + groups + acoes extras
    ============================================================ */
 .reservas-group {
     margin-bottom: var(--space-5);
@@ -3573,7 +3573,7 @@ body.nav-open {
 }
 
 /* ============================================================
-   FAVORITOS — coração nos cards, badge no menu e seção dedicada
+   FAVORITOS - coração nos cards, badge no menu e seção dedicada
    ============================================================ */
 .nav-badge {
     display: inline-grid;
@@ -3691,7 +3691,7 @@ body.nav-open {
 }
 
 /* ============================================================
-   LOGÍSTICA & TRANSPORTE (motorista da rodada) — diferencial
+   LOGÍSTICA & TRANSPORTE (motorista da rodada) - diferencial
    ============================================================ */
 .transporte-bloco {
     background: linear-gradient(135deg, rgba(107, 122, 58, .08), rgba(74, 13, 31, .05));
@@ -3943,7 +3943,7 @@ body.modal-open { overflow: hidden; }
 @media (min-width: 960px) { .rp-grid { grid-template-columns: repeat(3, 1fr); } }
 
 /* ============================================================
-   REVIEWS turbinadas — selo verificado + voto "útil"
+   REVIEWS turbinadas - selo verificado + voto "útil"
    ============================================================ */
 .aval-verif { color: var(--status-livre); font-weight: 600; white-space: nowrap; }
 .aval-verif i { font-size: .9em; }
@@ -3994,7 +3994,7 @@ body.modal-open { overflow: hidden; }
 .exp-comod-fav.is-active i { color: var(--branco); }
 
 /* ============================================================
-   PWA — botão instalar (no rodapé)
+   PWA - botão instalar (no rodapé)
    ============================================================ */
 .pwa-install-btn {
     margin-top: var(--space-4);
@@ -4011,7 +4011,7 @@ body.modal-open { overflow: hidden; }
 .pwa-install-btn:hover { background: var(--bege); color: var(--vinho); }
 
 /* ============================================================
-   RESERVA HONESTA — solicitação pendente + contato de confirmação
+   RESERVA HONESTA - solicitação pendente + contato de confirmação
    ============================================================ */
 .label-opt { font-weight: 400; color: rgba(44, 26, 31, .5); font-size: .85em; }
 .slots-note { display: block; margin-top: .6rem; font-size: .78rem; color: rgba(44, 26, 31, .6); }

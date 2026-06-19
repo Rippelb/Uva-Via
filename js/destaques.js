@@ -1,5 +1,5 @@
 // Sugestoes do dia + Vinicolas boutique + Perfil da Vinicola
-// Dividido de script.js — carregado como <script> classico, ordem importa.
+// Dividido de script.js - carregado como <script> classico, ordem importa.
 
 // =================== Sugestoes do dia ===================
 function getDisponibilidadeStatus(vagas, capacidade) {
@@ -19,7 +19,7 @@ function getProximoHorario(expId) {
         .sort((a, b) => (a.data + a.horario).localeCompare(b.data + b.horario))[0];
 }
 
-// Filtro temporal das sugestoes — alimenta os chips "Hoje | Amanhã | Fim de semana | Todas".
+// Filtro temporal das sugestoes - alimenta os chips "Hoje | Amanhã | Fim de semana | Todas".
 let sugFiltro = 'hoje';
 
 function dataMatchesFiltro(iso, filtro) {
@@ -48,13 +48,13 @@ function getProximoHorarioComFiltro(expId, filtro) {
         .sort((a, b) => (a.data + a.horario).localeCompare(b.data + b.horario))[0];
 }
 
-// Motivo personalizado por tag — explica "porque essa sugestao".
+// Motivo personalizado por tag - explica "porque essa sugestao".
 const SUG_MOTIVO = {
     'piquenique':         'Para curtir os vinhedos ao ar livre, com tempo de respirar.',
-    'degustacao-premium': 'Vinhos ícones conduzidos por sommelier — para quem quer profundidade.',
+    'degustacao-premium': 'Vinhos ícones conduzidos por sommelier, para quem quer profundidade.',
     'visita-tecnica':     'Entenda o terroir e o processo direto na cave.',
     'harmonizado':        'Cada vinho casado com um prato pensado pelo chef.',
-    'por-do-sol':         'A luz dourada cai sobre os vinhedos — momento icônico.',
+    'por-do-sol':         'A luz dourada cai sobre os vinhedos, momento icônico.',
     'boutique':           'Cantina intimista, atendimento próximo, produção limitada.',
 };
 
@@ -82,7 +82,7 @@ function renderSugestoes() {
 
     // Fallback: se filtro estrito nao trouxe nada, mostra "todas" mas avisa.
     if (sugestoes.length === 0 && sugFiltro !== 'todas') {
-        grid.innerHTML = `<p class="exp-empty">Sem sugestões com vagas para esse período — <button type="button" class="btn btn-ghost" id="sug-fallback" style="display:inline-flex;margin-left:.5rem;padding:.5rem .9rem;font-size:.75rem;min-height:36px">Ver todas</button></p>`;
+        grid.innerHTML = `<p class="exp-empty">Sem sugestões com vagas para esse período. <button type="button" class="btn btn-ghost" id="sug-fallback" style="display:inline-flex;margin-left:.5rem;padding:.5rem .9rem;font-size:.75rem;min-height:36px">Ver todas</button></p>`;
         document.getElementById('sug-fallback')?.addEventListener('click', () => {
             sugFiltro = 'todas';
             document.querySelectorAll('.sug-filter').forEach(b => {
@@ -169,8 +169,8 @@ function renderBoutique() {
         const expCount = EXPERIENCIAS.filter(e => e.vinicola_id === v.id).length;
         const initial = (v.nome || '?').replace(/^Vin[íi]cola\s+/i, '').charAt(0).toUpperCase();
         const preco = v.preco_min && v.preco_max
-            ? `${fmtBRL(v.preco_min)}–${fmtBRL(v.preco_max)}`
-            : '—';
+            ? `${fmtBRL(v.preco_min)}-${fmtBRL(v.preco_max)}`
+            : '-';
         const rating = getMediaAvaliacoes(v.id);
         const ratingTag = rating.total > 0
             ? `<span><i class="fa-solid fa-star" aria-hidden="true" style="color:var(--status-quase)"></i> <strong>${rating.media.toFixed(1)}</strong> (${rating.total})</span>`
@@ -219,7 +219,7 @@ function openVinicola(vinId, focusExpId) {
 }
 
 // Bloco de avaliacoes embutido no perfil da vinicola (usado em renderVinicolaPerfil).
-// Funcao definida em modulo separado abaixo, mas referenciada aqui — chamada gera HTML.
+// Funcao definida em modulo separado abaixo, mas referenciada aqui - chamada gera HTML.
 function renderVinAvaliacoes(vin) {
     // Funcao acessa getAllAvaliacoes/avalCardHTML definidos mais abaixo no arquivo;
     // funciona porque `function` declarations sao hoisted.
@@ -280,7 +280,7 @@ function renderVinicolaPerfil(vin, focusExpId) {
                     </div>
                     <div class="vin-meta-item">
                         <span>Faixa de preço/pessoa</span>
-                        <strong>${vin.preco_min && vin.preco_max ? fmtBRL(vin.preco_min) + ' – ' + fmtBRL(vin.preco_max) : '—'}</strong>
+                        <strong>${vin.preco_min && vin.preco_max ? fmtBRL(vin.preco_min) + ' - ' + fmtBRL(vin.preco_max) : '-'}</strong>
                     </div>
                     <div class="vin-meta-item">
                         <span>Experiências disponíveis</span>
@@ -288,7 +288,7 @@ function renderVinicolaPerfil(vin, focusExpId) {
                     </div>
                     <div class="vin-meta-item">
                         <span>Avaliação dos visitantes</span>
-                        <strong>${total > 0 ? media.toFixed(1) + ' / 5' : '—'}</strong>
+                        <strong>${total > 0 ? media.toFixed(1) + ' / 5' : '-'}</strong>
                     </div>
                 </div>
 

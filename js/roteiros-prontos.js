@@ -1,4 +1,4 @@
-// Roteiros prontos — curadoria de 1 clique. Inspirado nos "suggested trips" do
+// Roteiros prontos - curadoria de 1 clique. Inspirado nos "suggested trips" do
 // CellarPass: para quem não quer preencher o wizard, escolhe um tema e o roteiro
 // é gerado na hora (e pode ser ajustado depois). Reduz a fricção de partida.
 
@@ -35,7 +35,7 @@ const ROTEIROS_PRONTOS = [
     },
 ];
 
-// Próximo sábado (>= hoje) — começa a viagem num fim de semana plausível.
+// Próximo sábado (>= hoje) - começa a viagem num fim de semana plausível.
 function proximoSabadoISO() {
     const hoje = new Date();
     hoje.setHours(0, 0, 0, 0);
@@ -81,7 +81,7 @@ function renderRoteirosProntos() {
         btn.addEventListener('click', () => {
             const preset = ROTEIROS_PRONTOS.find(p => p.id === btn.dataset.rp);
             aplicarRoteiroPronto(preset);
-            if (typeof showToast === 'function') showToast(`Roteiro "${preset.titulo}" montado — ajuste como quiser.`);
+            if (typeof showToast === 'function') showToast(`Roteiro "${preset.titulo}" montado - ajuste como quiser.`);
         });
     });
 }

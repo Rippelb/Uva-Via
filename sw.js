@@ -1,4 +1,4 @@
-// Service Worker — Uva & Via PWA.
+// Service Worker - Uva & Via PWA.
 // Offline de verdade: a persona usa o celular na estrada e algumas vinícolas
 // têm sinal fraco (achado da pesquisa de campo). App shell em cache.
 // Estratégia: navegação network-first (mostra updates), estáticos cache-first.
@@ -39,7 +39,7 @@ self.addEventListener('fetch', (e) => {
   if (url.pathname.includes('/api/')) return;          // API nunca é cacheada
 
   // Network-first para TUDO (mesma origem): garante que o app sempre carrega a
-  // versão mais nova quando online — sem bug de asset velho após deploy — e cai
+  // versão mais nova quando online - sem bug de asset velho após deploy - e cai
   // no cache só quando offline. Trade-off de velocidade irrelevante para o porte.
   e.respondWith(
     fetch(req)

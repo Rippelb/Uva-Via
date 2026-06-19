@@ -1,4 +1,4 @@
-# 🍷 Uva & Via — Context
+# 🍷 Uva & Via - Context
 
 > Planejador inteligente de enoturismo para o Vale dos Vinhedos (RS, Brasil).
 
@@ -29,7 +29,7 @@ vinícolas e um mapa-timeline com tabs por dia.
 
 ## 3. Público-alvo
 
-- **Demográfico:** Maiores de 18 anos; pico entre 45–55+ (53,4%)
+- **Demográfico:** Maiores de 18 anos; pico entre 45-55+ (53,4%)
 - **Comportamental:** 64,5% já visitaram regiões vinícolas mais de 3 vezes; 50% viajam com família
 - **Perfis de viagem:** Casal · Família adulta · Grupo de amigos · Viajante solo
 - **Disposição a pagar:** 61,3% preferem soluções gratuitas (logo: MVP free + monetização futura via comissão de reservas)
@@ -64,7 +64,7 @@ vinícolas e um mapa-timeline com tabs por dia.
 ```
 
 **Fallback resiliente:** se a API estiver fora do ar, o `script.js` tem dados embutidos
-(mesmo seed do banco) — o site continua navegável e funcional.
+(mesmo seed do banco) - o site continua navegável e funcional.
 
 ---
 
@@ -141,23 +141,23 @@ Deslocamento estimado: haversine entre vinícolas a 45 km/h, mínimo 5min.
 **Grandes:** Miolo · Casa Valduga · Salton
 
 Cada vinícola tem: nome, cidade, descrição, tipo (boutique/grande), latitude/longitude,
-duração média, faixa de preço, paleta de cover (tones a–e).
+duração média, faixa de preço, paleta de cover (tones a-e).
 
 ---
 
 ## 7. Design System
 
 ### Paleta
-- **Bordô profundo** `#4a0d1f` — universo do vinho (CTAs, headers, brand)
-- **Vinho claro** `#6b1e2f` — hover/states
-- **Bege sofisticado** `#f5ecd9` — superfícies neutras, equilíbrio
-- **Bege escuro** `#d4b996` — bordas decorativas, secondary copy
-- **Oliva** `#6b7a3a` — eyebrows, status livre, accent secundário
+- **Bordô profundo** `#4a0d1f` - universo do vinho (CTAs, headers, brand)
+- **Vinho claro** `#6b1e2f` - hover/states
+- **Bege sofisticado** `#f5ecd9` - superfícies neutras, equilíbrio
+- **Bege escuro** `#d4b996` - bordas decorativas, secondary copy
+- **Oliva** `#6b7a3a` - eyebrows, status livre, accent secundário
 - **Status:** livre `#2d7a4f` · quase cheio `#c98e3e` · lotado `#a83247`
 
 ### Tipografia
-- **Cormorant Garamond** (serif itálico) — títulos, números destacados, identidade premium
-- **Inter** (sans-serif) — body, UI, labels
+- **Cormorant Garamond** (serif itálico) - títulos, números destacados, identidade premium
+- **Inter** (sans-serif) - body, UI, labels
 
 ### Espaçamento
 8 tokens de espaçamento (`--space-1` a `--space-8`, de 0.25rem a 4rem).

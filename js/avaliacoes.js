@@ -1,11 +1,11 @@
 // Avaliacoes (reviews)
-// Dividido de script.js — carregado como <script> classico, ordem importa.
+// Dividido de script.js - carregado como <script> classico, ordem importa.
 
 // =================== AVALIACOES (reviews) ===================
 const STORAGE_AVAL = 'uvaevia.avaliacoes';
 let avalFilter = 'todas';
 
-// --- Votos de "útil" (helpful) — confiança ao estilo GetYourGuide/Tripadvisor.
+// --- Votos de "útil" (helpful) - confiança ao estilo GetYourGuide/Tripadvisor.
 const STORAGE_AVAL_UTEIS = 'uvaevia.avaliacoes.uteis';
 function loadUteis() {
     try { return JSON.parse(localStorage.getItem(STORAGE_AVAL_UTEIS)) || {}; }
@@ -126,7 +126,7 @@ function renderAvaliacoes() {
 
     const all = getAllAvaliacoes();
     const { media, total } = getMediaGeral();
-    if (mediaEl) mediaEl.textContent = total > 0 ? media.toFixed(1) : '—';
+    if (mediaEl) mediaEl.textContent = total > 0 ? media.toFixed(1) : '-';
     if (totalEl) totalEl.textContent = total;
     const heroRating = document.getElementById('hero-rating');
     if (heroRating && total > 0) heroRating.textContent = media.toFixed(1);
@@ -172,7 +172,7 @@ document.querySelectorAll('.aval-filter').forEach(btn => {
     });
 });
 
-// Voto "útil" — delegação global, funciona em qualquer card de avaliação.
+// Voto "útil" - delegação global, funciona em qualquer card de avaliação.
 document.addEventListener('click', (e) => {
     const btn = e.target.closest('.aval-util');
     if (!btn) return;
@@ -198,7 +198,7 @@ function buildAvalForm(reserva) {
         <div class="aval-rating-picker" role="radiogroup" aria-label="Sua nota de 1 a 5 estrelas">
             ${[1,2,3,4,5].map(n => `<button type="button" data-n="${n}" aria-label="${n} estrela${n>1?'s':''}"><i class="fa-regular fa-star" aria-hidden="true"></i></button>`).join('')}
         </div>
-        <textarea placeholder="Conte como foi a experiência — atendimento, vinhos, ambiente, harmonização…" maxlength="320" rows="3"></textarea>
+        <textarea placeholder="Conte como foi a experiência: atendimento, vinhos, ambiente, harmonização…" maxlength="320" rows="3"></textarea>
         <div class="aval-form-actions">
             <button type="button" class="btn btn-ghost" data-aval-cancel>Cancelar</button>
             <button type="button" class="btn btn-primary" data-aval-send disabled>Enviar avaliação</button>
@@ -245,7 +245,7 @@ function buildAvalForm(reserva) {
         const arr = loadAvaliacoes();
         arr.push(nova);
         saveAvaliacoes(arr);
-        showToast('Avaliação enviada — obrigada por compartilhar!');
+        showToast('Avaliação enviada. Obrigada por compartilhar!');
         form.remove();
         renderAvaliacoes();
         renderReservas();

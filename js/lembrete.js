@@ -1,4 +1,4 @@
-// Lembrete da próxima visita — banner discreto quando há reserva para hoje ou
+// Lembrete da próxima visita - banner discreto quando há reserva para hoje ou
 // amanhã. CellarPass/GetYourGuide mandam e-mail de lembrete; sem backend de
 // e-mail, fazemos o lembrete no próprio app (e o .ics cobre o calendário).
 

@@ -1,7 +1,7 @@
-// Disponibilidade em tempo real — tick simulado
-// Dividido de script.js — carregado como <script> classico, ordem importa.
+// Disponibilidade em tempo real - tick simulado
+// Dividido de script.js - carregado como <script> classico, ordem importa.
 
-// =================== Disponibilidade em tempo real — tick simulado ===================
+// =================== Disponibilidade em tempo real - tick simulado ===================
 const STORAGE_LAST_TICK = 'uvaevia.lastTick';
 let liveTickHandle = null;
 let liveTickTimestamp = Date.now();

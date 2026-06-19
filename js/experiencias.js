@@ -1,5 +1,5 @@
 // Catalogo de Experiencias + helpers de selects
-// Dividido de script.js — carregado como <script> classico, ordem importa.
+// Dividido de script.js - carregado como <script> classico, ordem importa.
 
 // =================== Catalogo de Experiencias ===================
 const expSearch = document.getElementById('exp-search');
@@ -9,7 +9,7 @@ const expGrid = document.getElementById('exp-grid');
 const expEmpty = document.getElementById('exp-empty');
 const expCount = document.getElementById('exp-count');
 
-// Filtros por comodidade (da vinícola) + "só favoritos" — descoberta ao estilo
+// Filtros por comodidade (da vinícola) + "só favoritos" - descoberta ao estilo
 // dos filtros de GetYourGuide/Wanderlog.
 const expComodFilters = new Set();
 
@@ -65,7 +65,7 @@ function renderExperiencias() {
         card.className = 'exp-card';
         card.innerHTML = `
             ${window.favBtnHTML ? favBtnHTML('exp', e.id) : ''}
-            <span class="exp-vinicola">${vin?.nome ?? '—'} · ${vin?.cidade ?? ''}</span>
+            <span class="exp-vinicola">${vin?.nome ?? '-'} · ${vin?.cidade ?? ''}</span>
             <h3>${e.nome}</h3>
             <div class="exp-meta">
                 <span><i class="fa-regular fa-clock" aria-hidden="true"></i> <strong>${e.duracao} min</strong></span>

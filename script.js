@@ -52,7 +52,7 @@ let EXPERIENCIAS = [
 ];
 
 // Vinicolas customizadas (criadas via Gestao, persistidas em localStorage).
-// Declarado com var para hoisting — getAllVinicolas() pode ser chamada antes do load.
+// Declarado com var para hoisting - getAllVinicolas() pode ser chamada antes do load.
 var customVinicolas = [];
 
 let HORARIOS = [
@@ -91,13 +91,13 @@ let HORARIOS = [
 // Usuarias podem adicionar novas pela tela "Minhas reservas" apos a data passar.
 const AVALIACOES_SEED = [
     { id: 'av_seed_1',  vinicola_id: 1,  experiencia_id: 1,  nota: 5, autor: 'Helena M.',     perfil: 'Casal',           comentario: 'Atendimento impecável e a degustação de Merlot foi memorável. Voltaremos!',                            data: '2026-04-12' },
-    { id: 'av_seed_2',  vinicola_id: 2,  experiencia_id: 5,  nota: 5, autor: 'Lucas e Ana',   perfil: 'Casal',           comentario: 'Piquenique entre os vinhedos no fim de tarde — luz mágica, espumante perfeito.',                       data: '2026-04-20' },
+    { id: 'av_seed_2',  vinicola_id: 2,  experiencia_id: 5,  nota: 5, autor: 'Lucas e Ana',   perfil: 'Casal',           comentario: 'Piquenique entre os vinhedos no fim de tarde - luz mágica, espumante perfeito.',                       data: '2026-04-20' },
     { id: 'av_seed_3',  vinicola_id: 3,  experiencia_id: 8,  nota: 4, autor: 'Família Souza', perfil: 'Família adulta',  comentario: 'Participar da vindima com as crianças adultas foi inesquecível. Só achei que faltou um pouco de sombra.', data: '2026-03-05' },
     { id: 'av_seed_4',  vinicola_id: 4,  experiencia_id: 10, nota: 5, autor: 'Ricardo P.',    perfil: 'Grupo de amigos', comentario: 'Vertical do Dádivas é uma experiência sensorial sem igual. O sommelier conduziu com maestria.',         data: '2026-04-28' },
     { id: 'av_seed_5',  vinicola_id: 6,  experiencia_id: 16, nota: 5, autor: 'Marina C.',     perfil: 'Casal',           comentario: 'Jantar Maria Valduga foi um dos melhores que já fizemos. Harmonização de outro nível.',                  data: '2026-05-01' },
     { id: 'av_seed_6',  vinicola_id: 7,  experiencia_id: 18, nota: 5, autor: 'Patrícia L.',   perfil: 'Casal',           comentario: 'A cave na rocha é um espetáculo. Espumante envelhecido vale cada centavo.',                              data: '2026-04-15' },
     { id: 'av_seed_7',  vinicola_id: 9,  experiencia_id: 24, nota: 4, autor: 'Carlos R.',     perfil: 'Família adulta',  comentario: 'Almoço toscano divino, ambiente lindo. A espera entre os pratos foi um pouco longa.',                    data: '2026-04-03' },
-    { id: 'av_seed_8',  vinicola_id: 5,  experiencia_id: 13, nota: 5, autor: 'Bruna T.',      perfil: 'Grupo de amigos', comentario: 'Lote 43 é uma referência nacional — degustá-lo com explicação técnica foi muito enriquecedor.',         data: '2026-03-22' },
+    { id: 'av_seed_8',  vinicola_id: 5,  experiencia_id: 13, nota: 5, autor: 'Bruna T.',      perfil: 'Grupo de amigos', comentario: 'Lote 43 é uma referência nacional - degustá-lo com explicação técnica foi muito enriquecedor.',         data: '2026-03-22' },
     { id: 'av_seed_9',  vinicola_id: 10, experiencia_id: 26, nota: 4, autor: 'Júlia F.',      perfil: 'Viajante solo',   comentario: 'Flight de moscatéis surpreendente, ótimo custo-benefício. Atendimento simpático e familiar.',           data: '2026-04-09' },
     { id: 'av_seed_10', vinicola_id: 1,  experiencia_id: 3,  nota: 4, autor: 'Eduardo M.',    perfil: 'Grupo de amigos', comentario: 'Tour pelas caves bem informativo, gostei da estrutura. Senti falta de uma degustação inclusa.',          data: '2026-03-15' },
     { id: 'av_seed_11', vinicola_id: 8,  experiencia_id: 21, nota: 4, autor: 'Sofia D.',      perfil: 'Família adulta',  comentario: 'Tour histórico Salton é uma aula de enologia gaúcha. Recomendo para quem ama história.',                data: '2026-04-25' },
@@ -347,7 +347,7 @@ function getProximoHorario(expId) {
         .sort((a, b) => (a.data + a.horario).localeCompare(b.data + b.horario))[0];
 }
 
-// Filtro temporal das sugestoes — alimenta os chips "Hoje | Amanhã | Fim de semana | Todas".
+// Filtro temporal das sugestoes - alimenta os chips "Hoje | Amanhã | Fim de semana | Todas".
 let sugFiltro = 'hoje';
 
 function dataMatchesFiltro(iso, filtro) {
@@ -376,13 +376,13 @@ function getProximoHorarioComFiltro(expId, filtro) {
         .sort((a, b) => (a.data + a.horario).localeCompare(b.data + b.horario))[0];
 }
 
-// Motivo personalizado por tag — explica "porque essa sugestao".
+// Motivo personalizado por tag - explica "porque essa sugestao".
 const SUG_MOTIVO = {
     'piquenique':         'Para curtir os vinhedos ao ar livre, com tempo de respirar.',
-    'degustacao-premium': 'Vinhos ícones conduzidos por sommelier — para quem quer profundidade.',
+    'degustacao-premium': 'Vinhos ícones conduzidos por sommelier - para quem quer profundidade.',
     'visita-tecnica':     'Entenda o terroir e o processo direto na cave.',
     'harmonizado':        'Cada vinho casado com um prato pensado pelo chef.',
-    'por-do-sol':         'A luz dourada cai sobre os vinhedos — momento icônico.',
+    'por-do-sol':         'A luz dourada cai sobre os vinhedos - momento icônico.',
     'boutique':           'Cantina intimista, atendimento próximo, produção limitada.',
 };
 
@@ -410,7 +410,7 @@ function renderSugestoes() {
 
     // Fallback: se filtro estrito nao trouxe nada, mostra "todas" mas avisa.
     if (sugestoes.length === 0 && sugFiltro !== 'todas') {
-        grid.innerHTML = `<p class="exp-empty">Sem sugestões com vagas para esse período — <button type="button" class="btn btn-ghost" id="sug-fallback" style="display:inline-flex;margin-left:.5rem;padding:.5rem .9rem;font-size:.75rem;min-height:36px">Ver todas</button></p>`;
+        grid.innerHTML = `<p class="exp-empty">Sem sugestões com vagas para esse período - <button type="button" class="btn btn-ghost" id="sug-fallback" style="display:inline-flex;margin-left:.5rem;padding:.5rem .9rem;font-size:.75rem;min-height:36px">Ver todas</button></p>`;
         document.getElementById('sug-fallback')?.addEventListener('click', () => {
             sugFiltro = 'todas';
             document.querySelectorAll('.sug-filter').forEach(b => {
@@ -496,8 +496,8 @@ function renderBoutique() {
         const expCount = EXPERIENCIAS.filter(e => e.vinicola_id === v.id).length;
         const initial = (v.nome || '?').replace(/^Vin[íi]cola\s+/i, '').charAt(0).toUpperCase();
         const preco = v.preco_min && v.preco_max
-            ? `${fmtBRL(v.preco_min)}–${fmtBRL(v.preco_max)}`
-            : '—';
+            ? `${fmtBRL(v.preco_min)}-${fmtBRL(v.preco_max)}`
+            : '-';
         const rating = getMediaAvaliacoes(v.id);
         const ratingTag = rating.total > 0
             ? `<span><i class="fa-solid fa-star" aria-hidden="true" style="color:var(--status-quase)"></i> <strong>${rating.media.toFixed(1)}</strong> (${rating.total})</span>`
@@ -538,7 +538,7 @@ function openVinicola(vinId, focusExpId) {
 }
 
 // Bloco de avaliacoes embutido no perfil da vinicola (usado em renderVinicolaPerfil).
-// Funcao definida em modulo separado abaixo, mas referenciada aqui — chamada gera HTML.
+// Funcao definida em modulo separado abaixo, mas referenciada aqui - chamada gera HTML.
 function renderVinAvaliacoes(vin) {
     // Funcao acessa getAllAvaliacoes/avalCardHTML definidos mais abaixo no arquivo;
     // funciona porque `function` declarations sao hoisted.
@@ -598,7 +598,7 @@ function renderVinicolaPerfil(vin, focusExpId) {
                     </div>
                     <div class="vin-meta-item">
                         <span>Faixa de preço/pessoa</span>
-                        <strong>${vin.preco_min && vin.preco_max ? fmtBRL(vin.preco_min) + ' – ' + fmtBRL(vin.preco_max) : '—'}</strong>
+                        <strong>${vin.preco_min && vin.preco_max ? fmtBRL(vin.preco_min) + ' - ' + fmtBRL(vin.preco_max) : '-'}</strong>
                     </div>
                     <div class="vin-meta-item">
                         <span>Experiências disponíveis</span>
@@ -606,7 +606,7 @@ function renderVinicolaPerfil(vin, focusExpId) {
                     </div>
                     <div class="vin-meta-item">
                         <span>Avaliação dos visitantes</span>
-                        <strong>${total > 0 ? media.toFixed(1) + ' / 5' : '—'}</strong>
+                        <strong>${total > 0 ? media.toFixed(1) + ' / 5' : '-'}</strong>
                     </div>
                 </div>
 
@@ -725,7 +725,7 @@ function getAllVinicolas() {
     return [...VINICOLAS, ...customVinicolas];
 }
 
-// Algoritmo v2 — scoring com 7 fatores + rationale por escolha.
+// Algoritmo v2 - scoring com 7 fatores + rationale por escolha.
 // Fatores: tags diretas, keywords no nome, perfil de viagem, vagas atuais,
 // preco vs orcamento, avaliacao media da vinicola, e variedade (anti-mesma-cidade-seguida).
 // Aceita `seed` opcional para gerar variacoes do mesmo input ("regenerar").
@@ -735,7 +735,7 @@ function generateRoteiro(input) {
     const budgetPerExp = input.budget > 0 ? input.budget / totalExps / input.pessoas : Infinity;
     const seed = Number(input.seed || 0);
 
-    // PRNG simples com seed — Mulberry32. Permite reproduzir / variar o roteiro
+    // PRNG simples com seed - Mulberry32. Permite reproduzir / variar o roteiro
     // sem alterar o input.
     function makeRand(s) {
         let a = s >>> 0;
@@ -788,7 +788,7 @@ function generateRoteiro(input) {
         if (e.preco <= budgetPerExp) { score += 2; motivos.push('dentro do orçamento'); }
         else if (input.budget > 0 && e.preco > budgetPerExp * 1.5) score -= 1;
 
-        // Fator 5 (novo): avaliacoes da vinicola — bem avaliada pesa mais.
+        // Fator 5 (novo): avaliacoes da vinicola - bem avaliada pesa mais.
         if (typeof getMediaAvaliacoes === 'function' && vin) {
             const rating = getMediaAvaliacoes(vin.id);
             if (rating.total >= 3) {
@@ -798,7 +798,7 @@ function generateRoteiro(input) {
             }
         }
 
-        // Fator 6 (novo): aleatoriedade leve com seed — permite variacao real ao regenerar.
+        // Fator 6 (novo): aleatoriedade leve com seed - permite variacao real ao regenerar.
         score += rand() * 1.5;
 
         return { exp: e, vin, score, vagas, motivos };
@@ -883,7 +883,7 @@ function generateRoteiro(input) {
     const total = chosen.reduce((sum, it) => sum + it.exp.preco * input.pessoas, 0);
     const tagsPresentes = [...new Set(chosen.flatMap(it => it.exp.tags || []))];
 
-    // Narrativa do roteiro — destaque as 2 caracteristicas mais fortes do conjunto.
+    // Narrativa do roteiro - destaque as 2 caracteristicas mais fortes do conjunto.
     const sumario = construirSumarioRoteiro({ chosen, days: input.days, distanciaTotalKm });
 
     return {
@@ -900,7 +900,7 @@ function generateRoteiro(input) {
     };
 }
 
-// Texto narrativo "porque esse roteiro" — frase curta exibida acima do roteiro.
+// Texto narrativo "porque esse roteiro" - frase curta exibida acima do roteiro.
 function construirSumarioRoteiro({ chosen, days, distanciaTotalKm }) {
     const cidades = [...new Set(chosen.map(c => c.vin?.cidade).filter(Boolean))];
     const temPiq = chosen.some(c => (c.exp.tags || []).includes('piquenique'));
@@ -922,7 +922,7 @@ function construirSumarioRoteiro({ chosen, days, distanciaTotalKm }) {
         : (cidades.slice(0, -1).join(', ') + ' e ' + cidades[cidades.length - 1]);
 
     return `Roteiro de ${days} ${days === 1 ? 'dia' : 'dias'} pelo Vale dos Vinhedos com foco em ${trecho}. ` +
-           `Passa por ${cidStr}, com ~${Math.round(distanciaTotalKm)} km de deslocamento total — equilibrando ritmo e descobertas.`;
+           `Passa por ${cidStr}, com ~${Math.round(distanciaTotalKm)} km de deslocamento total - equilibrando ritmo e descobertas.`;
 }
 
 // =================== Renderiza Roteiro Sugerido ===================
@@ -1059,7 +1059,7 @@ function renderRoteiro(plano) {
         btn.querySelector('span').textContent = todosVisiveis ? 'Mostrar critérios' : 'Ocultar critérios';
     });
 
-    // Bind: regenerar — gera variacao com novo seed
+    // Bind: regenerar - gera variacao com novo seed
     section.querySelector('#btn-regenerar')?.addEventListener('click', () => {
         const novoInput = { ...plano, seed: Date.now() };
         const novoPlano = generateRoteiro(novoInput);
@@ -1149,7 +1149,7 @@ document.getElementById('roteiro-edit')?.addEventListener('click', () => {
 // =================== Mapa / Rota ===================
 let mapaActiveDay = 0;
 
-// Detecta se uma parada deve ser precedida por sugestao de almoco —
+// Detecta se uma parada deve ser precedida por sugestao de almoco -
 // quando o gap (chegada da proxima vs saida da atual) cruza 12h-14h
 // e nenhuma das duas paradas eh harmonizada.
 function sugerirAlmoco(stopAtual, stopProx) {
@@ -1182,10 +1182,10 @@ function renderMapa(plano) {
     content.hidden = false;
     if (mapaActiveDay >= plano.dias.length) mapaActiveDay = 0;
 
-    // Resumo enriquecido — inclui distancia total quando disponivel
+    // Resumo enriquecido - inclui distancia total quando disponivel
     const totalParadas = plano.chosen.length;
     const partida = plano.dias[0]?.[0]?.vin?.cidade || 'Vale dos Vinhedos';
-    const horarioPartida = plano.dias[0]?.[0]?.horario_sugerido || '—';
+    const horarioPartida = plano.dias[0]?.[0]?.horario_sugerido || '-';
     const kmCard = plano.distanciaTotalKm > 0
         ? `<div class="mapa-resumo-item"><span>Distância</span><strong>${Math.round(plano.distanciaTotalKm)} km</strong></div>`
         : '';
@@ -1209,7 +1209,7 @@ function renderMapa(plano) {
         </div>
     `;
 
-    // Barra de acoes — imprimir + compartilhar + .ics (novo)
+    // Barra de acoes - imprimir + compartilhar + .ics (novo)
     let actionsEl = document.getElementById('mapa-actions');
     if (!actionsEl) {
         actionsEl = document.createElement('div');
@@ -1248,12 +1248,12 @@ function renderMapa(plano) {
         });
     });
 
-    // Cabecalho do dia ativo — km do dia, paradas do dia, primeiro e ultimo horario
+    // Cabecalho do dia ativo - km do dia, paradas do dia, primeiro e ultimo horario
     const dia = plano.dias[mapaActiveDay] || plano.dias[0];
     const kmDia = dia.reduce((s, x) => s + (x.distanciaKm || 0), 0);
     const tempoDia = dia.reduce((s, x) => s + x.exp.duracao + (x.deslocamentoMin || 0), 0);
-    const inicioDia = dia[0]?.chegada || dia[0]?.horario_sugerido || '—';
-    const fimDia = dia[dia.length - 1]?.saida || '—';
+    const inicioDia = dia[0]?.chegada || dia[0]?.horario_sugerido || '-';
+    const fimDia = dia[dia.length - 1]?.saida || '-';
 
     // Timeline do dia ativo com chegada/saida + sugestao de almoco + distancia
     const timeline = document.getElementById('mapa-timeline');
@@ -1284,7 +1284,7 @@ function renderMapa(plano) {
                     <div class="mapa-pausa">
                         <span class="mapa-pausa-icon" aria-hidden="true"><i class="fa-solid fa-utensils"></i></span>
                         <div class="mapa-pausa-body">
-                            <strong>Pausa sugerida — almoço</strong>
+                            <strong>Pausa sugerida - almoço</strong>
                             <small>${almoco.inicio} → ${almoco.fim} · ${minutosParaHHMM(almoco.duracaoMin)} livres entre as paradas</small>
                         </div>
                     </div>
@@ -1319,7 +1319,7 @@ function renderMapa(plano) {
 // O destinatario abre o link e o plano eh restaurado automaticamente.
 function sharePlano(plano) {
     try {
-        // Compacta apenas o input do plano — quem abrir regenera o roteiro.
+        // Compacta apenas o input do plano - quem abrir regenera o roteiro.
         const payload = {
             startDate: plano.startDate,
             days: plano.days,
@@ -1347,7 +1347,7 @@ function sharePlano(plano) {
 function copiarUrl(url) {
     if (navigator.clipboard?.writeText) {
         navigator.clipboard.writeText(url).then(
-            () => showToast('Link copiado — cole onde quiser compartilhar.'),
+            () => showToast('Link copiado - cole onde quiser compartilhar.'),
             () => fallbackPromptUrl(url)
         );
     } else {
@@ -1394,7 +1394,7 @@ function downloadICSRoteiro(plano) {
             linhas.push(`DTSTAMP:${toICS(new Date())}`);
             linhas.push(`DTSTART:${toICS(dt)}`);
             linhas.push(`DTEND:${toICS(dtEnd)}`);
-            linhas.push(`SUMMARY:${stop.exp.nome} — ${stop.vin.nome}`);
+            linhas.push(`SUMMARY:${stop.exp.nome} - ${stop.vin.nome}`);
             linhas.push(`LOCATION:${stop.vin.nome}, ${stop.vin.cidade || ''}`);
             linhas.push(`DESCRIPTION:Parada ${idx + 1} do dia ${i + 1} no roteiro Uva & Via.`);
             linhas.push('END:VEVENT');
@@ -1522,7 +1522,7 @@ function refreshSlots(opts = {}) {
     if (horarios.length === 0) {
         const empty = document.createElement('p');
         empty.className = 'slots-empty';
-        empty.textContent = 'Sem horários disponíveis no momento — tente outra experiência.';
+        empty.textContent = 'Sem horários disponíveis no momento - tente outra experiência.';
         slotsEl.appendChild(empty);
         summary.hidden = true;
         btnReservar.disabled = true;
@@ -1601,7 +1601,7 @@ function mapReservaApi(r) {
         data: r.data_reserva,
         horario,
         pessoas: Number(r.num_pessoas),
-        nome: r.nome_completo || (window.UvaViaApi?.user?.nome_completo) || '—',
+        nome: r.nome_completo || (window.UvaViaApi?.user?.nome_completo) || '-',
         total: Number(r.preco_total),
         criadaEm: r.criado_em ? new Date(r.criado_em).getTime() : Date.now(),
         cancelada: r.status === 'cancelada',
@@ -1665,7 +1665,7 @@ const BUCKET_LABELS = {
 };
 const BUCKET_ORDER = ['hoje', 'amanha', 'semana', 'futuras', 'realizadas'];
 
-// Gera um .ics e dispara o download — funciona em Google/Apple/Outlook agenda.
+// Gera um .ics e dispara o download - funciona em Google/Apple/Outlook agenda.
 function downloadICS(r) {
     const dt = new Date(r.data + 'T' + r.horario + ':00');
     if (isNaN(dt.getTime())) return;
@@ -1680,9 +1680,9 @@ function downloadICS(r) {
         `DTSTAMP:${toICS(new Date())}`,
         `DTSTART:${toICS(dt)}`,
         `DTEND:${toICS(dtEnd)}`,
-        `SUMMARY:${r.experiencia} — ${r.vinicola}`,
+        `SUMMARY:${r.experiencia} - ${r.vinicola}`,
         `LOCATION:${r.vinicola}, ${r.cidade}`,
-        `DESCRIPTION:Reserva Uva & Via — ${r.pessoas} pessoa(s). Responsável: ${r.nome}.`,
+        `DESCRIPTION:Reserva Uva & Via - ${r.pessoas} pessoa(s). Responsável: ${r.nome}.`,
         'END:VEVENT',
         'END:VCALENDAR',
     ].join('\r\n');
@@ -1811,7 +1811,7 @@ function renderReservas() {
             const r = loadReservas().find(x => x.id === btn.dataset.id);
             if (r) {
                 downloadICS(r);
-                showToast('Arquivo .ics gerado — abra para adicionar à agenda.');
+                showToast('Arquivo .ics gerado - abra para adicionar à agenda.');
             }
         });
     });
@@ -1918,7 +1918,7 @@ function renderAvaliacoes() {
 
     const all = getAllAvaliacoes();
     const { media, total } = getMediaGeral();
-    if (mediaEl) mediaEl.textContent = total > 0 ? media.toFixed(1) : '—';
+    if (mediaEl) mediaEl.textContent = total > 0 ? media.toFixed(1) : '-';
     if (totalEl) totalEl.textContent = total;
     const heroRating = document.getElementById('hero-rating');
     if (heroRating && total > 0) heroRating.textContent = media.toFixed(1);
@@ -1969,7 +1969,7 @@ function buildAvalForm(reserva) {
         <div class="aval-rating-picker" role="radiogroup" aria-label="Sua nota de 1 a 5 estrelas">
             ${[1,2,3,4,5].map(n => `<button type="button" data-n="${n}" aria-label="${n} estrela${n>1?'s':''}"><i class="fa-regular fa-star" aria-hidden="true"></i></button>`).join('')}
         </div>
-        <textarea placeholder="Conte como foi a experiência — atendimento, vinhos, ambiente, harmonização…" maxlength="320" rows="3"></textarea>
+        <textarea placeholder="Conte como foi a experiência - atendimento, vinhos, ambiente, harmonização…" maxlength="320" rows="3"></textarea>
         <div class="aval-form-actions">
             <button type="button" class="btn btn-ghost" data-aval-cancel>Cancelar</button>
             <button type="button" class="btn btn-primary" data-aval-send disabled>Enviar avaliação</button>
@@ -2016,7 +2016,7 @@ function buildAvalForm(reserva) {
         const arr = loadAvaliacoes();
         arr.push(nova);
         saveAvaliacoes(arr);
-        showToast('Avaliação enviada — obrigada por compartilhar!');
+        showToast('Avaliação enviada - obrigada por compartilhar!');
         form.remove();
         renderAvaliacoes();
         renderReservas();
@@ -2027,7 +2027,7 @@ function buildAvalForm(reserva) {
     return form;
 }
 
-// =================== Disponibilidade em tempo real — tick simulado ===================
+// =================== Disponibilidade em tempo real - tick simulado ===================
 const STORAGE_LAST_TICK = 'uvaevia.lastTick';
 let liveTickHandle = null;
 let liveTickTimestamp = Date.now();
@@ -2100,7 +2100,7 @@ document.getElementById('booking-form').addEventListener('submit', async (e) => 
         document.dispatchEvent(new CustomEvent('uvaevia:require-login'));
         return;
     }
-    // Horarios custom (id >= 1000) sao locais — nao existem no backend.
+    // Horarios custom (id >= 1000) sao locais - nao existem no backend.
     const isHorarioLocal = Number(hor.id) >= 1000;
 
     btnReservar.disabled = true;
@@ -2207,7 +2207,7 @@ function renderExperiencias() {
         const card = document.createElement('article');
         card.className = 'exp-card';
         card.innerHTML = `
-            <span class="exp-vinicola">${vin?.nome ?? '—'} · ${vin?.cidade ?? ''}</span>
+            <span class="exp-vinicola">${vin?.nome ?? '-'} · ${vin?.cidade ?? ''}</span>
             <h3>${e.nome}</h3>
             <div class="exp-meta">
                 <span><i class="fa-regular fa-clock" aria-hidden="true"></i> <strong>${e.duracao} min</strong></span>
@@ -2262,7 +2262,7 @@ document.querySelectorAll('.manage-subtab').forEach(btn => {
 function populateVinicolaSelects() {
     const all = getAllVinicolas();
     const builders = [
-        { el: document.getElementById('b-vinicola'),     label: v => `${v.nome} — ${v.cidade}`, placeholder: 'Selecione uma vinícola…' },
+        { el: document.getElementById('b-vinicola'),     label: v => `${v.nome} - ${v.cidade}`, placeholder: 'Selecione uma vinícola…' },
         { el: document.getElementById('exp-vinicola'),   label: v => v.nome,                    placeholder: 'Todas as vinícolas' },
         { el: document.getElementById('m-vinicola'),     label: v => v.nome,                    placeholder: 'Selecione…' },
     ];
@@ -2427,8 +2427,8 @@ function renderManageTable() {
                 <span class="time">${h.horario}</span>
             </div>
             <div class="manage-exp">
-                <h4>${exp ? exp.nome : '—'}</h4>
-                <span class="vin">${vin ? vin.nome : '—'}</span>
+                <h4>${exp ? exp.nome : '-'}</h4>
+                <span class="vin">${vin ? vin.nome : '-'}</span>
             </div>
             <div class="manage-cap">
                 <span>${h.vagas}/${capacidade} vagas · ${pct}% ocupado</span>
@@ -2665,7 +2665,7 @@ function renderManageVinList() {
                 <div class="vin-row-meta">
                     <span><i class="fa-regular fa-clock" aria-hidden="true"></i> <strong>${v.duracao_media_min || 75}</strong> min</span>
                     <span><i class="fa-solid fa-wine-glass" aria-hidden="true"></i> <strong>${expCount}</strong> exp.</span>
-                    <span><i class="fa-solid fa-tag" aria-hidden="true"></i> ${fmtBRL(v.preco_min || 0)}–${fmtBRL(v.preco_max || 0)}</span>
+                    <span><i class="fa-solid fa-tag" aria-hidden="true"></i> ${fmtBRL(v.preco_min || 0)}-${fmtBRL(v.preco_max || 0)}</span>
                 </div>
                 <span class="vin-row-badge ${isCustom ? 'custom' : ''}">${isCustom ? 'Custom' : (v.tipo === 'boutique' ? 'Boutique' : 'Catálogo')}</span>
                 <div class="vin-row-actions">
@@ -2764,7 +2764,7 @@ setInterval(setMinDateInputs, 30 * 60 * 1000);
 startLiveTick();
 
 // =================== Sincronizacao com backend ===================
-// Reservas vivem no servidor — sempre que o auth muda, re-busca pra refletir
+// Reservas vivem no servidor - sempre que o auth muda, re-busca pra refletir
 // o estado canonico (incl. reservas feitas em outro dispositivo).
 document.addEventListener('uvaevia:auth-change', (e) => {
     const user = e.detail?.user;
@@ -2785,7 +2785,7 @@ const TAG_SLUG_TO_ID = {
     'arquitetura': 12, 'rapida': 13, 'completa': 14,
 };
 
-// Persiste o roteiro no backend depois que o client gerou. Fire-and-forget — o
+// Persiste o roteiro no backend depois que o client gerou. Fire-and-forget - o
 // algoritmo do backend gera a sua propria versao (pode divergir do client);
 // aqui o objetivo e historico/auditoria, nao espelhar 1-1 a visualizacao.
 async function persistirRoteiroNoBackend(input) {

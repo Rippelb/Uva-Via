@@ -1,4 +1,4 @@
-# 📜 Uva & Via — Logs de Desenvolvimento
+# 📜 Uva & Via - Logs de Desenvolvimento
 
 Registro cronológico das mudanças significativas no projeto.
 
@@ -7,7 +7,7 @@ Registro cronológico das mudanças significativas no projeto.
 
 ---
 
-## 2026-06-19 — Sprint final: guest-first + robustez do fluxo crítico (verificado ao vivo)
+## 2026-06-19 - Sprint final: guest-first + robustez do fluxo crítico (verificado ao vivo)
 
 Sprint de fechamento com foco no **fluxo crítico do MVP** (gerar roteiro → reservar)
 para a apresentação. Verificação ao vivo via Chrome headless (DevTools Protocol):
@@ -24,16 +24,16 @@ e roteiro pronto, **sem erros de console**. Edge cases (0 interesses, orçamento
 
 ---
 
-## 2026-06-17 — Repaginação guiada por pesquisa (confiança, logística, favoritos, PWA)
+## 2026-06-17 - Repaginação guiada por pesquisa (confiança, logística, favoritos, PWA)
 
 Repaginação evolutiva (sem reescrita) a partir de pesquisa de mercado e análise de
 risco de negócio. Documentos: `pesquisa-mercado.md`, `pesquisa-mercado-extensiva.md`
 (dados/fontes/experts + output em 11 skills) e `analise-negocio.md`.
 
 ### Produto / persona
-- **Motorista da rodada / transporte** — atende a maior dor real do Vale (vinícolas
+- **Motorista da rodada / transporte** - atende a maior dor real do Vale (vinícolas
   distantes + Lei Seca). Bloco no roteiro com 3 modos e dicas práticas.
-- **Confiança na reserva** — comprovante com código/endereço/contato/inclusões,
+- **Confiança na reserva** - comprovante com código/endereço/contato/inclusões,
   política de cancelamento clara (flex/moderada) e reserva enquadrada como
   "solicitação" pendente de confirmação. Ataca a reclamação nº1 do setor.
 - **Favoritos**, **roteiros prontos (1 clique)**, **rota no Google Maps**,
@@ -51,22 +51,22 @@ risco de negócio. Documentos: `pesquisa-mercado.md`, `pesquisa-mercado-extensiv
 
 ---
 
-## 2026-05-22 (noite) — Algoritmo v2 e Timeline v2
+## 2026-05-22 (noite) - Algoritmo v2 e Timeline v2
 
 ### Algoritmo de geração de roteiro v2
-- **Novo fator de scoring**: avaliação média da vinícola — bem avaliada (≥4.5/5 e ≥3 reviews)
+- **Novo fator de scoring**: avaliação média da vinícola - bem avaliada (≥4.5/5 e ≥3 reviews)
   ganha +3 pts, ≥4.0 ganha +2, ≥3.5 ganha +1. Reaproveita a base de avaliações da feature
   entregue mais cedo nesta data.
-- **PRNG com seed (Mulberry32)** — adiciona variabilidade controlada. Botão **"Gerar nova variação"**
+- **PRNG com seed (Mulberry32)** - adiciona variabilidade controlada. Botão **"Gerar nova variação"**
   cria roteiros diferentes a partir do mesmo input, sem mexer nas preferências.
 - **Rationale por escolha** (motivos): cada parada agora explica por que foi sugerida
   ("combina com piquenique · clima a dois · nota 4.8 entre visitantes"). Toggle no roteiro
   exibe/oculta todos os critérios de uma vez.
-- **Ordenação geográfica intradiária** — dentro de cada dia, paradas são ordenadas pela menor
+- **Ordenação geográfica intradiária** - dentro de cada dia, paradas são ordenadas pela menor
   distância até a parada anterior (nearest-neighbor). Reduz deslocamento real.
-- **Cálculo de chegada/saída por parada** — a partir do horário sugerido inicial, o algoritmo
+- **Cálculo de chegada/saída por parada** - a partir do horário sugerido inicial, o algoritmo
   calcula `chegada` e `saida` reais considerando duração e deslocamento.
-- **Sumário narrativo** — frase curta acima do roteiro descrevendo o que o conjunto entrega
+- **Sumário narrativo** - frase curta acima do roteiro descrevendo o que o conjunto entrega
   ("Roteiro de 2 dias com foco em degustações premium e pôr do sol nas serras…").
 - **Bonus**: penaliza experiências muito acima do orçamento (`>1.5x budget per stop`) com -1pt.
 
@@ -74,16 +74,16 @@ risco de negócio. Documentos: `pesquisa-mercado.md`, `pesquisa-mercado-extensiv
 - **Cabeçalho do dia ativo** com 4 stats: janela do dia (primeira chegada → última saída),
   número de paradas, duração do dia, e km totais do dia.
 - **Distância em km por trecho** ao lado do tempo de deslocamento ("12min · 8.4 km até Cave Geisse").
-- **Sugestão de almoço automática** — quando o gap entre duas paradas cai dentro de 12h-14h
-  e dura ≥30min, insere card "Pausa sugerida — almoço" entre elas. Não duplica se uma das
+- **Sugestão de almoço automática** - quando o gap entre duas paradas cai dentro de 12h-14h
+  e dura ≥30min, insere card "Pausa sugerida - almoço" entre elas. Não duplica se uma das
   paradas já é harmonizada.
 - **Chegada → Saída** visíveis em cada parada da timeline (não só horário sugerido).
-- **Compartilhar roteiro via URL** — encode base64 do input em `#roteiro=…`, usa
+- **Compartilhar roteiro via URL** - encode base64 do input em `#roteiro=…`, usa
   `navigator.share` no mobile ou copia para clipboard no desktop. Hash decodificado no load
   regenera o roteiro automaticamente.
-- **Exportar agenda (.ics multi-evento)** — gera um único arquivo com todas as paradas
+- **Exportar agenda (.ics multi-evento)** - gera um único arquivo com todas as paradas
   pontuadas com data/hora; compatível com Google/Apple/Outlook.
-- **Imprimir roteiro** — `@media print` agora esconde tudo exceto roteiro+mapa, adiciona
+- **Imprimir roteiro** - `@media print` agora esconde tudo exceto roteiro+mapa, adiciona
   `page-break-inside: avoid` em cards e separadores para um PDF nativo organizado.
 
 ### Infra
@@ -93,24 +93,24 @@ risco de negócio. Documentos: `pesquisa-mercado.md`, `pesquisa-mercado-extensiv
 
 ---
 
-## 2026-05-22 — Avaliações, real-time, reservas v2 e sugestões filtráveis
+## 2026-05-22 - Avaliações, real-time, reservas v2 e sugestões filtráveis
 
 ### Avaliações de usuários (nova feature)
-- Nova seção `#avaliacoes` com feed da comunidade — média geral, total, estrelas,
+- Nova seção `#avaliacoes` com feed da comunidade - média geral, total, estrelas,
   e cards com avatar/inicial, perfil do visitante, vinícola, experiência, comentário e data.
 - **Filtros**: Todas · 5 estrelas · 4+ estrelas · Mais recentes (chips no mesmo estilo do admin).
-- **Formulário inline** dentro de cada reserva passada — picker de 1 a 5 estrelas (FA `fa-star`),
+- **Formulário inline** dentro de cada reserva passada - picker de 1 a 5 estrelas (FA `fa-star`),
   textarea com limite de 320 caracteres, validação de nota mínima antes de habilitar envio.
 - **Persistência em localStorage** (`uvaevia.avaliacoes`) + 12 avaliações seed para a comunidade
   não nascer vazia. Após avaliar, a reserva ganha selo "Você já avaliou esta experiência".
-- **Bloco de avaliações no perfil da vinícola** — mostra média + estrelas + 4 reviews mais recentes,
+- **Bloco de avaliações no perfil da vinícola** - mostra média + estrelas + 4 reviews mais recentes,
   ou empty state convidativo.
 - **Badge de média** nos cards de Boutique, Sugestões e Experiências (estrela âmbar + nota + total).
 - Hero stat "nota média" agora calcula a média real das avaliações (substitui mock 4.9).
 
 ### Disponibilidade em tempo real (aprimorado)
 - **Tick simulado** a cada 45s: decrementa 1-2 vagas aleatórias para dar sensação de "outros visitantes reservando".
-- **Pausa quando aba não está visível** (Page Visibility API) — economia de processamento.
+- **Pausa quando aba não está visível** (Page Visibility API) - economia de processamento.
 - **Timestamp "Atualizado há X"** em todas as superfícies de disponibilidade (sugestões, slots),
   refrescado a cada 5s sem causar re-render.
 - Live dot já existente nas sugestões e no formulário de reserva, agora alimentado pelo tick global.
@@ -118,30 +118,30 @@ risco de negócio. Documentos: `pesquisa-mercado.md`, `pesquisa-mercado-extensiv
 
 ### Sistema de reservas v2
 - **Status derivado**: Pendente (primeiras 2h) → Confirmada → Realizada → Cancelada (pill colorida).
-- **Agrupamento por bucket temporal**: Hoje · Amanhã · Esta semana · Em breve · Histórico —
+- **Agrupamento por bucket temporal**: Hoje · Amanhã · Esta semana · Em breve · Histórico -
   cada grupo com header serif itálico e contagem.
 - **Ações inline por reserva**: "Agenda" (gera `.ics` baixável para Google/Apple/Outlook),
-  "Avaliar" (após data passar — abre formulário inline), "Cancelar" (confirm dialog antes).
+  "Avaliar" (após data passar - abre formulário inline), "Cancelar" (confirm dialog antes).
 - Reservas canceladas mantidas no histórico mas excluídas da soma do valor total.
-- Confirm dialog padrão do navegador antes de cancelar — evita perda acidental.
+- Confirm dialog padrão do navegador antes de cancelar - evita perda acidental.
 
 ### Sugestões do dia (aprimorado)
 - **Filtros temporais**: Hoje · Amanhã · Fim de semana · Todas (chips no estilo do admin).
-- **Motivo personalizado** por sugestão — frase explicando porque essa experiência foi recomendada
-  (ex.: "A luz dourada cai sobre os vinhedos — momento icônico" para `por-do-sol`).
+- **Motivo personalizado** por sugestão - frase explicando porque essa experiência foi recomendada
+  (ex.: "A luz dourada cai sobre os vinhedos - momento icônico" para `por-do-sol`).
 - **Badge de média** em cada card (estrela + nota + total de avaliações).
-- **Fallback elegante** quando o filtro estrito não traz nada — botão "Ver todas" inline.
+- **Fallback elegante** quando o filtro estrito não traz nada - botão "Ver todas" inline.
 
 ### Infra
 - Funções globais expostas em `window` (`renderAvaliacoes`) para o `api-client.js` re-renderizar
   pós-bootstrap.
-- Sync entre abas adicionado para `STORAGE_AVAL` — avaliar numa aba atualiza a outra.
+- Sync entre abas adicionado para `STORAGE_AVAL` - avaliar numa aba atualiza a outra.
 - Spy de scroll inclui `#avaliacoes` para destacar o link na nav.
-- IDs altos (>=1000) continuam reservados para custom data local — coexistência com seed/backend.
+- IDs altos (>=1000) continuam reservados para custom data local - coexistência com seed/backend.
 
 ---
 
-## 2026-05-15 (tarde) — Polimento UX + Admin
+## 2026-05-15 (tarde) - Polimento UX + Admin
 
 ### Iconografia
 - Substituídos **todos os emojis** por Font Awesome 6.5 (CDN): brand, hero search, sugestões,
@@ -184,7 +184,7 @@ risco de negócio. Documentos: `pesquisa-mercado.md`, `pesquisa-mercado-extensiv
 
 ---
 
-## 2026-05-15 (manhã) — Sprint Mobile-first + Features novas
+## 2026-05-15 (manhã) - Sprint Mobile-first + Features novas
 
 ### Refatoração mobile-first
 - Reescrita do `style.css` com abordagem **mobile-first** (base = mobile,
@@ -197,27 +197,27 @@ risco de negócio. Documentos: `pesquisa-mercado.md`, `pesquisa-mercado-extensiv
 
 ### Tipografia
 - Adicionadas Google Fonts: **Cormorant Garamond** (serif itálico premium) e **Inter** (UI sans).
-- Substituição do `Georgia` genérico — visual mais alinhado a apps de viagem premium.
+- Substituição do `Georgia` genérico - visual mais alinhado a apps de viagem premium.
 
 ### Navegação
 - Adicionados links: Roteiro · Vinícola · Mapa (visíveis sob demanda após gerar roteiro).
 - Drawer mobile com hamburger animado e `aria-expanded` atualizado.
 - Active link via `IntersectionObserver` cobrindo todas as seções (incluindo as novas).
 
-### Home — novas seções
+### Home - novas seções
 - **Hero com busca global** (vinícolas + experiências, dropdown debounced 150ms).
 - **Sugestões do dia**: 6 experiências curadas por tag (piquenique, premium, tour,
   harmonizado, pôr do sol, intimista), evita repetir vinícola.
 - **Vinícolas boutique em destaque**: cards clicáveis com cover gradient personalizado
   (`tone-a` a `tone-e`), abrem o perfil da vinícola.
 
-### Página da Vinícola (`#vinicola`) — nova seção
+### Página da Vinícola (`#vinicola`) - nova seção
 - Cover com gradiente customizável por vinícola.
 - Bloco de meta: duração média, faixa de preço, número de experiências.
 - Lista de experiências com badges de disponibilidade.
 - **Botões de horário direto** que pré-preenchem o formulário de reserva.
 
-### Mapa / Rota (`#mapa`) — nova seção
+### Mapa / Rota (`#mapa`) - nova seção
 - **Visão resumida da rota**: tempo total, deslocamento, paradas, saída sugerida.
 - Tabs por dia com scroll horizontal no mobile.
 - **Timeline vertical** com marcadores numerados, conector visual entre paradas,
@@ -225,7 +225,7 @@ risco de negócio. Documentos: `pesquisa-mercado.md`, `pesquisa-mercado-extensiv
 - Estado vazio amigável quando ainda não há roteiro.
 - Persistência do plano atual em `localStorage` (`uvaevia.plano.atual`).
 
-### Roteiro Sugerido (`#roteiro`) — promovido a seção própria
+### Roteiro Sugerido (`#roteiro`) - promovido a seção própria
 - Saiu do `#roteiro-output` inline dentro do planner; agora é seção navegável.
 - **Cards de paradas** com botões "Ver vinícola" e "Reservar" por parada.
 - **Tags badges** resumindo as experiências do roteiro.
@@ -254,7 +254,7 @@ risco de negócio. Documentos: `pesquisa-mercado.md`, `pesquisa-mercado-extensiv
 
 ---
 
-## 2026-04-15 — Backend PHP/MySQL (commit anterior)
+## 2026-04-15 - Backend PHP/MySQL (commit anterior)
 
 - Criados 10 endpoints PHP: vinicolas, experiencias, horarios, reservas, roteiros,
   perfis, tags, categorias, visitantes.
@@ -262,19 +262,19 @@ risco de negócio. Documentos: `pesquisa-mercado.md`, `pesquisa-mercado-extensiv
 - Cliente JS (`api-client.js`) com fallback para dados embutidos quando a API falha.
 - Algoritmo de roteiro server-side via `roteiros.php`.
 
-## 2026-03-25 — Catálogo, Gestão e Roteiro v1
+## 2026-03-25 - Catálogo, Gestão e Roteiro v1
 
 - Tela de catálogo de experiências com filtros e ordenação.
 - Tela de gestão de horários (admin) com CRUD em localStorage.
 - Geração de roteiro v1 (apenas client-side, scoring básico).
 
-## 2026-03-10 — Reservas, Diferenciais e Rodapé
+## 2026-03-10 - Reservas, Diferenciais e Rodapé
 
 - Formulário de reserva com slots de horário.
 - Seção de diferenciais com 4 cards.
 - Rodapé com explorar/contato.
 
-## 2026-02-28 — Setup inicial
+## 2026-02-28 - Setup inicial
 
 - Estrutura base do site (hero, planner, footer).
 - Paleta enoturística (bordô, bege, oliva).

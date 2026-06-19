@@ -1,5 +1,5 @@
-// Booking — montagem da reserva (selects, slots, resumo)
-// Dividido de script.js — carregado como <script> classico, ordem importa.
+// Booking - montagem da reserva (selects, slots, resumo)
+// Dividido de script.js - carregado como <script> classico, ordem importa.
 
 // =================== Booking ===================
 const selVinicola = document.getElementById('b-vinicola');
@@ -115,7 +115,7 @@ function refreshSlots(opts = {}) {
     if (horarios.length === 0) {
         const empty = document.createElement('p');
         empty.className = 'slots-empty';
-        empty.textContent = 'Sem horários disponíveis no momento — tente outra experiência.';
+        empty.textContent = 'Sem horários disponíveis no momento, tente outra experiência.';
         slotsEl.appendChild(empty);
         summary.hidden = true;
         btnReservar.disabled = true;
@@ -166,7 +166,7 @@ function refreshSummary() {
     sumCalc.textContent = `${pessoas} × ${fmtBRL(exp.preco)}`;
     sumTotal.textContent = fmtBRL(total);
 
-    // Política de cancelamento visível ANTES de reservar — transparência que
+    // Política de cancelamento visível ANTES de reservar - transparência que
     // ataca a reclamação nº1 de plataformas de passeio.
     const polEl = document.getElementById('summary-policy');
     if (polEl && typeof getCancelamento === 'function') {

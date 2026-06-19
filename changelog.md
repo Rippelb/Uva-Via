@@ -1,11 +1,11 @@
-# 🍇 Uva & Via — Changelog
+# 🍇 Uva & Via - Changelog
 
 Todas as mudanças notáveis seguem o formato [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/)
 e versionamento semântico [SemVer](https://semver.org/lang/pt-BR/).
 
 ---
 
-## [0.5.1] — 2026-06-19 — Sprint final: guest-first e robustez do fluxo crítico
+## [0.5.1] - 2026-06-19 - Sprint final: guest-first e robustez do fluxo crítico
 
 Foco total no **fluxo crítico** (gerar roteiro → reservar) funcionando ponta a
 ponta, verificado ao vivo via Chrome headless (DevTools Protocol). Achados de uma
@@ -14,7 +14,7 @@ revisão adversarial multi-agente (21 confirmados) foram corrigidos.
 ### Corrigido
 - **Guest-first (crítico):** o app não nasce mais travado atrás do login. Antes,
   com backend no ar e sem sessão, `onAuthChange(null)` travava a página e abria o
-  login — deixando o fluxo central (100% client-side) inacessível numa demo.
+  login - deixando o fluxo central (100% client-side) inacessível numa demo.
   Agora o visitante usa tudo como convidado; login segue no botão "Entrar";
   Gestão some para convidado; troca de senha obrigatória de admin ainda trava.
   Safety unlock (4s) impede página em branco se o bootstrap travar.
@@ -35,10 +35,10 @@ revisão adversarial multi-agente (21 confirmados) foram corrigidos.
 
 ---
 
-## [0.5.0] — 2026-06-17 — Repaginação: confiança, logística, favoritos e PWA
+## [0.5.0] - 2026-06-17 - Repaginação: confiança, logística, favoritos e PWA
 
 Repaginação guiada por pesquisa de mercado (concorrentes BR/intl., Reclame Aqui)
-e por uma análise de risco de negócio. Evolução da base — sem reescrita. Docs de
+e por uma análise de risco de negócio. Evolução da base - sem reescrita. Docs de
 apoio: `pesquisa-mercado.md`, `pesquisa-mercado-extensiva.md`, `analise-negocio.md`.
 
 ### Adicionado
@@ -46,7 +46,7 @@ apoio: `pesquisa-mercado.md`, `pesquisa-mercado-extensiva.md`, `analise-negocio.
   no roteiro com 3 modos (carro próprio, motorista por app, transfer/agência),
   orientação de motorista sóbrio, rodízio entre dias, estimativa de custo de app e
   faixa de transfer. Diferencial nascido da pesquisa (dirigir após degustar é a
-  maior dor do passeio) — nenhum concorrente trata bem.
+  maior dor do passeio) - nenhum concorrente trata bem.
 - **Favoritos / lista de desejos** (`js/favoritos.js`): coração nos cards
   (boutique, sugestões, catálogo, perfil), seção dedicada, contador no menu e sync
   entre abas.
@@ -88,13 +88,13 @@ apoio: `pesquisa-mercado.md`, `pesquisa-mercado-extensiva.md`, `analise-negocio.
 
 ---
 
-## [0.4.1] — 2026-05-22 (noite) — Algoritmo v2 e Timeline v2
+## [0.4.1] - 2026-05-22 (noite) - Algoritmo v2 e Timeline v2
 
 ### Adicionado
 - **Algoritmo de geração de roteiro v2**:
   - Novo fator: avaliação média da vinícola pesa no scoring (≥4.5 = +3, ≥4.0 = +2, ≥3.5 = +1,
     com `total ≥ 3` mínimo para evitar viés de poucas reviews).
-  - PRNG com seed (Mulberry32) inline — botão **"Gerar nova variação"** regenera o roteiro com
+  - PRNG com seed (Mulberry32) inline - botão **"Gerar nova variação"** regenera o roteiro com
     o mesmo input mas seed diferente.
   - **Rationale por parada**: motivos da escolha exibidos por baixo de cada experiência,
     com toggle global ("Mostrar critérios / Ocultar critérios").
@@ -114,7 +114,7 @@ apoio: `pesquisa-mercado.md`, `pesquisa-mercado-extensiva.md`, `analise-negocio.
   - **Compartilhar via URL** (`#roteiro=base64(JSON)`, `navigator.share` no mobile,
     clipboard no desktop) + auto-restore no load.
   - **Exportar agenda** como `.ics` multi-evento (todas as paradas pontuadas com data/hora).
-  - **Imprimir** com `@media print` otimizado — esconde tudo exceto Roteiro/Mapa,
+  - **Imprimir** com `@media print` otimizado - esconde tudo exceto Roteiro/Mapa,
     `page-break-inside: avoid` em cards e separadores.
 
 ### Mudado
@@ -124,7 +124,7 @@ apoio: `pesquisa-mercado.md`, `pesquisa-mercado-extensiva.md`, `analise-negocio.
 
 ---
 
-## [0.4.0] — 2026-05-22 — Avaliações, real-time, reservas v2
+## [0.4.0] - 2026-05-22 - Avaliações, real-time, reservas v2
 
 ### Adicionado
 - **Avaliações de usuários** (épico inteiro):
@@ -164,13 +164,13 @@ apoio: `pesquisa-mercado.md`, `pesquisa-mercado-extensiva.md`, `analise-negocio.
 
 ---
 
-## [Não publicado] — 2026-05-15 (noite)
+## [Não publicado] - 2026-05-15 (noite)
 
 ### Corrigido
 - **Bug crítico**: atributo `hidden` era ignorado em elementos com `display: flex/grid`
   (summary, slots-block, nav-menu, vinicola-section etc). Resolvido com regra global
   `[hidden] { display: none !important; }`. Sintoma visível: o summary do form de reserva
-  aparecia com valores "—" mesmo antes de selecionar experiência.
+  aparecia com valores "-" mesmo antes de selecionar experiência.
 
 ### Adicionado
 - **Drawer lateral animado** no mobile: slide-in da direita com gradient bordô profundo,
@@ -202,7 +202,7 @@ apoio: `pesquisa-mercado.md`, `pesquisa-mercado-extensiva.md`, `analise-negocio.
 
 ---
 
-## [0.3.0] — 2026-05-15 (tarde) (commit 20e998e)
+## [0.3.0] - 2026-05-15 (tarde) (commit 20e998e)
 - **Font Awesome 6.5** substituindo todos os emojis da interface (paleta consistente bordô/oliva).
 - **Validação client-side completa** em todos os formulários:
   - Data mínima = hoje (planejamento de viagem e cadastro de horários).
@@ -221,7 +221,7 @@ apoio: `pesquisa-mercado.md`, `pesquisa-mercado-extensiva.md`, `analise-negocio.
 - **Re-mapeamento automático** das datas do seed para futuro relativo a hoje (demo nunca expira).
 - `populateVinicolaSelects()` global, sincroniza b-vinicola / exp-vinicola / m-vinicola após qualquer mudança.
 - `getAllVinicolas()` combina catálogo + custom (espelha `getAllHorarios()`).
-- Botões com ícones (Font Awesome) — classe `.btn-icon` para espaçamento.
+- Botões com ícones (Font Awesome) - classe `.btn-icon` para espaçamento.
 - Arquivos de documentação: `backlog.md`, `changelog.md`.
 
 ### Mudado
@@ -234,11 +234,11 @@ apoio: `pesquisa-mercado.md`, `pesquisa-mercado-extensiva.md`, `analise-negocio.
 
 ### Corrigido
 - Variável `initial` não utilizada em `renderVinicolaPerfil()` removida (TS6133).
-- Tags do `data-mode` em formulários multi-modo ficavam com `required` mesmo escondidas — agora `disabled` quando hidden.
+- Tags do `data-mode` em formulários multi-modo ficavam com `required` mesmo escondidas - agora `disabled` quando hidden.
 
 ---
 
-## [0.2.0] — 2026-05-15 (commit 530341a)
+## [0.2.0] - 2026-05-15 (commit 530341a)
 
 ### Adicionado
 - **Mobile-first**: refator completo do `style.css` (base mobile, breakpoints `min-width` em 600/720/860/900/960).
@@ -269,7 +269,7 @@ apoio: `pesquisa-mercado.md`, `pesquisa-mercado-extensiva.md`, `analise-negocio.
 
 ---
 
-## [0.1.0] — 2026-04-15 (commit 4fd87d9)
+## [0.1.0] - 2026-04-15 (commit 4fd87d9)
 
 ### Adicionado
 - Backend PHP 8 + MySQL com 10 endpoints PDO:
@@ -281,7 +281,7 @@ apoio: `pesquisa-mercado.md`, `pesquisa-mercado-extensiva.md`, `analise-negocio.
 
 ---
 
-## [0.0.2] — 2026-03-25
+## [0.0.2] - 2026-03-25
 
 ### Adicionado
 - Catálogo de experiências com filtros (busca, vinícola, ordenação).
@@ -290,7 +290,7 @@ apoio: `pesquisa-mercado.md`, `pesquisa-mercado-extensiva.md`, `analise-negocio.
 
 ---
 
-## [0.0.1] — 2026-02-28 — Primeira versão
+## [0.0.1] - 2026-02-28 - Primeira versão
 
 ### Adicionado
 - Estrutura base do site (hero, planner, footer).

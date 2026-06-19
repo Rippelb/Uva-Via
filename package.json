@@ -1,7 +1,7 @@
 {
   "name": "uva-via",
   "version": "1.0.0",
-  "description": "Concierge digital de enoturismo para o Vale dos Vinhedos — front-end vanilla (HTML/CSS/JS) + API PHP 8 (PDO) + MySQL.",
+  "description": "Concierge digital de enoturismo para o Vale dos Vinhedos - front-end vanilla (HTML/CSS/JS) + API PHP 8 (PDO) + MySQL.",
   "private": true,
   "license": "MIT",
   "scripts": {

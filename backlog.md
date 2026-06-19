@@ -1,4 +1,4 @@
-# 🍇 Uva & Via — Backlog
+# 🍇 Uva & Via - Backlog
 
 Pendente, em progresso e concluído. Inspirado nos cards Trello do MVP +
 ideias que surgiram durante o desenvolvimento.
@@ -12,20 +12,20 @@ ideias que surgiram durante o desenvolvimento.
 | # | Story | Epic | Status |
 |---|---|---|---|
 | 24 | CRUD de vinícolas (admin) | Infra | ✅ |
-| 26 | Gestão de horários — modo único | Infra | ✅ |
-| 26b | Gestão de horários — modo faixa (bulk) | Infra | ✅ |
+| 26 | Gestão de horários - modo único | Infra | ✅ |
+| 26b | Gestão de horários - modo faixa (bulk) | Infra | ✅ |
 | 30 | Responsividade mobile completa | UX | ✅ |
 | 29 | Rodapé com diferenciais | UX | ✅ |
-| – | Validação de inputs (datas, números) | Qualidade | ✅ |
-| – | Font Awesome substituindo emojis | UX | ✅ |
-| – | Ocultar scrollbar visual | UX | ✅ |
-| – | Selects estilizados na paleta | UX | ✅ |
+| - | Validação de inputs (datas, números) | Qualidade | ✅ |
+| - | Font Awesome substituindo emojis | UX | ✅ |
+| - | Ocultar scrollbar visual | UX | ✅ |
+| - | Selects estilizados na paleta | UX | ✅ |
 | 31 | Avaliações da comunidade (estrelas + comentário) | Engajamento | ✅ |
 | 32 | Tick de disponibilidade em tempo real (simulado) | UX | ✅ |
-| 33 | Reservas v2 — status, grupos, .ics, cancelar com confirmação | Reservas | ✅ |
+| 33 | Reservas v2 - status, grupos, .ics, cancelar com confirmação | Reservas | ✅ |
 | 34 | Sugestões com filtros temporais e motivo personalizado | Home | ✅ |
-| 35 | Algoritmo v2 — rating, rationale, seed/regenerar, ordenação geográfica | Algoritmo | ✅ |
-| 36 | Timeline v2 — chegada/saída, almoço sugerido, km, share, print, .ics | Mapa | ✅ |
+| 35 | Algoritmo v2 - rating, rationale, seed/regenerar, ordenação geográfica | Algoritmo | ✅ |
+| 36 | Timeline v2 - chegada/saída, almoço sugerido, km, share, print, .ics | Mapa | ✅ |
 
 ---
 
@@ -152,7 +152,7 @@ ideias que surgiram durante o desenvolvimento.
 
 ## 🚧 Próximas sprints
 
-### Sprint v1.1 — Polimento e demo
+### Sprint v1.1 - Polimento e demo
 
 - 📋 Adicionar **experiências** a vinícolas customizadas (CRUD completo no admin)
 - 📋 Tour guiado na primeira visita (overlay com pontos de destaque)
@@ -160,7 +160,7 @@ ideias que surgiram durante o desenvolvimento.
 - 📋 Compartilhar roteiro via link (encode no hash)
 - 📋 Modo escuro respeitando `prefers-color-scheme`
 
-### Sprint v2 — Autenticação e persistência
+### Sprint v2 - Autenticação e persistência
 
 - 📋 Login social (Google / Apple)
 - 📋 Migrar reservas/horários custom do localStorage para o backend
@@ -168,7 +168,7 @@ ideias que surgiram durante o desenvolvimento.
 - 📋 Reset de senha por email
 - 📋 RGPD: termo de uso e política de privacidade
 
-### Sprint v2.1 — Pagamento e receita
+### Sprint v2.1 - Pagamento e receita
 
 - 📋 Integração Pix via API gateway (Mercado Pago / Stripe)
 - 📋 Cartão de crédito tokenizado
@@ -176,18 +176,18 @@ ideias que surgiram durante o desenvolvimento.
 - 📋 Painel de receita para a vinícola
 - 📋 Cupons e códigos promocionais
 
-### Sprint v3 — Inteligência e escala
+### Sprint v3 - Inteligência e escala
 
 - 📋 Recomendações por LLM (histórico do visitante → próximas sugestões)
 - 📋 Embeddings de experiências para "vinícolas parecidas com…"
 - 📋 Notificações push antes da visita
-- ✅ ~~Sistema de reviews pós-experiência (estrelas + texto)~~ — entregue em 2026-05-22 (épico Avaliações)
+- ✅ ~~Sistema de reviews pós-experiência (estrelas + texto)~~ - entregue em 2026-05-22 (épico Avaliações)
 - 📋 Reviews moderadas server-side (anti-spam, idioma)
 - 📋 Roteiros colaborativos (família/grupo edita junto via socket)
 - 📋 Integração real com agendas das vinícolas (API/webhook)
 - 📋 Disponibilidade real (substituir tick simulado por websocket/SSE do backend)
 
-### Sprint v4 — Mobile nativo
+### Sprint v4 - Mobile nativo
 
 - 📋 PWA com offline-first
 - 📋 App nativo iOS/Android (Capacitor)
@@ -200,10 +200,10 @@ ideias que surgiram durante o desenvolvimento.
 
 | # | Item | Prioridade |
 |---|---|---|
-| – | Re-mapeamento de datas do seed: hoje é temporário em script.js, deveria vir do backend já futuro | baixa |
-| – | Tags do banco vs slugs do front: dependemos do fallback para preservar slugs | média |
-| – | Custom vinicolas não podem ter experiências (apenas perfis) | alta |
-| – | Sem testes automatizados (manual QA por enquanto) | média |
+| - | Re-mapeamento de datas do seed: hoje é temporário em script.js, deveria vir do backend já futuro | baixa |
+| - | Tags do banco vs slugs do front: dependemos do fallback para preservar slugs | média |
+| - | Custom vinicolas não podem ter experiências (apenas perfis) | alta |
+| - | Sem testes automatizados (manual QA por enquanto) | média |
 
 ---
 

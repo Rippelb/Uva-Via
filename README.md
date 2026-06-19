@@ -4,7 +4,7 @@
 
 ### Concierge digital de enoturismo para o Vale dos Vinhedos
 
-*Monte seu roteiro ideal em minutos — sem filas, sem improviso.*
+*Monte seu roteiro ideal em minutos - sem filas, sem improviso.*
 
 [![Status](https://img.shields.io/badge/status-MVP-6b7a3a?style=flat-square)](#)
 [![Stack](https://img.shields.io/badge/stack-PHP%208%20%2B%20MySQL%208%20%2B%20Vanilla%20JS-4a0d1f?style=flat-square)](#)
@@ -44,7 +44,7 @@ baseados em:
 | 👥 **Perfil da viagem**           | Casal · Família · Amigos · Solo                        |
 | 💰 **Orçamento**                  | Filtra experiências e calcula valor total estimado     |
 | 🟢 **Disponibilidade real**       | Badges em tempo real (verde / amarelo / vermelho)      |
-| 🗺️ **Proximidade geográfica**     | Haversine entre vinícolas — minimiza deslocamento      |
+| 🗺️ **Proximidade geográfica**     | Haversine entre vinícolas - minimiza deslocamento      |
 | ⏱️ **Ritmo do passeio**           | Tranquilo (2/dia) · Equilibrado (3) · Explorador (4+)  |
 
 ---
@@ -52,18 +52,18 @@ baseados em:
 ## ✨ O que o MVP entrega
 
 ### 🆕 Repaginação 2026 (guiada por pesquisa de mercado)
-- 🚗 **Logística & "motorista da rodada"** — plano de transporte por modo (carro,
+- 🚗 **Logística & "motorista da rodada"** - plano de transporte por modo (carro,
   app, transfer) no roteiro. Diferencial: trata a maior dor real do Vale.
 - 🧾 **Comprovante/voucher** com código, endereço, contato, inclusões e
   **política de cancelamento clara** (flex 24h / moderada 48h).
-- 🤝 **Reserva honesta** — "solicitação" pendente de confirmação da vinícola, com
+- 🤝 **Reserva honesta** - "solicitação" pendente de confirmação da vinícola, com
   captura de e-mail/WhatsApp (evita o "passeio vendido e não entregue").
 - ❤️ **Favoritos**, ⚡ **roteiros prontos (1 clique)**, 🗺️ **rota no Google Maps**,
   🔔 **lembrete da visita**.
 - ⭐ **Reviews verificadas + voto "útil"**; 🔎 **filtros por comodidade** (pet,
   crianças, acessível, vegetariano…).
 - 📲 **PWA** instalável e offline (útil na estrada, onde o sinal é fraco).
-- 💼 **Seção "Para vinícolas" (B2B)** + **newsletter** — modelo de receita visível.
+- 💼 **Seção "Para vinícolas" (B2B)** + **newsletter** - modelo de receita visível.
 - 📚 Docs: [pesquisa-mercado.md](pesquisa-mercado.md) ·
   [pesquisa-mercado-extensiva.md](pesquisa-mercado-extensiva.md) ·
   [analise-negocio.md](analise-negocio.md).
@@ -71,8 +71,8 @@ baseados em:
 ### 🏠 Home
 - Hero com **CTA duplo** ("Planejar meu roteiro" / "Ver mapa do dia")
 - 🔍 **Busca global** (vinícolas + experiências em tempo real)
-- ✨ **Sugestões do dia** — experiências curadas com vagas abertas
-- 🏛️ **Vinícolas boutique em destaque** — Lídio Carraro, Torcello, Cave Geisse…
+- ✨ **Sugestões do dia** - experiências curadas com vagas abertas
+- 🏛️ **Vinícolas boutique em destaque** - Lídio Carraro, Torcello, Cave Geisse…
 
 ### 🧙 Wizard de Criação de Roteiro
 - 6 campos validados (dias, pessoas, orçamento, perfil, ritmo)
@@ -86,7 +86,7 @@ baseados em:
 - Gauge de orçamento (dentro/acima)
 - Cards de paradas com **chegada → saída**, motivos da escolha (toggle), e botões "Ver vinícola"/"Reservar"
 - Badges de disponibilidade
-- **"Gerar nova variação"** — re-roll com seed diferente
+- **"Gerar nova variação"** - re-roll com seed diferente
 
 ### 🍇 Página da Vinícola
 - Cover personalizado, descrição, faixa de preço, duração média
@@ -94,8 +94,8 @@ baseados em:
 - Reserva direta com pré-preenchimento
 
 ### 🗺️ Mapa / Rota
-- **Visão resumida** — tempo total, deslocamento, **distância em km**, paradas, saída sugerida
-- **Barra de ações** — Imprimir · Compartilhar (URL com hash) · Exportar agenda (.ics multi-evento)
+- **Visão resumida** - tempo total, deslocamento, **distância em km**, paradas, saída sugerida
+- **Barra de ações** - Imprimir · Compartilhar (URL com hash) · Exportar agenda (.ics multi-evento)
 - Tabs por dia (scroll horizontal mobile-friendly)
 - **Cabeçalho do dia ativo** com janela, nº paradas, duração e km do dia
 - **Timeline vertical** com marcadores numerados, chegada → saída, deslocamento em km e tempo
@@ -108,7 +108,7 @@ baseados em:
 - **Grupos por bucket**: Hoje · Amanhã · Esta semana · Em breve · Histórico
 - **Valor total estimado** em card destacado
 - Botões "Editar roteiro" / "Adicionar experiência"
-- **Exportar para agenda** (.ics — Google/Apple/Outlook) por reserva
+- **Exportar para agenda** (.ics - Google/Apple/Outlook) por reserva
 - **Cancelar com confirmação** (evita perda acidental)
 
 ### ⭐ Avaliações da comunidade
@@ -120,7 +120,7 @@ baseados em:
 - 12 avaliações seed para a comunidade não nascer vazia
 
 ### 🟢 Disponibilidade em tempo real
-- Tick simulado a cada 45s — outros usuários "consomem" vagas
+- Tick simulado a cada 45s - outros usuários "consomem" vagas
 - Pausa quando aba fica oculta (Page Visibility API)
 - Timestamp "Atualizado há Xs" nos slots e nas sugestões
 - Animação `.is-updated` nos slots que mudaram
@@ -128,12 +128,12 @@ baseados em:
 ### 🛠️ Gestão (admin)
 - **Subtabs:** Horários | Vinícolas
 - **CRUD de vinícolas**: nome, cidade, tipo, descrição, paleta, duração média, faixa de preço
-- **Horários — modo único** ou **modo faixa** (gera vários slots de uma vez com preview ao vivo)
+- **Horários - modo único** ou **modo faixa** (gera vários slots de uma vez com preview ao vivo)
 - Validação completa: datas no futuro, números positivos, nomes únicos
 - Métricas de ocupação em tempo real
 
 ### ✨ Qualidade e detalhes
-- **Font Awesome 6** — ícones consistentes (não emojis variáveis por SO)
+- **Font Awesome 6** - ícones consistentes (não emojis variáveis por SO)
 - **Scrollbar oculta** mantendo scroll funcional
 - **Validação inline** em todos os formulários com mensagens de erro contextuais
 - **Touch-targets 44px+** garantidos em todos os elementos clicáveis
@@ -191,7 +191,7 @@ breakpoints `min-width`. Touch-targets de 44px+ garantidos.
 ## 🚀 Rodando local
 
 ### Pré-requisitos
-- XAMPP (Apache + MySQL) — testado com PHP 8.x
+- XAMPP (Apache + MySQL) - testado com PHP 8.x
 - Git
 
 ### Passos
@@ -260,7 +260,7 @@ Lídio Carraro · Torcello · Pizzato · Cave Geisse · Don Giovanni · Dom Cân
 ### Tradicionais e familiares
 Miolo Wine Group · Casa Valduga · Salton
 
-26 experiências catalogadas — degustações, harmonizações, piqueniques entre vinhedos, tours de cave, vindima.
+26 experiências catalogadas - degustações, harmonizações, piqueniques entre vinhedos, tours de cave, vindima.
 
 ---
 
@@ -278,7 +278,7 @@ Miolo Wine Group · Casa Valduga · Salton
 
 ## 🛣️ Roadmap
 
-### v1 (atual) — MVP funcional
+### v1 (atual) - MVP funcional
 - [x] CRUD de vinícolas + experiências + horários
 - [x] Wizard de criação de roteiro
 - [x] Algoritmo de geração com scoring
@@ -287,7 +287,7 @@ Miolo Wine Group · Casa Valduga · Salton
 - [x] Mobile-first responsive
 - [x] Disponibilidade em tempo real (front)
 
-### v1.1 (atual) — Repaginação 2026
+### v1.1 (atual) - Repaginação 2026
 - [x] Logística & "motorista da rodada" no roteiro
 - [x] Comprovante/voucher + política de cancelamento transparente
 - [x] Reserva como "solicitação" + captura de contato
@@ -299,7 +299,7 @@ Miolo Wine Group · Casa Valduga · Salton
 - [x] PWA instalável e offline
 - [x] Seção B2B "Para vinícolas" + newsletter
 
-### v2 — Plataforma
+### v2 - Plataforma
 - [ ] Login social (Google/Apple)
 - [ ] Reservas persistentes server-side
 - [ ] Pagamento integrado (Pix + cartão)
@@ -310,7 +310,7 @@ Miolo Wine Group · Casa Valduga · Salton
 - [ ] Disponibilidade real via WebSocket/SSE do backend
 - [ ] Reviews moderadas server-side
 
-### v3 — Inteligência
+### v3 - Inteligência
 - [ ] Recomendações por LLM dado histórico
 - [ ] Roteiros colaborativos (família edita junto)
 - [ ] Integração real com agendas das vinícolas
@@ -332,7 +332,7 @@ Este é um projeto acadêmico/MVP. Issues e PRs são bem-vindos.
 
 ## 📜 Licença
 
-MIT — use, modifique, distribua. Beba com moderação. 🍷
+MIT - use, modifique, distribua. Beba com moderação. 🍷
 
 ---
 

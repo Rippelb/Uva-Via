@@ -1,4 +1,4 @@
-// PWA — registra o service worker e oferece "Instalar app".
+// PWA - registra o service worker e oferece "Instalar app".
 // Permite usar o Uva & Via como app na tela inicial, com cache offline.
 
 if ('serviceWorker' in navigator) {

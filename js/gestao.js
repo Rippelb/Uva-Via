@@ -1,5 +1,5 @@
 // Gestao: subtabs, Horarios e Vinicolas (CRUD)
-// Dividido de script.js — carregado como <script> classico, ordem importa.
+// Dividido de script.js - carregado como <script> classico, ordem importa.
 
 // =================== Gestao: subtabs (Horarios | Vinicolas) ===================
 document.querySelectorAll('.manage-subtab').forEach(btn => {
@@ -20,7 +20,7 @@ document.querySelectorAll('.manage-subtab').forEach(btn => {
 function populateVinicolaSelects() {
     const all = getAllVinicolas();
     const builders = [
-        { el: document.getElementById('b-vinicola'),     label: v => `${v.nome} — ${v.cidade}`, placeholder: 'Selecione uma vinícola…' },
+        { el: document.getElementById('b-vinicola'),     label: v => `${v.nome} - ${v.cidade}`, placeholder: 'Selecione uma vinícola…' },
         { el: document.getElementById('exp-vinicola'),   label: v => v.nome,                    placeholder: 'Todas as vinícolas' },
         { el: document.getElementById('m-vinicola'),     label: v => v.nome,                    placeholder: 'Selecione…' },
     ];
@@ -93,7 +93,7 @@ document.querySelectorAll('input[name="manage-mode"]').forEach(r => {
 
 function timeToMin(t) {
     // Defensivo: t pode vir undefined/malformado de um plano antigo no
-    // localStorage — sem isto, .split quebraria o render do roteiro/mapa ao
+    // localStorage - sem isto, .split quebraria o render do roteiro/mapa ao
     // revisitar a pagina. Default seguro para 00:00.
     const parts = String(t || '00:00').split(':').map(Number);
     return (parts[0] || 0) * 60 + (parts[1] || 0);
@@ -188,8 +188,8 @@ function renderManageTable() {
                 <span class="time">${h.horario}</span>
             </div>
             <div class="manage-exp">
-                <h4>${exp ? exp.nome : '—'}</h4>
-                <span class="vin">${vin ? vin.nome : '—'}</span>
+                <h4>${exp ? exp.nome : '-'}</h4>
+                <span class="vin">${vin ? vin.nome : '-'}</span>
             </div>
             <div class="manage-cap">
                 <span>${h.vagas}/${capacidade} vagas · ${pct}% ocupado</span>
@@ -426,7 +426,7 @@ function renderManageVinList() {
                 <div class="vin-row-meta">
                     <span><i class="fa-regular fa-clock" aria-hidden="true"></i> <strong>${v.duracao_media_min || 75}</strong> min</span>
                     <span><i class="fa-solid fa-wine-glass" aria-hidden="true"></i> <strong>${expCount}</strong> exp.</span>
-                    <span><i class="fa-solid fa-tag" aria-hidden="true"></i> ${fmtBRL(v.preco_min || 0)}–${fmtBRL(v.preco_max || 0)}</span>
+                    <span><i class="fa-solid fa-tag" aria-hidden="true"></i> ${fmtBRL(v.preco_min || 0)}-${fmtBRL(v.preco_max || 0)}</span>
                 </div>
                 <span class="vin-row-badge ${isCustom ? 'custom' : ''}">${isCustom ? 'Custom' : (v.tipo === 'boutique' ? 'Boutique' : 'Catálogo')}</span>
                 <div class="vin-row-actions">

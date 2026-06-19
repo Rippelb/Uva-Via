@@ -1,4 +1,4 @@
-# 🧭 Uva & Via — Decisões de Arquitetura
+# 🧭 Uva & Via - Decisões de Arquitetura
 
 Registro das decisões técnicas e de produto, com o **porquê** de cada escolha
 para que futuras manutenções não recolham os mesmos debates.
@@ -12,7 +12,7 @@ para que futuras manutenções não recolham os mesmos debates.
 **Por quê:**
 - O projeto roda em XAMPP local; introduzir Webpack/Vite/Node exigiria toolchain extra
   no fluxo do time, e o repo passaria a precisar de `node_modules` ou pipeline CI.
-- O escopo do MVP é uma SPA ancorada (~8 seções) — vanilla resolve sem ginástica.
+- O escopo do MVP é uma SPA ancorada (~8 seções) - vanilla resolve sem ginástica.
 - O algoritmo de roteiro e a UI são intencionalmente leves; framework agregaria peso
   sem ROI claro nesta fase.
 - Mobile-first se resolve com CSS bem escrito, não com framework.
@@ -30,7 +30,7 @@ Migração na branch `next-migration`, não no main.
 `@media (min-width: …)` em pontos definidos: 600, 720, 860, 900, 960.
 
 **Por quê:**
-- O público-alvo (45–55+ anos) acessa cada vez mais por celular durante a viagem.
+- O público-alvo (45-55+ anos) acessa cada vez mais por celular durante a viagem.
 - Mobile-first força priorizar conteúdo, sem media-queries inversas (`max-width`)
   empilhadas que ficam ilegíveis com o tempo.
 - Os breakpoints foram escolhidos a partir do conteúdo, não de dispositivos:
@@ -40,7 +40,7 @@ Migração na branch `next-migration`, não no main.
   - 900 = grids de 4-5 colunas (roteiro-meta, mapa-resumo)
   - 960 = grids de 3 cards lado a lado
 
-**Touch-targets:** 44 px mínimo (token `--touch`) — Apple HIG.
+**Touch-targets:** 44 px mínimo (token `--touch`) - Apple HIG.
 
 ---
 
@@ -52,7 +52,7 @@ Migração na branch `next-migration`, não no main.
 
 **Por quê:**
 - Bordô = universo do vinho, instantaneamente legível como categoria.
-- Bege + tons terrosos sugerem vinhedos e produção artesanal — alinhado a vinícolas boutique.
+- Bege + tons terrosos sugerem vinhedos e produção artesanal - alinhado a vinícolas boutique.
 - Serif itálica nos números/títulos remete a apps premium de viagem (Airbnb Luxe, Mr & Mrs Smith).
 - Inter para UI mantém legibilidade em telas pequenas (45+ anos, presbiopia).
 
@@ -66,7 +66,7 @@ Migração na branch `next-migration`, não no main.
 endpoint server (`api/roteiros.php`).
 
 **Por quê:**
-- Latência zero — o usuário vê o roteiro instantaneamente.
+- Latência zero - o usuário vê o roteiro instantaneamente.
 - Funciona offline com os dados embutidos no `script.js`.
 - O backend está pronto para assumir quando precisarmos de personalização baseada em
   histórico do usuário (ainda não implementado).
@@ -110,7 +110,7 @@ não um mapa geográfico (Leaflet/Google Maps).
 
 **Por quê:**
 - A informação **acionável** para o usuário é a sequência das paradas, horários e
-  tempos de deslocamento — não a geografia exata.
+  tempos de deslocamento - não a geografia exata.
 - Evita custo de API (Mapbox/Google Maps) e dependência externa no MVP.
 - Mobile-friendly: timeline vertical aproveita melhor a tela do que um mapa.
 - Mais rápido para implementar e testar.
@@ -127,7 +127,7 @@ escopo.
 ids numéricos do banco.
 
 **Por quê:**
-- O algoritmo de scoring precisa casar tags **e** keywords no nome — slugs são legíveis
+- O algoritmo de scoring precisa casar tags **e** keywords no nome - slugs são legíveis
   no código.
 - A API retorna tags como `{id, nome}`, mas o mapeador prioriza o fallback de slugs do
   `script.js` para manter o scoring funcional após carga da API.
@@ -160,7 +160,7 @@ HTML (chips). Aceito porque o catálogo de tags é estável.
 
 **Por quê:**
 - Padrão universal (semáforo), aprendizado zero.
-- A pesquisa mostrou que 93,6% valorizam disponibilidade em tempo real — destacar
+- A pesquisa mostrou que 93,6% valorizam disponibilidade em tempo real - destacar
   visualmente é a forma mais direta de entregar isso.
 - Os tons foram ajustados ao restante da paleta (não verde-neón nem vermelho-puro)
   para manter coesão premium.
@@ -173,7 +173,7 @@ HTML (chips). Aceito porque o catálogo de tags é estável.
 comentários de IA descrevendo o óbvio.
 
 **Por quê:**
-- Comentários do tipo "// percorre cada vinícola" são ruído — o código já diz isso.
+- Comentários do tipo "// percorre cada vinícola" são ruído - o código já diz isso.
 - Onde há **why** não óbvio (haversine, scoring com pesos arbitrários), há comentário
   curto.
 - Documentação de produto/decisão fica nos `.md` para sobreviver a refactors.
@@ -186,9 +186,9 @@ comentários de IA descrevendo o óbvio.
 **Decisão atual:** Font Awesome 6.5 via CDN (`cdnjs.cloudflare.com`).
 
 **Por quê mudou:**
-- Emojis variavam muito por SO (Windows ≠ iOS ≠ Android) — quebrava a consistência visual
+- Emojis variavam muito por SO (Windows ≠ iOS ≠ Android) - quebrava a consistência visual
   numa UI que se vende como "premium".
-- Font Awesome dá controle de cor via CSS (`color: var(--vinho)`) — emojis não.
+- Font Awesome dá controle de cor via CSS (`color: var(--vinho)`) - emojis não.
 - Tamanho perceptivo do FA Free CDN é aceitável (~80KB gzip, cacheado).
 - CDN com SRI hash garante integridade e velocidade global.
 
@@ -250,14 +250,14 @@ ainda não existe). Ver `backlog.md` v1.1.
 O modo faixa gera vários slots numa submissão (data início/fim × hora início/fim com intervalo).
 
 **Por quê:**
-- Cadastrar slot a slot é um trabalho braçal — uma vinícola que abre 6 horários/dia × 7 dias
+- Cadastrar slot a slot é um trabalho braçal - uma vinícola que abre 6 horários/dia × 7 dias
   precisaria de 42 submissões.
 - O modo faixa resolve com 1 form (preview ao vivo conta quantos slots vão ser criados).
 - Validações comuns (data passada, hora final menor que inicial, capacidade < 1) cobrem
   os dois modos.
 
 **Trade-off:** Aumenta complexidade do form (mais campos visíveis). Mitigado pelo toggle
-visual no topo do form — quando "Único" está ativo, os campos do modo faixa ficam `hidden`
+visual no topo do form - quando "Único" está ativo, os campos do modo faixa ficam `hidden`
 e `disabled` (não bloqueiam o submit por `required`).
 
 ---
@@ -279,7 +279,7 @@ fundação. Cada feature virou commit independente para revisão e rollback fác
 modos carro/app/transfer e orientação de motorista sóbrio, em vez de só calcular km.
 
 **Por quê:** a pesquisa de campo mostrou que **dirigir após degustar** e a distância
-entre vinícolas (3–8 km) são a maior dor do passeio — e nenhum concorrente trata.
+entre vinícolas (3-8 km) são a maior dor do passeio - e nenhum concorrente trata.
 É barato de implementar (client-side) e alto em diferenciação/marca.
 
 ---
@@ -291,7 +291,7 @@ tags/preço em `js/dados-extra.js`, exibida antes de reservar, no perfil e no
 comprovante; o cancelamento informa o reembolso conforme o prazo.
 
 **Por quê:** a reclamação nº1 contra plataformas de passeio (Reclame Aqui) é
-cancelamento opaco/assimétrico. Transparência é feature de confiança — e confiança
+cancelamento opaco/assimétrico. Transparência é feature de confiança - e confiança
 é o nosso valor central.
 
 ---
@@ -316,7 +316,7 @@ offline (`sw.js`): navegação network-first, estáticos cache-first, nunca cach
 
 **Por quê:** a persona usa o celular durante a viagem e algumas vinícolas têm sinal
 fraco (achado da pesquisa). Cache-first nos estáticos pode servir versão levemente
-defasada — mitigado pela versão do cache (`uvaevia-vN`) a cada release.
+defasada - mitigado pela versão do cache (`uvaevia-vN`) a cada release.
 
 ---
 
@@ -350,7 +350,7 @@ central (gerar roteiro, explorar, reservar) como convidado; login é opcional
 admin). Gestão fica visível apenas para admin.
 
 **Por quê:** o gate duro (`body.auth-locked` + `onAuthChange(null)` reabrindo o
-login) deixava o fluxo crítico — 100% client-side — **inacessível** quando o
+login) deixava o fluxo crítico - 100% client-side - **inacessível** quando o
 backend estava no ar sem sessão, ou se ele oscilasse. Numa avaliação que testa "a
 ação principal como usuário real", um muro de login dependente de PHP/MySQL/
 cookies/CSRF é um risco grande e desnecessário. Guest-first também realinha com o

@@ -1,11 +1,11 @@
 // Mapa / Rota + compartilhamento + ICS do roteiro
-// Dividido de script.js — carregado como <script> classico, ordem importa.
+// Dividido de script.js - carregado como <script> classico, ordem importa.
 
 // =================== Mapa / Rota ===================
 let mapaActiveDay = 0;
 
 // Ponto navegável de uma vinícola: usa coordenadas quando há, senão cai no
-// nome+cidade. Usado para abrir a rota real no Google Maps / Waze — funcionalidade
+// nome+cidade. Usado para abrir a rota real no Google Maps / Waze - funcionalidade
 // que o Wanderlog tem e que faltava aqui.
 function pontoMaps(v) {
     if (!v) return '';
@@ -28,7 +28,7 @@ function gmapsStopUrl(v) {
     return p ? `https://www.google.com/maps/search/?api=1&query=${p}` : '#';
 }
 
-// Detecta se uma parada deve ser precedida por sugestao de almoco —
+// Detecta se uma parada deve ser precedida por sugestao de almoco -
 // quando o gap (chegada da proxima vs saida da atual) cruza 12h-14h
 // e nenhuma das duas paradas eh harmonizada.
 function sugerirAlmoco(stopAtual, stopProx) {
@@ -61,10 +61,10 @@ function renderMapa(plano) {
     content.hidden = false;
     if (mapaActiveDay >= plano.dias.length) mapaActiveDay = 0;
 
-    // Resumo enriquecido — inclui distancia total quando disponivel
+    // Resumo enriquecido - inclui distancia total quando disponivel
     const totalParadas = plano.chosen.length;
     const partida = plano.dias[0]?.[0]?.vin?.cidade || 'Vale dos Vinhedos';
-    const horarioPartida = plano.dias[0]?.[0]?.horario_sugerido || '—';
+    const horarioPartida = plano.dias[0]?.[0]?.horario_sugerido || '-';
     const kmCard = plano.distanciaTotalKm > 0
         ? `<div class="mapa-resumo-item"><span>Distância</span><strong>${Math.round(plano.distanciaTotalKm)} km</strong></div>`
         : '';
@@ -88,7 +88,7 @@ function renderMapa(plano) {
         </div>
     `;
 
-    // Barra de acoes — imprimir + compartilhar + .ics (novo)
+    // Barra de acoes - imprimir + compartilhar + .ics (novo)
     let actionsEl = document.getElementById('mapa-actions');
     if (!actionsEl) {
         actionsEl = document.createElement('div');
@@ -132,13 +132,13 @@ function renderMapa(plano) {
         });
     });
 
-    // Cabecalho do dia ativo — km do dia, paradas do dia, primeiro e ultimo horario.
+    // Cabecalho do dia ativo - km do dia, paradas do dia, primeiro e ultimo horario.
     // Filtra paradas malformadas (defesa contra plano antigo/corrompido no storage).
     const dia = (plano.dias[mapaActiveDay] || plano.dias[0] || []).filter(s => s && s.vin && s.exp);
     const kmDia = dia.reduce((s, x) => s + (x.distanciaKm || 0), 0);
     const tempoDia = dia.reduce((s, x) => s + x.exp.duracao + (x.deslocamentoMin || 0), 0);
-    const inicioDia = dia[0]?.chegada || dia[0]?.horario_sugerido || '—';
-    const fimDia = dia[dia.length - 1]?.saida || '—';
+    const inicioDia = dia[0]?.chegada || dia[0]?.horario_sugerido || '-';
+    const fimDia = dia[dia.length - 1]?.saida || '-';
 
     // Timeline do dia ativo com chegada/saida + sugestao de almoco + distancia
     const timeline = document.getElementById('mapa-timeline');
@@ -169,7 +169,7 @@ function renderMapa(plano) {
                     <div class="mapa-pausa">
                         <span class="mapa-pausa-icon" aria-hidden="true"><i class="fa-solid fa-utensils"></i></span>
                         <div class="mapa-pausa-body">
-                            <strong>Pausa sugerida — almoço</strong>
+                            <strong>Pausa sugerida: almoço</strong>
                             <small>${almoco.inicio} → ${almoco.fim} · ${minutosParaHHMM(almoco.duracaoMin)} livres entre as paradas</small>
                         </div>
                     </div>
@@ -205,7 +205,7 @@ function renderMapa(plano) {
 // O destinatario abre o link e o plano eh restaurado automaticamente.
 function sharePlano(plano) {
     try {
-        // Compacta apenas o input do plano — quem abrir regenera o roteiro.
+        // Compacta apenas o input do plano - quem abrir regenera o roteiro.
         const payload = {
             startDate: plano.startDate,
             days: plano.days,
@@ -233,7 +233,7 @@ function sharePlano(plano) {
 function copiarUrl(url) {
     if (navigator.clipboard?.writeText) {
         navigator.clipboard.writeText(url).then(
-            () => showToast('Link copiado — cole onde quiser compartilhar.'),
+            () => showToast('Link copiado! Cole onde quiser compartilhar.'),
             () => fallbackPromptUrl(url)
         );
     } else {
@@ -280,7 +280,7 @@ function downloadICSRoteiro(plano) {
             linhas.push(`DTSTAMP:${toICS(new Date())}`);
             linhas.push(`DTSTART:${toICS(dt)}`);
             linhas.push(`DTEND:${toICS(dtEnd)}`);
-            linhas.push(`SUMMARY:${escapeICS(stop.exp.nome)} — ${escapeICS(stop.vin.nome)}`);
+            linhas.push(`SUMMARY:${escapeICS(stop.exp.nome)} - ${escapeICS(stop.vin.nome)}`);
             linhas.push(`LOCATION:${escapeICS(stop.vin.nome)}, ${escapeICS(stop.vin.cidade || '')}`);
             linhas.push(`DESCRIPTION:Parada ${idx + 1} do dia ${i + 1} no roteiro Uva & Via.`);
             linhas.push('END:VEVENT');

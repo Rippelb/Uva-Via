@@ -1,4 +1,4 @@
-// Favoritos / lista de desejos — salva vinícolas e experiências no localStorage.
+// Favoritos / lista de desejos - salva vinícolas e experiências no localStorage.
 // Padrão em GetYourGuide/Wanderlog/Wine Locals; faltava aqui. Carregado antes do
 // init.js para que favBtnHTML exista quando os cards forem renderizados.
 
@@ -36,7 +36,7 @@ function toggleFavExp(id) {
     return f.experiencias.includes(id);
 }
 
-// Botão de coração reutilizável — usado nos templates de cards.
+// Botão de coração reutilizável - usado nos templates de cards.
 function favBtnHTML(type, id) {
     const ativo = type === 'vin' ? isFavVin(id) : isFavExp(id);
     const lbl = ativo ? 'Remover dos favoritos' : 'Salvar nos favoritos';
@@ -149,7 +149,7 @@ window.renderFavoritos = renderFavoritos;
 window.favBtnHTML = favBtnHTML;
 window.updateFavCount = updateFavCount;
 
-// Clique global nos corações (delegação) — funciona em qualquer card.
+// Clique global nos corações (delegação) - funciona em qualquer card.
 document.addEventListener('click', (e) => {
     const btn = e.target.closest('.fav-btn');
     if (!btn) return;

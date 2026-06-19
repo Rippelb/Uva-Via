@@ -1,5 +1,5 @@
 // Sync entre abas + Init (DEVE ser o ultimo a carregar)
-// Dividido de script.js — carregado como <script> classico, ordem importa.
+// Dividido de script.js - carregado como <script> classico, ordem importa.
 
 // =================== Sync entre abas ===================
 window.addEventListener('storage', (e) => {
@@ -68,7 +68,7 @@ try {
         document.querySelector('[data-mapa-link]')?.removeAttribute('hidden');
     }
 } catch (e) {
-    console.warn('[Uva&Via] Plano salvo invalido — descartando.', e);
+    console.warn('[Uva&Via] Plano salvo invalido - descartando.', e);
     try { clearPlan(); } catch {}
 }
 

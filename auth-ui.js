@@ -240,7 +240,7 @@ body.auth-locked .auth-modal-foot { background: rgba(245,236,217,.6); }
                 </div>
             </form>
             <div class="auth-modal-foot">
-                Suas reservas e roteiros ficam vinculados à conta — você pode acessá-los de qualquer dispositivo.
+                Suas reservas e roteiros ficam vinculados à conta - você pode acessá-los de qualquer dispositivo.
             </div>
         </div>
     `;
@@ -251,7 +251,7 @@ body.auth-locked .auth-modal-foot { background: rgba(245,236,217,.6); }
     const forms = overlay.querySelectorAll('.auth-form');
 
     // Locked: modal nao fecha (sem X, ESC ou clique fora). Guest-first: o app NAO
-    // nasce travado — o visitante usa o fluxo central (gerar roteiro, explorar,
+    // nasce travado - o visitante usa o fluxo central (gerar roteiro, explorar,
     // reservar) sem login. So travamos em casos especificos (troca de senha
     // obrigatoria de admin). Login segue disponivel pelo botao "Entrar".
     let locked = false;
@@ -284,7 +284,7 @@ body.auth-locked .auth-modal-foot { background: rgba(245,236,217,.6); }
             login:             ['Bem-vindo de volta',  'Entre para acessar suas reservas e roteiros.'],
             register:          ['Crie sua conta',       'Em segundos você tem acesso a tudo.'],
             'change-password': ['Atualize sua senha',   'Por segurança, defina uma nova senha antes de continuar.'],
-            forgot:            ['Recuperar senha',      'Não se preocupa — vamos gerar um token de recuperação.'],
+            forgot:            ['Recuperar senha',      'Não se preocupa - vamos gerar um token de recuperação.'],
             reset:             ['Redefinir senha',      'Use o token gerado para criar uma nova senha.'],
         };
         const [t, p] = titulos[tab] || titulos.login;

@@ -1,7 +1,7 @@
 // Dados derivados de confiança: comodidades, "o que está incluído", "o que
 // levar" e política de cancelamento. Centraliza o que os concorrentes
 // (GetYourGuide, Wine Locals) mostram antes da reserva e que faltava aqui.
-// Carregado logo após data.js — escopo de <script> clássico é compartilhado.
+// Carregado logo após data.js - escopo de <script> clássico é compartilhado.
 
 // =================== Comodidades (filtráveis) ===================
 const COMODIDADE_LABEL = {
@@ -71,7 +71,7 @@ const CANCELAMENTO = {
     },
 };
 // Experiências com preparo (jantares, almoços, verticais, vindima, masterclass)
-// pedem antecedência maior — política moderada.
+// pedem antecedência maior - política moderada.
 const CANCELAMENTO_MODERADA_IDS = new Set([2, 8, 10, 13, 14, 16, 24]);
 
 function getCancelamento(exp) {

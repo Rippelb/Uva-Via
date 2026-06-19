@@ -213,7 +213,7 @@ async function bootstrap() {
     try {
         await UvaViaApi.refreshSession();
     } catch (err) {
-        console.warn('[Uva&Via] Backend inacessivel — modo convidado offline (dados embutidos).', err);
+        console.warn('[Uva&Via] Backend inacessivel - modo convidado offline (dados embutidos).', err);
         window.UvaViaAuthUI?.unlock?.();
         window.UvaViaAuthUI?.close?.();
         return;
@@ -238,7 +238,7 @@ async function bootstrap() {
         }
 
         repopularSelect(document.getElementById('b-vinicola'), window.VINICOLAS || [], 'id',
-            v => `${v.nome} — ${v.cidade}`, 'Selecione uma vinícola…');
+            v => `${v.nome} - ${v.cidade}`, 'Selecione uma vinícola…');
         repopularSelect(document.getElementById('exp-vinicola'), window.VINICOLAS || [], 'id',
             v => v.nome, 'Todas as vinícolas');
         repopularSelect(document.getElementById('m-vinicola'), window.VINICOLAS || [], 'id',
@@ -254,7 +254,7 @@ async function bootstrap() {
 }
 
 // Reserva agora e responsabilidade de script.js (await na API). Aqui apenas
-// avisamos quem precisa quando o estado de auth muda — script.js refetcha
+// avisamos quem precisa quando o estado de auth muda - script.js refetcha
 // reservas/roteiros ao logar via 'uvaevia:auth-change'.
 UvaViaApi.onAuthChange((user) => {
     document.dispatchEvent(new CustomEvent('uvaevia:auth-change', { detail: { user } }));

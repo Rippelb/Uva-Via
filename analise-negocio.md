@@ -1,7 +1,7 @@
-# 🧠 Uva & Via — Análise de Negócio (visão de analista)
+# 🧠 Uva & Via - Análise de Negócio (visão de analista)
 
 > Exercício pedido pelo dono do produto: **entrar na pele de um analista de
-> negócios e responder — se o Uva & Via fracassar em 6 meses, por quê?** A partir
+> negócios e responder - se o Uva & Via fracassar em 6 meses, por quê?** A partir
 > do diagnóstico, derivamos features mitigantes e já as executamos.
 >
 > Data-base: junho/2026.
@@ -11,7 +11,7 @@
 ## 1. O que o negócio realmente é
 
 Não somos "um site de vinhos". Somos um **agregador de planejamento + reserva**
-de enoturismo. O valor para o turista (persona: casal 45–55+ que odeia
+de enoturismo. O valor para o turista (persona: casal 45-55+ que odeia
 imprevisto) é **chegar com tudo resolvido**. O valor para a vinícola é
 **ocupação previsível** e **visitante qualificado**. O dinheiro, quando existir,
 virá de **comissão sobre reservas** e/ou **assinatura das vinícolas**.
@@ -27,10 +27,10 @@ Ranqueado por probabilidade × letalidade.
 
 ### 🥇 Causa nº1 (a mais provável): "A reserva que não é reserva"
 Hoje a reserva vive no `localStorage` do navegador do turista. A vinícola **não
-recebe nada**. No dia, o turista chega confiante e **não há registro** — é
+recebe nada**. No dia, o turista chega confiante e **não há registro** - é
 exatamente o *"passeio vendido e não entregue"* que mais aparece no Reclame Aqui
 contra Civitatis/GetYourGuide. Basta **um** caso desses, um post no grupo de
-Facebook de viagens, e a confiança — que é 100% do nosso valor — evapora.
+Facebook de viagens, e a confiança - que é 100% do nosso valor - evapora.
 
 > **A promessa ("confirmamos sua reserva na hora") é maior que a entrega.** Esse
 > descompasso é o assassino mais rápido.
@@ -39,7 +39,7 @@ Facebook de viagens, e a confiança — que é 100% do nosso valor — evapora.
 Somos grátis (61,3% preferem grátis) e a monetização é "futura". Sem receita não
 há caixa para vendas, suporte e marketing. A **Wine Locals** já transaciona (71
 mil atividades/2025) e tem time comercial. Se não fecharmos o **lado da oferta**
-(vinícolas pagantes/comissionadas) e o **pagamento**, isto é um belo MVP — não um
+(vinícolas pagantes/comissionadas) e o **pagamento**, isto é um belo MVP - não um
 negócio.
 
 ### 🥉 Causa nº3: Cold start da oferta (supply side vazio)
@@ -50,13 +50,13 @@ percebe.
 
 ### 4. Frequência/retenção baixa
 Enoturismo é ocasional (poucas vezes por ano). O app é usado intensamente por uma
-semana e **abandonado**. Sem recorrência, cada usuário custa caro e rende pouco —
+semana e **abandonado**. Sem recorrência, cada usuário custa caro e rende pouco -
 a não ser que a comissão por transação seja alta o suficiente (volta à Causa nº2).
 
 ### 5. Distribuição inexistente
 "Construímos, logo virão" é mito. O turista planeja no Google, Instagram e em
 blogs. Sem SEO, conteúdo, parcerias com pousadas/hotéis e presença onde a decisão
-acontece, não há tráfego — e marketplace sem demanda não atrai oferta.
+acontece, não há tráfego - e marketplace sem demanda não atrai oferta.
 
 ### 6. Concentração em um único destino
 Só Vale dos Vinhedos. TAM limitado e **sazonal** (vindima, feriados). Um inverno
@@ -79,7 +79,7 @@ tivermos dados de uso para personalizar. Feature isolada não é defensável.
 
 ## 4. O que dá pra mitigar AGORA no produto (e já executamos)
 
-Não resolvemos sozinhos o backend de pagamento ou a força de vendas — mas o
+Não resolvemos sozinhos o backend de pagamento ou a força de vendas - mas o
 **produto** pode parar de cavar a própria cova e começar a construir confiança e
 o caminho de receita:
 
@@ -101,14 +101,14 @@ o caminho de receita:
 
 ## 5. Recomendação do analista (próximos 90 dias)
 
-1. **Fechar 5–10 vinícolas-âncora** com agenda real e comissão acordada antes de
+1. **Fechar 5-10 vinícolas-âncora** com agenda real e comissão acordada antes de
    escalar marketing. Sem oferta confiável, não gaste em demanda.
-2. **Ativar pagamento** (Pix) e tornar a reserva de fato confirmável — transformar
+2. **Ativar pagamento** (Pix) e tornar a reserva de fato confirmável - transformar
    "Solicitação" em "Confirmada" via aceite da vinícola.
 3. **Conteúdo + SEO** ("roteiro Vale dos Vinhedos", "o que fazer em Bento") para
-   capturar a demanda na hora do planejamento — onde já perdemos para blogs.
+   capturar a demanda na hora do planejamento - onde já perdemos para blogs.
 4. **Medir** ativação (gerou roteiro), conversão (reservou) e a taxa de
-   comparecimento (no-show) — o no-show é o termômetro da confiança.
+   comparecimento (no-show) - o no-show é o termômetro da confiança.
 
 A tecnologia já está à frente do negócio. O risco de 6 meses é **comercial e de
-confiança**, não de código — e o produto agora joga a favor dos dois.
+confiança**, não de código - e o produto agora joga a favor dos dois.

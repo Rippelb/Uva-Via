@@ -1,5 +1,5 @@
-// Dados (fallback) — VINICOLAS, EXPERIENCIAS, HORARIOS, AVALIACOES_SEED
-// Dividido de script.js — carregado como <script> classico, ordem importa.
+// Dados (fallback) - VINICOLAS, EXPERIENCIAS, HORARIOS, AVALIACOES_SEED
+// Dividido de script.js - carregado como <script> classico, ordem importa.
 
 /* =============================================================
    Uva & Via - Front-end (vanilla)
@@ -14,19 +14,19 @@
 
 // Cada vinícola carrega, além do básico, dados que dão CONFIANÇA ao visitante
 // (endereço, telefone) e COMODIDADES filtráveis (pet, crianças, acessível,
-// vegetariano, estacionamento, restaurante) — diferencial inspirado nos filtros
+// vegetariano, estacionamento, restaurante) - diferencial inspirado nos filtros
 // de GetYourGuide/Wanderlog e nas reclamações de "falta de informação".
 let VINICOLAS = [
-    { id: 1, nome: 'Vinícola Pizzato',  cidade: 'Bento Gonçalves',     tipo: 'boutique', tone: 'a', latitude: -29.226, longitude: -51.535, descricao: 'Pioneira em Merlot no Brasil, produção autoral em pequenas safras.', duracao_media_min: 75, preco_min: 60,  preco_max: 320, endereco: 'Via dos Vinhedos, s/n — Linha Pizzato, Vale dos Vinhedos', telefone: '+55 54 3459-1144', comodidades: ['estacionamento', 'criancas', 'vegetariano'] },
-    { id: 2, nome: 'Vinícola Torcello', cidade: 'Monte Belo do Sul',   tipo: 'boutique', tone: 'b', latitude: -29.156, longitude: -51.626, descricao: 'Espumantes premiados entre vinhedos com vista privilegiada.', duracao_media_min: 70, preco_min: 90,  preco_max: 180, endereco: 'Linha Paese, s/n — Monte Belo do Sul', telefone: '+55 54 3457-2200', comodidades: ['estacionamento', 'pet', 'vegetariano', 'acessivel'] },
-    { id: 3, nome: 'Vinícola Larentis', cidade: 'Monte Belo do Sul',   tipo: 'boutique', tone: 'c', latitude: -29.163, longitude: -51.635, descricao: 'Família italiana com tradição em vinhos de guarda e vindima participativa.', duracao_media_min: 90, preco_min: 40,  preco_max: 220, endereco: 'Linha Amadeu, s/n — Monte Belo do Sul', telefone: '+55 54 3457-3110', comodidades: ['estacionamento', 'criancas', 'pet', 'grupos'] },
-    { id: 4, nome: 'Lídio Carraro',     cidade: 'Bento Gonçalves',     tipo: 'boutique', tone: 'd', latitude: -29.249, longitude: -51.553, descricao: 'Boutique de vinhos ícone, sem usar barricas de carvalho.', duracao_media_min: 80, preco_min: 70,  preco_max: 380, endereco: 'RS-444, Km 21 — Vale dos Vinhedos', telefone: '+55 54 3045-5005', comodidades: ['estacionamento', 'acessivel', 'vegetariano'] },
-    { id: 5, nome: 'Miolo Wine Group',  cidade: 'Bento Gonçalves',     tipo: 'grande',   tone: 'a', latitude: -29.255, longitude: -51.518, descricao: 'Maior vinícola brasileira, tour completo e gastronomia harmonizada.', duracao_media_min: 110, preco_min: 80, preco_max: 450, endereco: 'RS-444, Km 21 — Vale dos Vinhedos', telefone: '+55 54 2102-7000', comodidades: ['estacionamento', 'restaurante', 'acessivel', 'criancas', 'grupos', 'vegetariano'] },
-    { id: 6, nome: 'Casa Valduga',      cidade: 'Bento Gonçalves',     tipo: 'grande',   tone: 'd', latitude: -29.234, longitude: -51.501, descricao: 'Tradição com pousada, restaurante Maria e jantares assinados.', duracao_media_min: 120, preco_min: 70, preco_max: 420, endereco: 'Via Trento, 2355 — Linha Leopoldina', telefone: '+55 54 2105-3122', comodidades: ['estacionamento', 'restaurante', 'acessivel', 'grupos', 'vegetariano'] },
-    { id: 7, nome: 'Cave Geisse',       cidade: 'Pinto Bandeira',      tipo: 'boutique', tone: 'e', latitude: -29.103, longitude: -51.426, descricao: 'Espumantes méthode champenoise envelhecidos em caves na rocha.', duracao_media_min: 85, preco_min: 120, preco_max: 250, endereco: 'Linha Jansen, s/n — Pinto Bandeira', telefone: '+55 54 3455-7575', comodidades: ['estacionamento', 'pet', 'vegetariano'] },
-    { id: 8, nome: 'Vinícola Salton',   cidade: 'Bento Gonçalves',     tipo: 'grande',   tone: 'a', latitude: -29.182, longitude: -51.518, descricao: 'Centenária, com museu e tour histórico do vinho gaúcho.', duracao_media_min: 75, preco_min: 45,  preco_max: 90, endereco: 'Rota do Sol, Distrito de Tuiuty — Bento Gonçalves', telefone: '+55 54 2105-1000', comodidades: ['estacionamento', 'restaurante', 'acessivel', 'criancas', 'grupos'] },
-    { id: 9, nome: 'Don Giovanni',      cidade: 'Bento Gonçalves',     tipo: 'boutique', tone: 'b', latitude: -29.207, longitude: -51.541, descricao: 'Castelo italiano com almoço toscano entre os vinhedos.', duracao_media_min: 95, preco_min: 70,  preco_max: 260, endereco: 'RS-444, Km 7 — Vale dos Vinhedos', telefone: '+55 54 3055-2200', comodidades: ['estacionamento', 'restaurante', 'criancas', 'vegetariano'] },
-    { id: 10, nome: 'Dom Cândido',      cidade: 'Garibaldi',           tipo: 'boutique', tone: 'c', latitude: -29.255, longitude: -51.532, descricao: 'Especializada em moscatéis e vinhos de mesa, com cave subterrânea.', duracao_media_min: 55, preco_min: 45,  preco_max: 55, endereco: 'Av. Rio Branco, 1200 — Garibaldi', telefone: '+55 54 3462-1010', comodidades: ['estacionamento', 'pet', 'criancas'] },
+    { id: 1, nome: 'Vinícola Pizzato',  cidade: 'Bento Gonçalves',     tipo: 'boutique', tone: 'a', latitude: -29.226, longitude: -51.535, descricao: 'Pioneira em Merlot no Brasil, produção autoral em pequenas safras.', duracao_media_min: 75, preco_min: 60,  preco_max: 320, endereco: 'Via dos Vinhedos, s/n - Linha Pizzato, Vale dos Vinhedos', telefone: '+55 54 3459-1144', comodidades: ['estacionamento', 'criancas', 'vegetariano'] },
+    { id: 2, nome: 'Vinícola Torcello', cidade: 'Monte Belo do Sul',   tipo: 'boutique', tone: 'b', latitude: -29.156, longitude: -51.626, descricao: 'Espumantes premiados entre vinhedos com vista privilegiada.', duracao_media_min: 70, preco_min: 90,  preco_max: 180, endereco: 'Linha Paese, s/n - Monte Belo do Sul', telefone: '+55 54 3457-2200', comodidades: ['estacionamento', 'pet', 'vegetariano', 'acessivel'] },
+    { id: 3, nome: 'Vinícola Larentis', cidade: 'Monte Belo do Sul',   tipo: 'boutique', tone: 'c', latitude: -29.163, longitude: -51.635, descricao: 'Família italiana com tradição em vinhos de guarda e vindima participativa.', duracao_media_min: 90, preco_min: 40,  preco_max: 220, endereco: 'Linha Amadeu, s/n - Monte Belo do Sul', telefone: '+55 54 3457-3110', comodidades: ['estacionamento', 'criancas', 'pet', 'grupos'] },
+    { id: 4, nome: 'Lídio Carraro',     cidade: 'Bento Gonçalves',     tipo: 'boutique', tone: 'd', latitude: -29.249, longitude: -51.553, descricao: 'Boutique de vinhos ícone, sem usar barricas de carvalho.', duracao_media_min: 80, preco_min: 70,  preco_max: 380, endereco: 'RS-444, Km 21 - Vale dos Vinhedos', telefone: '+55 54 3045-5005', comodidades: ['estacionamento', 'acessivel', 'vegetariano'] },
+    { id: 5, nome: 'Miolo Wine Group',  cidade: 'Bento Gonçalves',     tipo: 'grande',   tone: 'a', latitude: -29.255, longitude: -51.518, descricao: 'Maior vinícola brasileira, tour completo e gastronomia harmonizada.', duracao_media_min: 110, preco_min: 80, preco_max: 450, endereco: 'RS-444, Km 21 - Vale dos Vinhedos', telefone: '+55 54 2102-7000', comodidades: ['estacionamento', 'restaurante', 'acessivel', 'criancas', 'grupos', 'vegetariano'] },
+    { id: 6, nome: 'Casa Valduga',      cidade: 'Bento Gonçalves',     tipo: 'grande',   tone: 'd', latitude: -29.234, longitude: -51.501, descricao: 'Tradição com pousada, restaurante Maria e jantares assinados.', duracao_media_min: 120, preco_min: 70, preco_max: 420, endereco: 'Via Trento, 2355 - Linha Leopoldina', telefone: '+55 54 2105-3122', comodidades: ['estacionamento', 'restaurante', 'acessivel', 'grupos', 'vegetariano'] },
+    { id: 7, nome: 'Cave Geisse',       cidade: 'Pinto Bandeira',      tipo: 'boutique', tone: 'e', latitude: -29.103, longitude: -51.426, descricao: 'Espumantes méthode champenoise envelhecidos em caves na rocha.', duracao_media_min: 85, preco_min: 120, preco_max: 250, endereco: 'Linha Jansen, s/n - Pinto Bandeira', telefone: '+55 54 3455-7575', comodidades: ['estacionamento', 'pet', 'vegetariano'] },
+    { id: 8, nome: 'Vinícola Salton',   cidade: 'Bento Gonçalves',     tipo: 'grande',   tone: 'a', latitude: -29.182, longitude: -51.518, descricao: 'Centenária, com museu e tour histórico do vinho gaúcho.', duracao_media_min: 75, preco_min: 45,  preco_max: 90, endereco: 'Rota do Sol, Distrito de Tuiuty - Bento Gonçalves', telefone: '+55 54 2105-1000', comodidades: ['estacionamento', 'restaurante', 'acessivel', 'criancas', 'grupos'] },
+    { id: 9, nome: 'Don Giovanni',      cidade: 'Bento Gonçalves',     tipo: 'boutique', tone: 'b', latitude: -29.207, longitude: -51.541, descricao: 'Castelo italiano com almoço toscano entre os vinhedos.', duracao_media_min: 95, preco_min: 70,  preco_max: 260, endereco: 'RS-444, Km 7 - Vale dos Vinhedos', telefone: '+55 54 3055-2200', comodidades: ['estacionamento', 'restaurante', 'criancas', 'vegetariano'] },
+    { id: 10, nome: 'Dom Cândido',      cidade: 'Garibaldi',           tipo: 'boutique', tone: 'c', latitude: -29.255, longitude: -51.532, descricao: 'Especializada em moscatéis e vinhos de mesa, com cave subterrânea.', duracao_media_min: 55, preco_min: 45,  preco_max: 55, endereco: 'Av. Rio Branco, 1200 - Garibaldi', telefone: '+55 54 3462-1010', comodidades: ['estacionamento', 'pet', 'criancas'] },
 ];
 
 let EXPERIENCIAS = [
@@ -59,7 +59,7 @@ let EXPERIENCIAS = [
 ];
 
 // Vinicolas customizadas (criadas via Gestao, persistidas em localStorage).
-// Declarado com var para hoisting — getAllVinicolas() pode ser chamada antes do load.
+// Declarado com var para hoisting - getAllVinicolas() pode ser chamada antes do load.
 var customVinicolas = [];
 
 let HORARIOS = [
@@ -98,13 +98,13 @@ let HORARIOS = [
 // Usuarias podem adicionar novas pela tela "Minhas reservas" apos a data passar.
 const AVALIACOES_SEED = [
     { id: 'av_seed_1',  vinicola_id: 1,  experiencia_id: 1,  nota: 5, autor: 'Helena M.',     perfil: 'Casal',           comentario: 'Atendimento impecável e a degustação de Merlot foi memorável. Voltaremos!',                            data: '2026-04-12' },
-    { id: 'av_seed_2',  vinicola_id: 2,  experiencia_id: 5,  nota: 5, autor: 'Lucas e Ana',   perfil: 'Casal',           comentario: 'Piquenique entre os vinhedos no fim de tarde — luz mágica, espumante perfeito.',                       data: '2026-04-20' },
+    { id: 'av_seed_2',  vinicola_id: 2,  experiencia_id: 5,  nota: 5, autor: 'Lucas e Ana',   perfil: 'Casal',           comentario: 'Piquenique entre os vinhedos no fim de tarde, luz mágica, espumante perfeito.',                       data: '2026-04-20' },
     { id: 'av_seed_3',  vinicola_id: 3,  experiencia_id: 8,  nota: 4, autor: 'Família Souza', perfil: 'Família adulta',  comentario: 'Participar da vindima com as crianças adultas foi inesquecível. Só achei que faltou um pouco de sombra.', data: '2026-03-05' },
     { id: 'av_seed_4',  vinicola_id: 4,  experiencia_id: 10, nota: 5, autor: 'Ricardo P.',    perfil: 'Grupo de amigos', comentario: 'Vertical do Dádivas é uma experiência sensorial sem igual. O sommelier conduziu com maestria.',         data: '2026-04-28' },
     { id: 'av_seed_5',  vinicola_id: 6,  experiencia_id: 16, nota: 5, autor: 'Marina C.',     perfil: 'Casal',           comentario: 'Jantar Maria Valduga foi um dos melhores que já fizemos. Harmonização de outro nível.',                  data: '2026-05-01' },
     { id: 'av_seed_6',  vinicola_id: 7,  experiencia_id: 18, nota: 5, autor: 'Patrícia L.',   perfil: 'Casal',           comentario: 'A cave na rocha é um espetáculo. Espumante envelhecido vale cada centavo.',                              data: '2026-04-15' },
     { id: 'av_seed_7',  vinicola_id: 9,  experiencia_id: 24, nota: 4, autor: 'Carlos R.',     perfil: 'Família adulta',  comentario: 'Almoço toscano divino, ambiente lindo. A espera entre os pratos foi um pouco longa.',                    data: '2026-04-03' },
-    { id: 'av_seed_8',  vinicola_id: 5,  experiencia_id: 13, nota: 5, autor: 'Bruna T.',      perfil: 'Grupo de amigos', comentario: 'Lote 43 é uma referência nacional — degustá-lo com explicação técnica foi muito enriquecedor.',         data: '2026-03-22' },
+    { id: 'av_seed_8',  vinicola_id: 5,  experiencia_id: 13, nota: 5, autor: 'Bruna T.',      perfil: 'Grupo de amigos', comentario: 'Lote 43 é uma referência nacional, degustá-lo com explicação técnica foi muito enriquecedor.',         data: '2026-03-22' },
     { id: 'av_seed_9',  vinicola_id: 10, experiencia_id: 26, nota: 4, autor: 'Júlia F.',      perfil: 'Viajante solo',   comentario: 'Flight de moscatéis surpreendente, ótimo custo-benefício. Atendimento simpático e familiar.',           data: '2026-04-09' },
     { id: 'av_seed_10', vinicola_id: 1,  experiencia_id: 3,  nota: 4, autor: 'Eduardo M.',    perfil: 'Grupo de amigos', comentario: 'Tour pelas caves bem informativo, gostei da estrutura. Senti falta de uma degustação inclusa.',          data: '2026-03-15' },
     { id: 'av_seed_11', vinicola_id: 8,  experiencia_id: 21, nota: 4, autor: 'Sofia D.',      perfil: 'Família adulta',  comentario: 'Tour histórico Salton é uma aula de enologia gaúcha. Recomendo para quem ama história.',                data: '2026-04-25' },
@@ -113,7 +113,7 @@ const AVALIACOES_SEED = [
 
 // Snapshot imutavel do seed. Os mappers do api-client.js usam isto para
 // preservar campos de enriquecimento que o backend nao envia (tipo, tone,
-// comodidades, endereco, telefone, inclui, cancelamento) fazendo lookup por id —
+// comodidades, endereco, telefone, inclui, cancelamento) fazendo lookup por id -
 // sem isto, ao carregar a API o site perdia o filtro de boutique e as
 // comodidades. Congelado raso para nao ser mutado pelo tick de disponibilidade.
 window.SEED_VINICOLAS = VINICOLAS.map(v => ({ ...v }));
@@ -121,7 +121,7 @@ window.SEED_EXPERIENCIAS = EXPERIENCIAS.map(e => ({ ...e, tags: [...(e.tags || [
 
 // Expoe os arrays no window para o api-client.js poder substituir o conteudo
 // quando a API responde. `let`/`const` no escopo global de um <script> classico
-// NAO viram propriedade de window, por isso a exposicao precisa ser explicita —
+// NAO viram propriedade de window, por isso a exposicao precisa ser explicita -
 // sem isto o override do backend e silenciosamente ignorado e os selects esvaziam.
 window.VINICOLAS = VINICOLAS;
 window.EXPERIENCIAS = EXPERIENCIAS;

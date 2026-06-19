@@ -1,5 +1,5 @@
 // Form de planejamento + gerador e render de roteiro
-// Dividido de script.js — carregado como <script> classico, ordem importa.
+// Dividido de script.js - carregado como <script> classico, ordem importa.
 
 // =================== Form de planejamento + gerador de roteiro ===================
 const INTEREST_KEYWORDS = {
@@ -39,19 +39,19 @@ function getAllVinicolas() {
     return [...VINICOLAS, ...customVinicolas];
 }
 
-// Algoritmo v2 — scoring com 7 fatores + rationale por escolha.
+// Algoritmo v2 - scoring com 7 fatores + rationale por escolha.
 // Fatores: tags diretas, keywords no nome, perfil de viagem, vagas atuais,
 // preco vs orcamento, avaliacao media da vinicola, e variedade (anti-mesma-cidade-seguida).
 // Aceita `seed` opcional para gerar variacoes do mesmo input ("regenerar").
 function generateRoteiro(input) {
     const expsPerDay = { tranquilo: 2, equilibrado: 3, explorador: 4 }[input.pace] || 3;
-    // Guards: days/pessoas vindos do hash compartilhado podem ser 0 — evita
+    // Guards: days/pessoas vindos do hash compartilhado podem ser 0 - evita
     // divisao por zero (budget/0 = Infinity corrompe o scoring).
     const totalExps = Math.max(1, (Number(input.days) || 1) * expsPerDay);
     const budgetPerExp = input.budget > 0 ? input.budget / totalExps / Math.max(1, Number(input.pessoas) || 1) : Infinity;
     const seed = Number(input.seed || 0);
 
-    // PRNG simples com seed — Mulberry32. Permite reproduzir / variar o roteiro
+    // PRNG simples com seed - Mulberry32. Permite reproduzir / variar o roteiro
     // sem alterar o input.
     function makeRand(s) {
         let a = s >>> 0;
@@ -104,7 +104,7 @@ function generateRoteiro(input) {
         if (e.preco <= budgetPerExp) { score += 2; motivos.push('dentro do orçamento'); }
         else if (input.budget > 0 && e.preco > budgetPerExp * 1.5) score -= 1;
 
-        // Fator 5 (novo): avaliacoes da vinicola — bem avaliada pesa mais.
+        // Fator 5 (novo): avaliacoes da vinicola - bem avaliada pesa mais.
         if (typeof getMediaAvaliacoes === 'function' && vin) {
             const rating = getMediaAvaliacoes(vin.id);
             if (rating.total >= 3) {
@@ -114,11 +114,11 @@ function generateRoteiro(input) {
             }
         }
 
-        // Fator 6 (novo): aleatoriedade leve com seed — permite variacao real ao regenerar.
+        // Fator 6 (novo): aleatoriedade leve com seed - permite variacao real ao regenerar.
         score += rand() * 1.5;
 
         return { exp: e, vin, score, vagas, motivos };
-    }).filter(item => item.vin); // descarta experiencias orfas (vinicola_id sem vinicola) — evita crash no render
+    }).filter(item => item.vin); // descarta experiencias orfas (vinicola_id sem vinicola) - evita crash no render
 
     scored.sort((a, b) => b.score - a.score || a.exp.preco - b.exp.preco);
 
@@ -199,7 +199,7 @@ function generateRoteiro(input) {
     const total = chosen.reduce((sum, it) => sum + it.exp.preco * input.pessoas, 0);
     const tagsPresentes = [...new Set(chosen.flatMap(it => it.exp.tags || []))];
 
-    // Narrativa do roteiro — destaque as 2 caracteristicas mais fortes do conjunto.
+    // Narrativa do roteiro - destaque as 2 caracteristicas mais fortes do conjunto.
     const sumario = construirSumarioRoteiro({ chosen, days: input.days, distanciaTotalKm });
 
     return {
@@ -216,7 +216,7 @@ function generateRoteiro(input) {
     };
 }
 
-// Texto narrativo "porque esse roteiro" — frase curta exibida acima do roteiro.
+// Texto narrativo "porque esse roteiro" - frase curta exibida acima do roteiro.
 function construirSumarioRoteiro({ chosen, days, distanciaTotalKm }) {
     const cidades = [...new Set(chosen.map(c => c.vin?.cidade).filter(Boolean))];
     const temPiq = chosen.some(c => (c.exp.tags || []).includes('piquenique'));
@@ -238,7 +238,7 @@ function construirSumarioRoteiro({ chosen, days, distanciaTotalKm }) {
         : (cidades.slice(0, -1).join(', ') + ' e ' + cidades[cidades.length - 1]);
 
     return `Roteiro de ${days} ${days === 1 ? 'dia' : 'dias'} pelo Vale dos Vinhedos com foco em ${trecho}. ` +
-           `Passa por ${cidStr}, com ~${Math.round(distanciaTotalKm)} km de deslocamento total — equilibrando ritmo e descobertas.`;
+           `Passa por ${cidStr}, com ~${Math.round(distanciaTotalKm)} km de deslocamento total, equilibrando ritmo e descobertas.`;
 }
 
 // =================== Renderiza Roteiro Sugerido ===================
@@ -390,7 +390,7 @@ function renderRoteiro(plano) {
         btn.querySelector('span').textContent = todosVisiveis ? 'Mostrar critérios' : 'Ocultar critérios';
     });
 
-    // Bind: regenerar — gera variacao com novo seed
+    // Bind: regenerar - gera variacao com novo seed
     section.querySelector('#btn-regenerar')?.addEventListener('click', () => {
         const novoInput = { ...plano, seed: Date.now() };
         const novoPlano = generateRoteiro(novoInput);

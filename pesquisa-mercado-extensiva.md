@@ -1,4 +1,4 @@
-# 📊 Uva & Via — Pesquisa de Mercado Extensiva + Output em 11 Skills
+# 📊 Uva & Via - Pesquisa de Mercado Extensiva + Output em 11 Skills
 
 > Pesquisa aprofundada com **dados consolidados, fontes e opinião de especialistas**,
 > comparação com o estado atual do produto e, ao final, um **output multidisciplinar
@@ -15,7 +15,7 @@ Triangulação de três fontes: (a) relatórios de mercado (Grand View Research,
 Future Market Insights), (b) dados setoriais brasileiros (Wine Locals, Ibravin/
 Uvibra, Embratur/Ministério do Turismo, Sebrae) e (c) imprensa e estudos
 acadêmicos (UCS, Redalyc) + a pesquisa primária que originou o produto. Números
-de firmas diferentes usam metodologias distintas — tratamos faixas, não verdades
+de firmas diferentes usam metodologias distintas - tratamos faixas, não verdades
 absolutas.
 
 ---
@@ -26,7 +26,7 @@ absolutas.
 |-----------|-------|-------|
 | Tamanho do mercado (2023) | **US$ 46,47 bi** | Grand View Research |
 | Projeção (2030) | **US$ 106,74 bi** | Grand View Research |
-| **CAGR 2024–2030** | **12,9% a.a.** | Grand View Research |
+| **CAGR 2024-2030** | **12,9% a.a.** | Grand View Research |
 | Participação da Europa (2023) | **>50%** | Grand View Research |
 | América do Norte (2023) | **25,1%** | Grand View Research |
 | Degustações + tours (receita) | **>57%** | Grand View Research |
@@ -49,7 +49,7 @@ predominância de **turista doméstico** (alinhado ao nosso público nacional).
 |-----------|-------|-------|
 | Atividades de enoturismo vendidas no RS (2025) | **71 mil** | Wine Locals |
 | Crescimento vs 2024 | **+57,8%** | Wine Locals |
-| Crescimento anual histórico do nº de enoturistas | **10–15% a.a.** | Uvibra/União da Vitivinicultura |
+| Crescimento anual histórico do nº de enoturistas | **10-15% a.a.** | Uvibra/União da Vitivinicultura |
 | Visitantes do Vale dos Vinhedos (2019) | **~500 mil** | imprensa regional |
 | Turistas em Bento Gonçalves/ano | **>1 milhão** | Min. do Turismo |
 | Visitantes projetados só na Miolo | **>200 mil/ano (+20%)** | imprensa setorial (2026) |
@@ -66,7 +66,7 @@ predominância de **turista doméstico** (alinhado ao nosso público nacional).
   **personalização de itinerários** e **IA/chatbots** no topo da lista.
 
 **Leitura:** o destino é grande, cresce rápido, é majoritariamente visitado por
-quem vem de fora (logo, **planeja antes** — nosso momento de ouro) e a
+quem vem de fora (logo, **planeja antes** - nosso momento de ouro) e a
 digitalização das reservas está acelerando. O mercado está vindo para onde o
 Uva & Via já está.
 
@@ -78,11 +78,11 @@ Uva & Via já está.
   como motor; vinícolas que vendem vivência (e não só vinho) crescem mais
   (caso Larentis: 35% da receita vem de enoturismo).
 - **Diferenciação é obrigatória:** com a concorrência subindo, especialistas do
-  setor batem na tecla de que vinícolas precisam **diferenciar a experiência** —
+  setor batem na tecla de que vinícolas precisam **diferenciar a experiência** -
   o que reforça a necessidade de uma camada de descoberta/curadoria como a nossa.
-- **Personalização por IA** é tendência declarada para 2026 — exatamente o
+- **Personalização por IA** é tendência declarada para 2026 - exatamente o
   caminho do nosso algoritmo de roteiro (hoje por scoring, amanhã por histórico).
-- **Reserva antecipada** vira padrão de comportamento — valida a tese central do
+- **Reserva antecipada** vira padrão de comportamento - valida a tese central do
   produto (67,7% chegam sem reserva = dor a ser extinta).
 
 ---
@@ -108,7 +108,7 @@ concorrência na camada de planejamento/logística. As lacunas são **comerciais
 
 ---
 
-## 6. Output em 11 skills — o que eu acho e próximos passos
+## 6. Output em 11 skills - o que eu acho e próximos passos
 
 Cada disciplina avalia o Uva & Via hoje, dá um veredito e aponta o próximo passo
 concreto. Ordenado por impacto no negócio.
@@ -120,7 +120,7 @@ que viram visita realizada"* (não cadastros). Medir ativação→reserva→comp
 
 ### 2) 💸 Business / Finance
 **Acho:** sem receita ativada, não há negócio (só MVP). O modelo de comissão por
-reserva concretizada é o certo. **Próximo passo:** fechar **5–10 vinícolas-âncora**
+reserva concretizada é o certo. **Próximo passo:** fechar **5-10 vinícolas-âncora**
 com comissão acordada e instrumentar unit economics (take rate, CAC, no-show).
 
 ### 3) 🤝 Sales & Partnerships (oferta)
@@ -142,7 +142,7 @@ hospedagem) e captação de e-mail (newsletter já criada) para reativação.
 ### 6) 🔎 SEO & Content
 **Acho:** perdemos a demanda exatamente onde ela nasce (Google/blogs). **Próximo
 passo:** hub de conteúdo ("roteiro Vale dos Vinhedos 2/3 dias", "como ir sem
-carro", "vindima") com CTA para gerar roteiro — transformar tráfego em uso.
+carro", "vindima") com CTA para gerar roteiro - transformar tráfego em uso.
 
 ### 7) 🎨 UX / Product Design
 **Acho:** base sólida e premium; o ganho marginal está em **reduzir fricção** e
@@ -175,16 +175,16 @@ privacidade + consentimento na captação de e-mail, aviso "beba com moderação
 
 ## 7. Próximos passos consolidados (priorizados)
 
-**Agora (0–30 dias) — sem mexer no que está pronto:**
+**Agora (0-30 dias) - sem mexer no que está pronto:**
 1. Telemetria de funil + definição da North Star e do KPI de no-show.
 2. Playbook B2B e abordagem das 5 primeiras vinícolas-âncora.
 
-**Curto (30–90 dias):**
+**Curto (30-90 dias):**
 3. Persistir reservas/favoritos no backend + disponibilidade real via API.
 4. Pagamento Pix e fluxo "Solicitação → Confirmada" pela vinícola.
 5. Hub de conteúdo/SEO + parcerias com hospedagem.
 
-**Médio (90–180 dias):**
+**Médio (90-180 dias):**
 6. Personalização do roteiro por histórico (semente de IA).
 7. Avaliar 2ª região (Vale do São Francisco / Pinto Bandeira) para reduzir
    concentração e sazonalidade.
@@ -205,14 +205,14 @@ riscos e passou a sustentar essa virada.
 
 ## 9. Fontes
 
-- Grand View Research — *Wine Tourism Market Size, Share & Trends Report, 2030*: https://www.grandviewresearch.com/industry-analysis/wine-tourism-market-report · https://www.grandviewresearch.com/press-release/global-wine-tourism-market
-- Future Market Insights — *Wine Tourism Market 2025–2035*: https://www.futuremarketinsights.com/reports/wine-tourism-market
+- Grand View Research - *Wine Tourism Market Size, Share & Trends Report, 2030*: https://www.grandviewresearch.com/industry-analysis/wine-tourism-market-report · https://www.grandviewresearch.com/press-release/global-wine-tourism-market
+- Future Market Insights - *Wine Tourism Market 2025-2035*: https://www.futuremarketinsights.com/reports/wine-tourism-market
 - Wine Locals (dados RS 2025, mix de reservas, origem dos visitantes): https://www.wine-locals.com/
 - Enoturismo no Brasil cresce em 2025 (Miolo/Larentis): https://www.falavoce.com.br/noticias/4513-2026/02/22/enoturismo-no-brasil-cresce-em-2025-e-vinicolas-ampliam-experiencias-no-vale-dos-vinhedos-e-no-vale-do-sao-francisco
-- Brazil Economy — *O enoturismo é o novo motor da economia do vinho*: https://brazileconomy.com.br/2025/12/o-enoturismo-e-o-novo-motor-da-economia-do-vinho-em-todo-o-mundo/
-- AEB — *Vinhos do Brasil: mercado em ebulição e crescimento do enoturismo*: https://www.aeb.org.br/en/assuntos-de-interesse/2024/07/vinhos-do-brasil-mercado-em-ebulicao-e-crescimento-exuberante-do-enoturismo/
-- Ministério do Turismo / Embratur — *Tendências de turismo de experiência 2026*: https://www.gov.br/turismo/pt-br/assuntos/noticias/conheca-8-tendencias-de-turismo-de-experiencia-para-2026 · https://embratur.com.br/2026/03/25/revista-tendencias-do-turismo-chega-a-setima-edicao-e-traz-analises-e-perspectivas-do-setor-para-2026/
-- Paytour — *6 tendências no turismo para 2026* (digitalização/vendas online): https://www.paytour.com.br/6-tendencias-no-turismo-para-2026/
-- Sebrae — *Como e porque investir no enoturismo*: https://sebrae.com.br/sites/PortalSebrae/artigos/artigoshome/como-e-porque-investir-no-enoturismo-em-2022,ba65fc53c65fe710VgnVCM100000d701210aRCRD
-- UCS — *Enoturismo no Vale dos Vinhedos: uma análise de seu funcionamento*: https://www.ucs.br/site/midia/arquivos/gt1-enoturismo.pdf
-- Redalyc — *Enoturismo e território: o caso do Vale dos Vinhedos*: https://www.redalyc.org/journal/2610/261056057004/html/
+- Brazil Economy - *O enoturismo é o novo motor da economia do vinho*: https://brazileconomy.com.br/2025/12/o-enoturismo-e-o-novo-motor-da-economia-do-vinho-em-todo-o-mundo/
+- AEB - *Vinhos do Brasil: mercado em ebulição e crescimento do enoturismo*: https://www.aeb.org.br/en/assuntos-de-interesse/2024/07/vinhos-do-brasil-mercado-em-ebulicao-e-crescimento-exuberante-do-enoturismo/
+- Ministério do Turismo / Embratur - *Tendências de turismo de experiência 2026*: https://www.gov.br/turismo/pt-br/assuntos/noticias/conheca-8-tendencias-de-turismo-de-experiencia-para-2026 · https://embratur.com.br/2026/03/25/revista-tendencias-do-turismo-chega-a-setima-edicao-e-traz-analises-e-perspectivas-do-setor-para-2026/
+- Paytour - *6 tendências no turismo para 2026* (digitalização/vendas online): https://www.paytour.com.br/6-tendencias-no-turismo-para-2026/
+- Sebrae - *Como e porque investir no enoturismo*: https://sebrae.com.br/sites/PortalSebrae/artigos/artigoshome/como-e-porque-investir-no-enoturismo-em-2022,ba65fc53c65fe710VgnVCM100000d701210aRCRD
+- UCS - *Enoturismo no Vale dos Vinhedos: uma análise de seu funcionamento*: https://www.ucs.br/site/midia/arquivos/gt1-enoturismo.pdf
+- Redalyc - *Enoturismo e território: o caso do Vale dos Vinhedos*: https://www.redalyc.org/journal/2610/261056057004/html/

@@ -1,5 +1,5 @@
 // Reservas confirmadas (lista, render, stats, ICS)
-// Dividido de script.js — carregado como <script> classico, ordem importa.
+// Dividido de script.js - carregado como <script> classico, ordem importa.
 
 // =================== Reservas confirmadas ===================
 const STORAGE_KEY = 'uvaevia.reservas';
@@ -56,7 +56,7 @@ const BUCKET_LABELS = {
 };
 const BUCKET_ORDER = ['hoje', 'amanha', 'semana', 'futuras', 'realizadas'];
 
-// Gera um .ics e dispara o download — funciona em Google/Apple/Outlook agenda.
+// Gera um .ics e dispara o download - funciona em Google/Apple/Outlook agenda.
 function downloadICS(r) {
     const dt = new Date(r.data + 'T' + r.horario + ':00');
     if (isNaN(dt.getTime())) return;
@@ -71,9 +71,9 @@ function downloadICS(r) {
         `DTSTAMP:${toICS(new Date())}`,
         `DTSTART:${toICS(dt)}`,
         `DTEND:${toICS(dtEnd)}`,
-        `SUMMARY:${escapeICS(r.experiencia)} — ${escapeICS(r.vinicola)}`,
+        `SUMMARY:${escapeICS(r.experiencia)} - ${escapeICS(r.vinicola)}`,
         `LOCATION:${escapeICS(r.vinicola)}, ${escapeICS(r.cidade)}`,
-        `DESCRIPTION:${escapeICS(`Reserva Uva & Via — ${r.pessoas} pessoa(s). Responsável: ${r.nome}.`)}`,
+        `DESCRIPTION:${escapeICS(`Reserva Uva & Via - ${r.pessoas} pessoa(s). Responsável: ${r.nome}.`)}`,
         'END:VEVENT',
         'END:VCALENDAR',
     ].join('\r\n');
@@ -188,14 +188,14 @@ function renderReservas() {
             const id = btn.dataset.id;
             const r = loadReservas().find(x => x.id === id);
             if (!r) return;
-            // Mensagem ciente da política de cancelamento — transparência total.
+            // Mensagem ciente da política de cancelamento - transparência total.
             const exp = (window.EXPERIENCIAS || []).find(e => e.id === r.experiencia_id || e.nome === r.experiencia);
             const policy = (r.cancelamento && window.CANCELAMENTO?.[r.cancelamento])
                 || (typeof getCancelamento === 'function' && exp ? getCancelamento(exp) : { prazoHoras: 24, key: 'flex' });
             const horas = (new Date(r.data + 'T' + (r.horario || '00:00') + ':00') - Date.now()) / 3.6e6;
             let msg;
             if (horas >= policy.prazoHoras) {
-                msg = `Cancelar esta reserva?\n\nVocê está dentro do prazo de ${policy.prazoHoras}h — reembolso integral. A vaga será liberada para outros visitantes.`;
+                msg = `Cancelar esta reserva?\n\nVocê está dentro do prazo de ${policy.prazoHoras}h - reembolso integral. A vaga será liberada para outros visitantes.`;
             } else if (policy.key === 'moderada' && horas >= 24) {
                 msg = `Atenção: faltam menos de ${policy.prazoHoras}h.\n\nO reembolso será de 50% conforme a política desta experiência. Deseja cancelar mesmo assim?`;
             } else {
@@ -213,7 +213,7 @@ function renderReservas() {
             const r = loadReservas().find(x => x.id === btn.dataset.id);
             if (r) {
                 downloadICS(r);
-                showToast('Arquivo .ics gerado — abra para adicionar à agenda.');
+                showToast('Arquivo .ics gerado - abra para adicionar à agenda.');
             }
         });
     });
