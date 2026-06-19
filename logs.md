@@ -7,6 +7,23 @@ Registro cronológico das mudanças significativas no projeto.
 
 ---
 
+## 2026-06-19 — Sprint final: guest-first + robustez do fluxo crítico (verificado ao vivo)
+
+Sprint de fechamento com foco no **fluxo crítico do MVP** (gerar roteiro → reservar)
+para a apresentação. Verificação ao vivo via Chrome headless (DevTools Protocol):
+home renderiza, gerar roteiro → 6 paradas → mapa → reserva → comprovante, favoritos
+e roteiro pronto, **sem erros de console**. Edge cases (0 interesses, orçamento 0,
+1 dia, explorador, 5 dias, regenerar, catálogo vazio) todos verdes.
+
+- **Guest-first (correção crítica):** o fluxo central deixou de ficar atrás do muro
+  de login (ver `decisoes.md` D-24). Service worker passou a network-first.
+- **Revisão adversarial multi-agente** (21 achados confirmados de 40) → correções de
+  robustez na geração de roteiro, reserva (anti-overbooking, slots), caminho com
+  backend (mappers) e acessibilidade (focus trap, touch targets).
+- **Onboarding "Como funciona"** + meta tags **Open Graph/SEO**.
+
+---
+
 ## 2026-06-17 — Repaginação guiada por pesquisa (confiança, logística, favoritos, PWA)
 
 Repaginação evolutiva (sem reescrita) a partir de pesquisa de mercado e análise de

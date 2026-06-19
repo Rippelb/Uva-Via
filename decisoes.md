@@ -339,3 +339,24 @@ e-mail via newsletter (`js/parcerias.js`), persistindo leads em localStorage (de
 **Por quê:** mitiga os riscos nº2 (receita nunca ativada) e nº4/5 (retenção/
 distribuição) de `analise-negocio.md`. Mantém a porta aberta para o backend assumir
 os leads quando houver operação comercial.
+
+---
+
+## D-24. Guest-first: o fluxo central não exige login
+
+**Decisão:** O app não nasce travado atrás do login. O visitante usa o fluxo
+central (gerar roteiro, explorar, reservar) como convidado; login é opcional
+(botão "Entrar"). Só travamos em casos específicos (troca de senha obrigatória de
+admin). Gestão fica visível apenas para admin.
+
+**Por quê:** o gate duro (`body.auth-locked` + `onAuthChange(null)` reabrindo o
+login) deixava o fluxo crítico — 100% client-side — **inacessível** quando o
+backend estava no ar sem sessão, ou se ele oscilasse. Numa avaliação que testa "a
+ação principal como usuário real", um muro de login dependente de PHP/MySQL/
+cookies/CSRF é um risco grande e desnecessário. Guest-first também realinha com o
+D-09 ("sem fricção de cadastro") e com a persona (61,3% preferem grátis/sem
+cadastro). Há um safety unlock de 4s para a página nunca ficar em branco.
+
+**Mantido:** todo o sistema de auth (login, cadastro, papéis, reset/troca de
+senha) continua funcional para quem quiser entrar; a separação de níveis de
+acesso (admin × convidado) é aplicada por `applyRoleVisibility`.

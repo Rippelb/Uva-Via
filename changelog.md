@@ -5,6 +5,36 @@ e versionamento semântico [SemVer](https://semver.org/lang/pt-BR/).
 
 ---
 
+## [0.5.1] — 2026-06-19 — Sprint final: guest-first e robustez do fluxo crítico
+
+Foco total no **fluxo crítico** (gerar roteiro → reservar) funcionando ponta a
+ponta, verificado ao vivo via Chrome headless (DevTools Protocol). Achados de uma
+revisão adversarial multi-agente (21 confirmados) foram corrigidos.
+
+### Corrigido
+- **Guest-first (crítico):** o app não nasce mais travado atrás do login. Antes,
+  com backend no ar e sem sessão, `onAuthChange(null)` travava a página e abria o
+  login — deixando o fluxo central (100% client-side) inacessível numa demo.
+  Agora o visitante usa tudo como convidado; login segue no botão "Entrar";
+  Gestão some para convidado; troca de senha obrigatória de admin ainda trava.
+  Safety unlock (4s) impede página em branco se o bootstrap travar.
+- **Service worker network-first** (+ cache v2): nunca serve asset velho após deploy.
+- **Geração de roteiro robusta:** descarta experiências órfãs (evita crash em
+  `stop.vin`), guarda divisão por zero (days/pessoas), estado vazio amigável
+  quando o catálogo está vazio, `timeToMin` defensivo e restauração de plano do
+  localStorage em try/catch.
+- **Reserva robusta:** limpa seleção se o horário some pelo tick; valida
+  vagas ≥ pessoas (anti-overbooking); ICS com escaping RFC 5545.
+- **Backend path:** fallbacks em mapHorario/mapExperiencia e reset de select
+  inválido após carga da API.
+- **Acessibilidade/mobile:** focus trap + retorno de foco no modal do comprovante;
+  touch target de 44px no voto "útil"; estado desabilitado mais legível.
+
+### Adicionado
+- Seção **"Como funciona"** (onboarding em 3 passos) e meta tags **Open Graph/Twitter**.
+
+---
+
 ## [0.5.0] — 2026-06-17 — Repaginação: confiança, logística, favoritos e PWA
 
 Repaginação guiada por pesquisa de mercado (concorrentes BR/intl., Reclame Aqui)
