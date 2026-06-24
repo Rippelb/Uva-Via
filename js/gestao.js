@@ -13,6 +13,8 @@ document.querySelectorAll('.manage-subtab').forEach(btn => {
         document.querySelectorAll('[data-subtab-panel]').forEach(panel => {
             panel.hidden = panel.dataset.subtabPanel !== target;
         });
+        // Painel de usuarios busca dados na API a cada abertura
+        if (target === 'usuarios') window.renderUsuariosPanel?.();
     });
 });
 
@@ -65,6 +67,21 @@ mVinicola.addEventListener('change', () => {
         mExperiencia.appendChild(new Option(e.nome, e.id));
     });
 });
+
+// Trava o select de vinicola no escopo do adm_vinicola logado (contrato com auth-ui)
+let vinicolaScopeTravada = false;
+window.applyVinicolaScope = function (user) {
+    if (!mVinicola) return;
+    if (user?.role === 'adm_vinicola' && user.vinicola_id) {
+        vinicolaScopeTravada = true;
+        mVinicola.value = String(user.vinicola_id);
+        mVinicola.disabled = true;
+        mVinicola.dispatchEvent(new Event('change'));
+    } else {
+        vinicolaScopeTravada = false;
+        mVinicola.disabled = false;
+    }
+};
 
 // Modo: single | range
 function getManageMode() {
@@ -163,6 +180,9 @@ function renderManageTable() {
     let totalVagasIniciais = 0;
     let totalVagasRestantes = 0;
 
+    // Admin logado pode excluir itens do catalogo (API); adm_vinicola so na propria vinicola
+    const me = window.UvaViaApi?.user;
+
     manageTable.innerHTML = '';
     todos.forEach(h => {
         const exp = EXPERIENCIAS.find(e => e.id === h.experiencia_id);
@@ -171,6 +191,10 @@ function renderManageTable() {
         const ocupadas = capacidade - h.vagas;
         const pct = capacidade > 0 ? Math.round((ocupadas / capacidade) * 100) : 0;
         const isCustom = customHorarios.some(c => c.id === h.id);
+        const vinId = h.vinicola_id ?? exp?.vinicola_id;
+        const podeExcluirApi = me?.role === 'adm_supremo'
+            || (me?.role === 'adm_vinicola' && vinId != null && Number(me.vinicola_id) === Number(vinId));
+        const podeExcluir = isCustom || podeExcluirApi;
 
         totalVagasIniciais += capacidade;
         totalVagasRestantes += h.vagas;
@@ -193,7 +217,7 @@ function renderManageTable() {
                 <span class="bar ${barClass}"><span style="width:${pct}%"></span></span>
             </div>
             <span class="manage-badge ${isCustom ? 'custom' : ''}">${isCustom ? 'Custom' : 'Catálogo'}</span>
-            <button class="manage-delete" type="button" data-id="${h.id}" ${isCustom ? '' : 'disabled title="Horários do catálogo não podem ser removidos"'}>
+            <button class="manage-delete" type="button" data-id="${h.id}" ${podeExcluir ? '' : 'disabled title="Faça login como administrador para remover horários do catálogo"'}>
                 Excluir
             </button>
         `;
@@ -201,15 +225,33 @@ function renderManageTable() {
     });
 
     manageTable.querySelectorAll('.manage-delete').forEach(btn => {
-        btn.addEventListener('click', () => {
+        btn.addEventListener('click', async () => {
             if (btn.disabled) return;
             const id = Number(btn.dataset.id);
-            customHorarios = customHorarios.filter(h => h.id !== id);
-            saveCustomHorarios(customHorarios);
-            renderManageTable();
-            renderExperiencias();
-            renderSugestoes();
-            showToast('Horário removido.');
+            const isCustom = customHorarios.some(h => h.id === id);
+            if (isCustom) {
+                // Fluxo convidado: horario local (localStorage)
+                customHorarios = customHorarios.filter(h => h.id !== id);
+                saveCustomHorarios(customHorarios);
+                renderManageTable();
+                renderExperiencias();
+                renderSugestoes();
+                showToast('Horário removido.');
+                return;
+            }
+            // Horario do catalogo: exclui via API (backend valida a permissao)
+            if (!confirm('Excluir este horário definitivamente?')) return;
+            try {
+                await UvaViaApi.removerHorario(id);
+                const idx = HORARIOS.findIndex(h => h.id === id);
+                if (idx >= 0) HORARIOS.splice(idx, 1);
+                renderManageTable();
+                renderExperiencias();
+                renderSugestoes();
+                showToast('Horário removido.');
+            } catch (err) {
+                showToast(err?.message || 'Não foi possível remover o horário.', 'error');
+            }
         });
     });
 
@@ -272,6 +314,75 @@ document.getElementById('manage-form').addEventListener('submit', (e) => {
         showToast('Não há horários para criar com esses parâmetros.', 'error');
         return;
     }
+
+    // Reset do form + re-render compartilhados pelos fluxos API e convidado
+    const resetManageForm = () => {
+        e.target.reset();
+        mExperiencia.disabled = true;
+        mExperiencia.innerHTML = '<option value="">Escolha uma vinícola primeiro</option>';
+        mCapacidade.value = 12;
+        if (mHoraInicio) mHoraInicio.value = '10:00';
+        if (mHoraFim) mHoraFim.value = '17:00';
+        document.querySelector('input[name="manage-mode"][value="single"]').checked = true;
+        applyManageMode();
+        setMinDateInputs();
+        // Reaplica a trava de escopo do adm_vinicola perdida no reset
+        if (vinicolaScopeTravada) window.applyVinicolaScope(window.UvaViaApi?.user);
+    };
+    const rerenderHorarios = () => {
+        renderManageTable();
+        renderExperiencias();
+        renderSugestoes();
+        if (selExperiencia.value && Number(selExperiencia.value) === expId) refreshSlots();
+    };
+
+    const role = window.UvaViaApi?.user?.role;
+    if (role === 'adm_supremo' || role === 'adm_vinicola') {
+        // Admin logado: persiste cada slot via API (nada vai para localStorage)
+        const vinicolaId = Number(mVinicola.value) || exp.vinicola_id;
+        Promise.allSettled(slots.map(s => UvaViaApi.criarHorario({
+            vinicola_id: vinicolaId,
+            experiencia_id: expId,
+            data: s.data,
+            horario: s.horario,
+            capacidade_maxima: capacidade,
+        }))).then(results => {
+            let criados = 0;
+            let primeiraFalha = null;
+            results.forEach((r, i) => {
+                if (r.status === 'fulfilled') {
+                    criados++;
+                    const novo = r.value || {};
+                    HORARIOS.push({
+                        id: novo.id != null ? Number(novo.id) : 1000 + (Date.now() % 100000) + i,
+                        experiencia_id: expId,
+                        data: slots[i].data,
+                        horario: slots[i].horario,
+                        vagas: capacidade,
+                        capacidade,
+                    });
+                } else if (!primeiraFalha) {
+                    primeiraFalha = r.reason;
+                }
+            });
+            if (criados === 1) {
+                showToast(`Horário criado: ${fmtData(slots[0].data)} às ${slots[0].horario}.`);
+            } else if (criados > 1) {
+                showToast(`${criados} horários criados com sucesso.`);
+            }
+            if (primeiraFalha) {
+                const falhas = results.length - criados;
+                showToast(`${falhas} ${falhas === 1 ? 'horário falhou' : 'horários falharam'}: ${primeiraFalha?.message || 'erro na API'}`, 'error');
+            }
+            if (criados > 0) {
+                resetManageForm();
+                rerenderHorarios();
+            }
+        });
+        return;
+    }
+
+    // Modo convidado: mantem o fluxo local (localStorage)
     let baseId = 1000 + (Date.now() % 100000);
     slots.forEach((s, i) => {
         customHorarios.push({
@@ -291,19 +402,8 @@ document.getElementById('manage-form').addEventListener('submit', (e) => {
         showToast(`${slots.length} horários criados com sucesso.`);
     }
 
-    e.target.reset();
-    mExperiencia.disabled = true;
-    mExperiencia.innerHTML = '<option value="">Escolha uma vinícola primeiro</option>';
-    mCapacidade.value = 12;
-    if (mHoraInicio) mHoraInicio.value = '10:00';
-    if (mHoraFim) mHoraFim.value = '17:00';
-    document.querySelector('input[name="manage-mode"][value="single"]').checked = true;
-    applyManageMode();
-    setMinDateInputs();
-    renderManageTable();
-    renderExperiencias();
-    renderSugestoes();
-    if (selExperiencia.value && Number(selExperiencia.value) === expId) refreshSlots();
+    resetManageForm();
+    rerenderHorarios();
 });
 
 // =================== Gestao: Vinicolas (CRUD) ===================
@@ -366,13 +466,60 @@ vinicolaForm?.addEventListener('submit', (e) => {
         return;
     }
 
+    const descricao = vDescricao.value.trim() || 'Experiência exclusiva entre os vinhedos.';
+    const tipo = vTipo.value || 'boutique';
+    const tone = vTone.value || 'a';
+
+    const refreshVinicolas = () => {
+        populateVinicolaSelects();
+        renderManageVinList();
+        renderBoutique();
+        renderExperiencias();
+    };
+
+    if (window.UvaViaApi?.user?.role === 'adm_supremo') {
+        // Admin supremo: persiste via API. Lat/long sao obrigatorios no backend e o
+        // form nao coleta coordenadas — usa o centro aproximado do Vale dos Vinhedos.
+        UvaViaApi.criarVinicola({
+            nome,
+            cidade,
+            descricao,
+            duracao_media_min: duracao,
+            preco_min: precoMin,
+            preco_max: precoMax,
+            latitude: -29.2,
+            longitude: -51.53,
+        }).then(criada => {
+            VINICOLAS.push({
+                id: Number(criada.id),
+                nome,
+                cidade,
+                tipo,            // campos locais (tipo/tone) seguem so no objeto em memoria
+                tone,
+                descricao,
+                duracao_media_min: duracao,
+                preco_min: precoMin,
+                preco_max: precoMax,
+                latitude: criada.latitude != null ? Number(criada.latitude) : null,
+                longitude: criada.longitude != null ? Number(criada.longitude) : null,
+            });
+            refreshVinicolas();
+            vinicolaForm.reset();
+            showToast(`Vinícola "${nome}" cadastrada!`);
+        }).catch(err => {
+            showToast(err?.message || 'Não foi possível cadastrar a vinícola.', 'error');
+        });
+        return;
+    }
+
+    // Modo convidado: mantem o fluxo local (localStorage)
     const novo = {
         id: 1000 + (Date.now() % 100000),
         nome,
         cidade,
-        tipo: vTipo.value || 'boutique',
-        tone: vTone.value || 'a',
-        descricao: vDescricao.value.trim() || 'Experiência exclusiva entre os vinhedos.',
+        tipo,
+        tone,
+        descricao,
         duracao_media_min: duracao,
         preco_min: precoMin,
         preco_max: precoMax,
@@ -381,10 +528,7 @@ vinicolaForm?.addEventListener('submit', (e) => {
     };
     customVinicolas.push(novo);
     saveCustomVinicolas(customVinicolas);
-    populateVinicolaSelects();
-    renderManageVinList();
-    renderBoutique();
-    renderExperiencias();
+    refreshVinicolas();
     e.target.reset();
     showToast(`Vinícola "${nome}" cadastrada!`);
 });
@@ -409,8 +553,12 @@ function renderManageVinList() {
         list.innerHTML = '<p class="manage-empty">Nenhuma vinícola cadastrada.</p>';
         return;
     }
+    // Adm supremo logado pode excluir vinicolas do catalogo via API
+    const souSupremo = window.UvaViaApi?.user?.role === 'adm_supremo';
+
     list.innerHTML = all.map(v => {
         const isCustom = customVinicolas.some(c => c.id === v.id);
+        const podeExcluir = isCustom || souSupremo;
         const initial = (v.nome || '?').replace(/^Vin[íi]cola\s+/i, '').charAt(0).toUpperCase();
         const expCount = EXPERIENCIAS.filter(e => e.vinicola_id === v.id).length;
         return `
@@ -428,7 +576,7 @@ function renderManageVinList() {
                 <span class="vin-row-badge ${isCustom ? 'custom' : ''}">${isCustom ? 'Custom' : (v.tipo === 'boutique' ? 'Boutique' : 'Catálogo')}</span>
                 <div class="vin-row-actions">
                     <button type="button" class="btn btn-ghost" data-action="ver" data-id="${v.id}" style="padding:.5rem .85rem;font-size:.72rem;min-height:36px">Ver</button>
-                    <button type="button" class="manage-delete" data-action="del" data-id="${v.id}" ${isCustom ? '' : 'disabled title="Vinícolas do catálogo não podem ser removidas"'}>Excluir</button>
+                    <button type="button" class="manage-delete" data-action="del" data-id="${v.id}" ${podeExcluir ? '' : 'disabled title="Faça login como admin supremo para remover vinícolas do catálogo"'}>Excluir</button>
                 </div>
             </div>
         `;
@@ -438,19 +586,235 @@ function renderManageVinList() {
         btn.addEventListener('click', () => openVinicola(Number(btn.dataset.id)));
     });
     list.querySelectorAll('[data-action="del"]').forEach(btn => {
-        btn.addEventListener('click', () => {
+        btn.addEventListener('click', async () => {
             if (btn.disabled) return;
             const id = Number(btn.dataset.id);
-            customVinicolas = customVinicolas.filter(v => v.id !== id);
-            saveCustomVinicolas(customVinicolas);
-            populateVinicolaSelects();
-            renderManageVinList();
-            renderBoutique();
-            renderExperiencias();
-            showToast('Vinícola removida.');
+            const isCustom = customVinicolas.some(v => v.id === id);
+            if (isCustom) {
+                // Fluxo convidado: vinicola local (localStorage)
+                customVinicolas = customVinicolas.filter(v => v.id !== id);
+                saveCustomVinicolas(customVinicolas);
+                populateVinicolaSelects();
+                renderManageVinList();
+                renderBoutique();
+                renderExperiencias();
+                showToast('Vinícola removida.');
+                return;
+            }
+            // Vinicola do catalogo: exclui via API (somente adm_supremo)
+            if (!confirm('Excluir esta vinícola definitivamente?')) return;
+            try {
+                await UvaViaApi.removerVinicola(id);
+                const idx = VINICOLAS.findIndex(v => v.id === id);
+                if (idx >= 0) VINICOLAS.splice(idx, 1);
+                populateVinicolaSelects();
+                renderManageVinList();
+                renderBoutique();
+                renderExperiencias();
+                showToast('Vinícola removida.');
+            } catch (err) {
+                showToast(err?.message || 'Não foi possível remover a vinícola.', 'error');
+            }
         });
     });
 }
 window.renderManageVinList = renderManageVinList;
 window.populateVinicolaSelects = populateVinicolaSelects;
+
+// =================== Gestao: Usuarios (somente adm_supremo) ===================
+const usuarioForm = document.getElementById('usuario-form');
+const uNome = document.getElementById('u-nome');
+const uEmail = document.getElementById('u-email');
+const uTelefone = document.getElementById('u-telefone');
+const uSenha = document.getElementById('u-senha');
+const uRole = document.getElementById('u-role');
+const uVinicola = document.getElementById('u-vinicola');
+const uVinicolaField = document.getElementById('u-vinicola-field');
+const manageUserList = document.getElementById('manage-user-list');
+const uStatTotal = document.getElementById('u-stat-total');
+
+const ROLE_INFO = {
+    adm_supremo:  { label: 'Admin supremo',  cls: 'role-supremo'  },
+    adm_vinicola: { label: 'Admin vinícola', cls: 'role-vinicola' },
+    usuario:      { label: 'Membro',         cls: 'role-usuario'  },
+};
+
+// Nomes/emails vem do banco — escapa antes de interpolar em innerHTML
+function escHtml(s) {
+    return String(s ?? '').replace(/[&<>"']/g, c => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
+    }[c]));
+}
+
+function populateUsuarioVinicolaSelect() {
+    if (!uVinicola) return;
+    const all = getAllVinicolas();
+    const prev = uVinicola.value;
+    uVinicola.innerHTML = '';
+    uVinicola.appendChild(new Option('Selecione a vinícola…', ''));
+    all.forEach(v => uVinicola.appendChild(new Option(v.nome, v.id)));
+    if (prev && all.some(v => String(v.id) === prev)) uVinicola.value = prev;
+}
+
+// Campo de vinicola so faz sentido para adm_vinicola
+function toggleUsuarioVinicolaField() {
+    if (uVinicolaField) uVinicolaField.hidden = uRole?.value !== 'adm_vinicola';
+}
+uRole?.addEventListener('change', toggleUsuarioVinicolaField);
+
+async function renderUsuariosPanel() {
+    if (window.UvaViaApi?.user?.role !== 'adm_supremo') return;
+    if (!manageUserList) return;
+
+    populateUsuarioVinicolaSelect();
+    toggleUsuarioVinicolaField();
+
+    let usuarios;
+    try {
+        usuarios = await UvaViaApi.listarUsuarios();
+    } catch (err) {
+        window.showToast?.(err?.message || 'Não foi possível carregar os usuários.', 'error');
+        manageUserList.innerHTML = '<p class="manage-empty">Não foi possível carregar os usuários.</p>';
+        return;
+    }
+
+    if (uStatTotal) uStatTotal.textContent = usuarios.length;
+    if (usuarios.length === 0) {
+        manageUserList.innerHTML = '<p class="manage-empty">Nenhum usuário cadastrado.</p>';
+        return;
+    }
+
+    const vinicolas = getAllVinicolas();
+    manageUserList.innerHTML = usuarios.map(u => {
+        const info = ROLE_INFO[u.role] || ROLE_INFO.usuario;
+        const inicial = (u.nome_completo || '?').trim().charAt(0).toUpperCase();
+        const vin = u.vinicola_id ? vinicolas.find(v => Number(v.id) === Number(u.vinicola_id)) : null;
+        const roleOptions = Object.entries(ROLE_INFO).map(([value, r]) =>
+            `<option value="${value}" ${value === u.role ? 'selected' : ''}>${r.label}</option>`
+        ).join('');
+        return `
+            <div class="manage-user-row" data-id="${u.id}">
+                <div class="user-row-avatar">${escHtml(inicial)}</div>
+                <div class="user-row-info">
+                    <h4>${escHtml(u.nome_completo)}</h4>
+                    <span class="user-row-email">${escHtml(u.email)}</span>
+                </div>
+                <div class="user-row-meta">
+                    <span class="user-row-badge ${info.cls}">${info.label}</span>
+                    ${vin ? `<span class="user-row-vin"><i class="fa-solid fa-wine-bottle" aria-hidden="true"></i> ${escHtml(vin.nome)}</span>` : ''}
+                </div>
+                <div class="user-row-actions">
+                    <select class="user-role-select" data-id="${u.id}" aria-label="Papel de ${escHtml(u.nome_completo)}">
+                        ${roleOptions}
+                    </select>
+                    <button type="button" class="manage-delete" data-action="del-user" data-id="${u.id}">Excluir</button>
+                </div>
+            </div>
+        `;
+    }).join('');
+
+    // Troca de papel inline (confirm + update via API)
+    manageUserList.querySelectorAll('.user-role-select').forEach(sel => {
+        sel.addEventListener('change', async () => {
+            const id = Number(sel.dataset.id);
+            const alvo = usuarios.find(u => Number(u.id) === id);
+            const novoRole = sel.value;
+            const label = ROLE_INFO[novoRole]?.label || novoRole;
+            if (!confirm(`Alterar o papel de "${alvo?.nome_completo}" para ${label}?`)) {
+                sel.value = alvo?.role || 'usuario';
+                return;
+            }
+            const payload = { role: novoRole };
+            if (novoRole === 'adm_vinicola' && alvo?.vinicola_id) payload.vinicola_id = alvo.vinicola_id;
+            try {
+                await UvaViaApi.atualizarUsuario(id, payload);
+                window.showToast?.('Papel atualizado.');
+                renderUsuariosPanel();
+            } catch (err) {
+                window.showToast?.(err?.message || 'Não foi possível atualizar o papel.', 'error');
+                sel.value = alvo?.role || 'usuario';
+            }
+        });
+    });
+
+    // Exclusao (backend bloqueia auto-exclusao e usuarios com reservas — 403/409 vira toast)
+    manageUserList.querySelectorAll('[data-action="del-user"]').forEach(btn => {
+        btn.addEventListener('click', async () => {
+            const id = Number(btn.dataset.id);
+            const alvo = usuarios.find(u => Number(u.id) === id);
+            if (!confirm(`Excluir o usuário "${alvo?.nome_completo}"? Esta ação não pode ser desfeita.`)) return;
+            try {
+                await UvaViaApi.removerUsuario(id);
+                window.showToast?.('Usuário excluído.');
+                renderUsuariosPanel();
+            } catch (err) {
+                window.showToast?.(err?.message || 'Não foi possível excluir o usuário.', 'error');
+            }
+        });
+    });
+}
+window.renderUsuariosPanel = renderUsuariosPanel;
+
+usuarioForm?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (window.UvaViaApi?.user?.role !== 'adm_supremo') return;
+
+    const nome = uNome.value.trim();
+    const email = uEmail.value.trim();
+    const senha = uSenha.value;
+    const role = uRole.value;
+    const telefone = uTelefone.value.trim();
+
+    // Validacao leve client-side (backend revalida tudo)
+    let invalid = false;
+    if (nome.length < 3) {
+        setFieldError(uNome, 'Nome muito curto.');
+        invalid = true;
+    } else {
+        clearFieldError(uNome);
+    }
+    if (!email.includes('@')) {
+        setFieldError(uEmail, 'Informe um e-mail válido.');
+        invalid = true;
+    } else {
+        clearFieldError(uEmail);
+    }
+    if (senha.length < 8) {
+        setFieldError(uSenha, 'A senha precisa de ao menos 8 caracteres.');
+        invalid = true;
+    } else {
+        clearFieldError(uSenha);
+    }
+    if (role === 'adm_vinicola' && !uVinicola.value) {
+        setFieldError(uVinicola, 'Escolha a vinícola do administrador.');
+        invalid = true;
+    } else {
+        clearFieldError(uVinicola);
+    }
+    if (invalid) {
+        window.showToast?.('Revise os campos destacados.', 'error');
+        return;
+    }
+
+    const payload = { nome_completo: nome, email, senha, role };
+    if (telefone) payload.telefone = telefone;
+    if (role === 'adm_vinicola') payload.vinicola_id = Number(uVinicola.value);
+
+    try {
+        await UvaViaApi.criarUsuario(payload);
+        window.showToast?.(`Usuário "${nome}" criado.`);
+        usuarioForm.reset();
+        toggleUsuarioVinicolaField();
+        renderUsuariosPanel();
+    } catch (err) {
+        window.showToast?.(err?.message || 'Não foi possível criar o usuário.', 'error');
+    }
+});
+
+// Limpa erros em tempo real do form de usuario
+['u-nome', 'u-email', 'u-senha'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('input', () => clearFieldError(el));
+});
+uVinicola?.addEventListener('change', () => clearFieldError(uVinicola));
 

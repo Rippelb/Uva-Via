@@ -356,7 +356,7 @@ function renderRoteiro(plano) {
                         <div class="stop-actions">
                             <span class="stop-price">${fmtBRL(stop.exp.preco * plano.pessoas)}</span>
                             <button type="button" class="btn btn-ghost" data-action="ver-vinicola" data-vin="${stop.vin.id}">Ver vinícola</button>
-                            <button type="button" class="btn btn-primary" data-action="reservar" data-vin="${stop.vin.id}" data-exp="${stop.exp.id}">Reservar</button>
+                            <button type="button" class="btn btn-primary" data-action="reservar" data-vin="${stop.vin.id}" data-exp="${stop.exp.id}" data-dia="${i}" data-horario="${stop.horario_sugerido}">Reservar</button>
                         </div>
                     </li>
                 `;}).join('')}
@@ -377,6 +377,7 @@ function renderRoteiro(plano) {
     section.querySelector('#btn-regenerar')?.addEventListener('click', () => {
         const novoInput = { ...plano, seed: Date.now() };
         const novoPlano = generateRoteiro(novoInput);
+        window.resetMapaActiveDay?.(); // roteiro novo -> mapa volta para o Dia 1
         renderRoteiro(novoPlano);
         showToast('Variação gerada com base nos mesmos critérios.');
     });
@@ -392,7 +393,40 @@ function renderRoteiro(plano) {
             document.getElementById('b-vinicola').value = vinId;
             refreshExperiencias();
             document.getElementById('b-experiencia').value = expId;
-            refreshSlots();
+
+            // Preenche pessoas do plano antes dos slots (resumo usa o valor atual)
+            const inpPessoasEl = document.getElementById('b-pessoas');
+            if (inpPessoasEl && plano.pessoas) inpPessoasEl.value = plano.pessoas;
+
+            // Pre-selecao defensiva do slot: data alvo (inicio + dia) e horario sugerido.
+            // Se nada casar, mantem o comportamento atual (sem pre-selecao).
+            let horarioAlvo = null;
+            try {
+                const diaIdx = Number(btn.dataset.dia);
+                const horaSugerida = btn.dataset.horario || '';
+                const dataAlvo = (plano.startDate && Number.isInteger(diaIdx) && diaIdx >= 0)
+                    ? addDays(plano.startDate, diaIdx)
+                    : '';
+                const candidatos = getAllHorarios()
+                    .filter(h => h.experiencia_id === expId && h.vagas > 0);
+                if (horaSugerida) {
+                    if (dataAlvo) {
+                        horarioAlvo = candidatos.find(h => h.data === dataAlvo && h.horario === horaSugerida) || null;
+                    }
+                    if (!horarioAlvo) {
+                        horarioAlvo = candidatos.find(h => h.horario === horaSugerida) || null;
+                    }
+                }
+            } catch (err) {
+                horarioAlvo = null;
+            }
+
+            if (horarioAlvo) {
+                selectedHorarioId = horarioAlvo.id; // binding global de js/reserva.js
+                refreshSlots({ preserveSelection: true });
+            } else {
+                refreshSlots();
+            }
             document.getElementById('reservar').scrollIntoView({ behavior: 'smooth' });
         });
     });
@@ -444,6 +478,7 @@ document.getElementById('travel-form').addEventListener('submit', (e) => {
         interests: [...e.target.querySelectorAll('input[name="interests"]:checked')].map(i => i.value),
     };
     const plano = generateRoteiro(input);
+    window.resetMapaActiveDay?.(); // roteiro novo -> mapa volta para o Dia 1
     renderRoteiro(plano);
     showToast('Roteiro gerado com base nas suas preferências!');
 });

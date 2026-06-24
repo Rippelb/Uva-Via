@@ -22,7 +22,7 @@ try {
             json_response($vinicola);
         }
 
-        $stmt = $pdo->query('SELECT id, nome, cidade, descricao, foto_url, duracao_media_min, preco_min, preco_max FROM vinicolas ORDER BY nome');
+        $stmt = $pdo->query('SELECT id, nome, cidade, tipo, tone, descricao, foto_url, duracao_media_min, preco_min, preco_max FROM vinicolas ORDER BY nome');
         json_response($stmt->fetchAll());
     }
 
@@ -35,9 +35,9 @@ try {
 
         $ins = $pdo->prepare('
             INSERT INTO vinicolas (nome, descricao, foto_url, latitude, longitude, cidade,
-                                   duracao_media_min, preco_min, preco_max)
+                                   tipo, tone, duracao_media_min, preco_min, preco_max)
             VALUES (:nome, :descricao, :foto_url, :latitude, :longitude, :cidade,
-                    :duracao_media_min, :preco_min, :preco_max)
+                    :tipo, :tone, :duracao_media_min, :preco_min, :preco_max)
         ');
         $ins->execute($campos);
 
@@ -129,6 +129,25 @@ function validar_vinicola(array $body, bool $obrigatorio): array {
         if (!isset($out[$campo]) || $out[$campo] === null || $out[$campo] === '') {
             json_error("Campo $campo obrigatorio", 422);
         }
+    }
+
+    // tipo/tone: usados pelo front no cover das vinicolas. Valores restritos;
+    // na criacao sempre entram no INSERT (com default quando ausentes).
+    if ($obrigatorio || array_key_exists('tipo', $body)) {
+        $tipo = $body['tipo'] ?? 'boutique';
+        if ($tipo === '') $tipo = 'boutique';
+        if (!in_array($tipo, ['boutique', 'grande'], true)) {
+            json_error('Campo tipo deve ser boutique ou grande', 422);
+        }
+        $out['tipo'] = $tipo;
+    }
+    if ($obrigatorio || array_key_exists('tone', $body)) {
+        $tone = $body['tone'] ?? 'a';
+        if ($tone === '') $tone = 'a';
+        if (!is_string($tone) || !preg_match('/^[a-e]$/', $tone)) {
+            json_error('Campo tone deve ser uma letra de a a e', 422);
+        }
+        $out['tone'] = $tone;
     }
     return $out;
 }

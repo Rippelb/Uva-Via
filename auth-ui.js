@@ -180,7 +180,7 @@ body.auth-locked .auth-modal-foot { background: rgba(245,236,217,.6); }
                 <input id="auth-login-email" type="email" autocomplete="email" required>
                 <label for="auth-login-senha">Senha</label>
                 <input id="auth-login-senha" type="password" autocomplete="current-password" required>
-                <p class="auth-error" data-error></p>
+                <p class="auth-error" data-error aria-live="polite"></p>
                 <div class="auth-actions">
                     <button type="submit" class="btn btn-primary">Entrar</button>
                 </div>
@@ -192,7 +192,7 @@ body.auth-locked .auth-modal-foot { background: rgba(245,236,217,.6); }
                 </p>
                 <label for="auth-fp-email">Email</label>
                 <input id="auth-fp-email" type="email" autocomplete="email" required>
-                <p class="auth-error" data-error></p>
+                <p class="auth-error" data-error aria-live="polite"></p>
                 <div class="auth-actions">
                     <button type="submit" class="btn btn-primary">Gerar token</button>
                 </div>
@@ -206,7 +206,7 @@ body.auth-locked .auth-modal-foot { background: rgba(245,236,217,.6); }
                 <input id="auth-rp-token" type="text" autocomplete="one-time-code" required spellcheck="false">
                 <label for="auth-rp-senha">Nova senha</label>
                 <input id="auth-rp-senha" type="password" autocomplete="new-password" minlength="8" required>
-                <p class="auth-error" data-error></p>
+                <p class="auth-error" data-error aria-live="polite"></p>
                 <div class="auth-actions">
                     <button type="submit" class="btn btn-primary">Redefinir senha</button>
                 </div>
@@ -221,20 +221,20 @@ body.auth-locked .auth-modal-foot { background: rgba(245,236,217,.6); }
                 <input id="auth-reg-telefone" type="tel" autocomplete="tel">
                 <label for="auth-reg-senha">Senha (mínimo 8 caracteres)</label>
                 <input id="auth-reg-senha" type="password" autocomplete="new-password" minlength="8" required>
-                <p class="auth-error" data-error></p>
+                <p class="auth-error" data-error aria-live="polite"></p>
                 <div class="auth-actions">
                     <button type="submit" class="btn btn-primary">Criar conta</button>
                 </div>
             </form>
             <form class="auth-form" data-form="change-password" novalidate>
-                <p style="background: rgba(201,142,62,.15); color: #6b4d1a; padding:.7rem; border-radius:10px; font-size:.85rem;">
+                <p data-first-session style="background: rgba(201,142,62,.15); color: #6b4d1a; padding:.7rem; border-radius:10px; font-size:.85rem;">
                     Esta é sua primeira sessão. Defina uma nova senha para continuar.
                 </p>
                 <label for="auth-cp-atual">Senha atual</label>
                 <input id="auth-cp-atual" type="password" autocomplete="current-password" required>
                 <label for="auth-cp-nova">Nova senha (mínimo 8 caracteres)</label>
                 <input id="auth-cp-nova" type="password" autocomplete="new-password" minlength="8" required>
-                <p class="auth-error" data-error></p>
+                <p class="auth-error" data-error aria-live="polite"></p>
                 <div class="auth-actions">
                     <button type="submit" class="btn btn-primary">Atualizar senha</button>
                 </div>
@@ -311,123 +311,186 @@ body.auth-locked .auth-modal-foot { background: rgba(245,236,217,.6); }
     });
     tabBtns.forEach(b => b.addEventListener('click', () => switchTab(b.dataset.tab)));
 
+    // -------- helpers de formulario
+    const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    function emailValido(email) {
+        return !!email && EMAIL_RE.test(email);
+    }
+
+    // Desabilita o submit e troca o rotulo enquanto fn() roda.
+    async function withLoading(form, label, fn) {
+        const btn = form.querySelector('button[type="submit"]');
+        const original = btn ? btn.textContent : '';
+        if (btn) {
+            btn.disabled = true;
+            btn.textContent = label;
+        }
+        try {
+            await fn();
+        } finally {
+            if (btn) {
+                btn.disabled = false;
+                btn.textContent = original;
+            }
+        }
+    }
+
+    // Aviso "primeira sessao" do form de troca de senha: aparece apenas
+    // quando a troca e forcada (must_change_password), nao na voluntaria.
+    function setFirstSessionNotice(forcada) {
+        const aviso = overlay.querySelector('[data-form="change-password"] [data-first-session]');
+        if (aviso) aviso.hidden = !forcada;
+    }
+
     // -------- submit handlers
     overlay.querySelector('[data-form="login"]').addEventListener('submit', async (e) => {
         e.preventDefault();
-        const err = e.target.querySelector('[data-error]');
+        const form = e.target;
+        const err = form.querySelector('[data-error]');
         err.textContent = '';
-        try {
-            const user = await UvaViaApi.login(
-                document.getElementById('auth-login-email').value.trim(),
-                document.getElementById('auth-login-senha').value,
-            );
-            if (user?.must_change_password) {
-                switchTab('change-password');
-                // permanece travado ate trocar senha
-            } else {
-                setLocked(false);
-                closeModal(true);
-                window.showToast?.(`Bem-vindo, ${user.nome_completo.split(' ')[0]}!`);
+        const email = document.getElementById('auth-login-email').value.trim();
+        const senha = document.getElementById('auth-login-senha').value;
+        if (!emailValido(email)) { err.textContent = 'Informe um email válido.'; return; }
+        if (!senha) { err.textContent = 'Informe sua senha.'; return; }
+        await withLoading(form, 'Entrando…', async () => {
+            try {
+                const user = await UvaViaApi.login(email, senha);
+                if (user?.must_change_password) {
+                    setFirstSessionNotice(true);
+                    switchTab('change-password');
+                    // permanece travado ate trocar senha
+                } else {
+                    setLocked(false);
+                    closeModal(true);
+                    window.showToast?.(`Bem-vindo, ${user.nome_completo.split(' ')[0]}!`);
+                }
+            } catch (ex) {
+                err.textContent = ex.message || 'Erro ao entrar';
             }
-        } catch (ex) {
-            err.textContent = ex.message || 'Erro ao entrar';
-        }
+        });
     });
 
     overlay.querySelector('[data-form="register"]').addEventListener('submit', async (e) => {
         e.preventDefault();
-        const err = e.target.querySelector('[data-error]');
+        const form = e.target;
+        const err = form.querySelector('[data-error]');
         err.textContent = '';
-        try {
-            const user = await UvaViaApi.register({
-                nome_completo: document.getElementById('auth-reg-nome').value.trim(),
-                email: document.getElementById('auth-reg-email').value.trim(),
-                telefone: document.getElementById('auth-reg-telefone').value.trim(),
-                senha: document.getElementById('auth-reg-senha').value,
-            });
-            setLocked(false);
-            closeModal(true);
-            window.showToast?.(`Conta criada. Bem-vindo, ${user.nome_completo.split(' ')[0]}!`);
-        } catch (ex) {
-            err.textContent = ex.message || 'Erro ao cadastrar';
-        }
+        const nome = document.getElementById('auth-reg-nome').value.trim();
+        const email = document.getElementById('auth-reg-email').value.trim();
+        const telefone = document.getElementById('auth-reg-telefone').value.trim();
+        const senha = document.getElementById('auth-reg-senha').value;
+        if (nome.length < 3) { err.textContent = 'O nome precisa de pelo menos 3 caracteres.'; return; }
+        if (!emailValido(email)) { err.textContent = 'Informe um email válido.'; return; }
+        if (senha.length < 8) { err.textContent = 'A senha precisa de pelo menos 8 caracteres.'; return; }
+        await withLoading(form, 'Criando…', async () => {
+            try {
+                const user = await UvaViaApi.register({
+                    nome_completo: nome,
+                    email,
+                    telefone,
+                    senha,
+                });
+                setLocked(false);
+                closeModal(true);
+                window.showToast?.(`Conta criada. Bem-vindo, ${user.nome_completo.split(' ')[0]}!`);
+            } catch (ex) {
+                err.textContent = ex.message || 'Erro ao cadastrar';
+            }
+        });
     });
 
     overlay.querySelector('[data-form="forgot"]').addEventListener('submit', async (e) => {
         e.preventDefault();
-        const err = e.target.querySelector('[data-error]');
+        const form = e.target;
+        const err = form.querySelector('[data-error]');
         err.textContent = '';
-        try {
-            const r = await UvaViaApi.forgotPassword(
-                document.getElementById('auth-fp-email').value.trim(),
-            );
-            if (!r.token) {
-                err.textContent = 'Se o email existir, geramos um token. Cheque com o administrador.';
-                return;
-            }
-            // Pre-popula o form de reset com o token + mostra aviso de dev.
-            switchTab('reset');
-            const resetForm = overlay.querySelector('[data-form="reset"]');
-            const tokenField = resetForm.querySelector('#auth-rp-token');
-            tokenField.value = r.token;
+        // Remove notices anteriores antes de processar de novo.
+        form.querySelectorAll('.auth-notice').forEach(el => el.remove());
+        const email = document.getElementById('auth-fp-email').value.trim();
+        if (!emailValido(email)) { err.textContent = 'Informe um email válido.'; return; }
+        await withLoading(form, 'Gerando…', async () => {
+            try {
+                const r = await UvaViaApi.forgotPassword(email);
+                if (!r.token) {
+                    // Mensagem neutra (nao e erro): notice ambar dentro do form.
+                    const aviso = document.createElement('p');
+                    aviso.className = 'auth-notice';
+                    aviso.textContent = 'Se o email existir, geramos um token. Cheque com o administrador.';
+                    form.insertBefore(aviso, err);
+                    return;
+                }
+                // Pre-popula o form de reset com o token + mostra aviso de dev.
+                switchTab('reset');
+                const resetForm = overlay.querySelector('[data-form="reset"]');
+                const tokenField = resetForm.querySelector('#auth-rp-token');
+                tokenField.value = r.token;
 
-            // Notice + token display antes do campo (uma vez por sessao).
-            resetForm.querySelectorAll('.auth-notice, .auth-token-display').forEach(el => el.remove());
-            const notice = document.createElement('div');
-            notice.className = 'auth-notice';
-            notice.innerHTML = `<strong>Modo desenvolvimento:</strong> em produção, este token iria por email. Aqui mostramos direto. Válido por ${r.ttl_minutos || 60} minutos.`;
-            const display = document.createElement('div');
-            display.className = 'auth-token-display';
-            display.innerHTML = `<span data-token>${r.token}</span><button type="button" data-copy>Copiar</button>`;
-            display.querySelector('[data-copy]').addEventListener('click', async () => {
-                try {
-                    await navigator.clipboard.writeText(r.token);
-                    display.querySelector('[data-copy]').textContent = 'Copiado!';
-                    setTimeout(() => display.querySelector('[data-copy]').textContent = 'Copiar', 1500);
-                } catch {}
-            });
-            tokenField.parentNode.insertBefore(notice, tokenField.previousElementSibling);
-            tokenField.parentNode.insertBefore(display, tokenField.previousElementSibling);
-            setTimeout(() => resetForm.querySelector('#auth-rp-senha').focus(), 50);
-        } catch (ex) {
-            err.textContent = ex.message || 'Erro ao gerar token';
-        }
+                // Notice + token display antes do campo (uma vez por sessao).
+                resetForm.querySelectorAll('.auth-notice, .auth-token-display').forEach(el => el.remove());
+                const notice = document.createElement('div');
+                notice.className = 'auth-notice';
+                notice.innerHTML = `<strong>Modo desenvolvimento:</strong> em produção, este token iria por email. Aqui mostramos direto. Válido por ${r.ttl_minutos || 60} minutos.`;
+                const display = document.createElement('div');
+                display.className = 'auth-token-display';
+                display.innerHTML = `<span data-token>${r.token}</span><button type="button" data-copy>Copiar</button>`;
+                display.querySelector('[data-copy]').addEventListener('click', async () => {
+                    try {
+                        await navigator.clipboard.writeText(r.token);
+                        display.querySelector('[data-copy]').textContent = 'Copiado!';
+                        setTimeout(() => display.querySelector('[data-copy]').textContent = 'Copiar', 1500);
+                    } catch {}
+                });
+                tokenField.parentNode.insertBefore(notice, tokenField.previousElementSibling);
+                tokenField.parentNode.insertBefore(display, tokenField.previousElementSibling);
+                setTimeout(() => resetForm.querySelector('#auth-rp-senha').focus(), 50);
+            } catch (ex) {
+                err.textContent = ex.message || 'Erro ao gerar token';
+            }
+        });
     });
 
     overlay.querySelector('[data-form="reset"]').addEventListener('submit', async (e) => {
         e.preventDefault();
-        const err = e.target.querySelector('[data-error]');
+        const form = e.target;
+        const err = form.querySelector('[data-error]');
         err.textContent = '';
-        try {
-            await UvaViaApi.resetPassword(
-                document.getElementById('auth-rp-token').value.trim(),
-                document.getElementById('auth-rp-senha').value,
-            );
-            // Limpa notice/display do dev mode antes de voltar pro login.
-            e.target.querySelectorAll('.auth-notice, .auth-token-display').forEach(el => el.remove());
-            switchTab('login');
-            window.showToast?.('Senha redefinida. Entre com a nova senha.');
-        } catch (ex) {
-            err.textContent = ex.message || 'Erro ao redefinir senha';
-        }
+        const token = document.getElementById('auth-rp-token').value.trim();
+        const senha = document.getElementById('auth-rp-senha').value;
+        if (!token) { err.textContent = 'Informe o token de recuperação.'; return; }
+        if (senha.length < 8) { err.textContent = 'A senha precisa de pelo menos 8 caracteres.'; return; }
+        await withLoading(form, 'Redefinindo…', async () => {
+            try {
+                await UvaViaApi.resetPassword(token, senha);
+                // Limpa notice/display do dev mode antes de voltar pro login.
+                form.querySelectorAll('.auth-notice, .auth-token-display').forEach(el => el.remove());
+                switchTab('login');
+                window.showToast?.('Senha redefinida. Entre com a nova senha.');
+            } catch (ex) {
+                err.textContent = ex.message || 'Erro ao redefinir senha';
+            }
+        });
     });
 
     overlay.querySelector('[data-form="change-password"]').addEventListener('submit', async (e) => {
         e.preventDefault();
-        const err = e.target.querySelector('[data-error]');
+        const form = e.target;
+        const err = form.querySelector('[data-error]');
         err.textContent = '';
-        try {
-            await UvaViaApi.changePassword(
-                document.getElementById('auth-cp-atual').value,
-                document.getElementById('auth-cp-nova').value,
-            );
-            await UvaViaApi.refreshSession();
-            setLocked(false);
-            closeModal(true);
-            window.showToast?.('Senha atualizada.');
-        } catch (ex) {
-            err.textContent = ex.message || 'Erro ao trocar senha';
-        }
+        const atual = document.getElementById('auth-cp-atual').value;
+        const nova = document.getElementById('auth-cp-nova').value;
+        if (!atual) { err.textContent = 'Informe a senha atual.'; return; }
+        if (nova.length < 8) { err.textContent = 'A senha precisa de pelo menos 8 caracteres.'; return; }
+        await withLoading(form, 'Atualizando…', async () => {
+            try {
+                await UvaViaApi.changePassword(atual, nova);
+                await UvaViaApi.refreshSession();
+                setLocked(false);
+                closeModal(true);
+                window.showToast?.('Senha atualizada.');
+            } catch (ex) {
+                err.textContent = ex.message || 'Erro ao trocar senha';
+            }
+        });
     });
 
     // -------- render do widget
@@ -488,23 +551,56 @@ body.auth-locked .auth-modal-foot { background: rgba(245,236,217,.6); }
         menu.addEventListener('click', (e) => e.stopPropagation());
         menu.querySelector('[data-action="logout"]').addEventListener('click', async () => {
             menu.classList.remove('is-open');
-            await UvaViaApi.logout();
-            window.showToast?.('Sessão encerrada.');
+            try {
+                await UvaViaApi.logout();
+                window.showToast?.('Sessão encerrada.');
+            } catch (ex) {
+                window.showToast?.(ex.message || 'Erro ao encerrar a sessão.', 'error');
+            }
         });
         menu.querySelector('[data-action="change-pw"]').addEventListener('click', () => {
             menu.classList.remove('is-open');
             chip.classList.remove('is-open');
+            // Troca voluntaria: sem o aviso de primeira sessao.
+            setFirstSessionNotice(false);
             openModal('change-password');
         });
     }
 
     // -------- visibilidade por papel
+    // Tres niveis: visitante/usuario nao ve gestao; adm_vinicola ve gestao sem
+    // as abas globais (vinicolas/usuarios); adm_supremo ve tudo.
     function applyRoleVisibility(user) {
-        const gestao = document.querySelector('a[href="#gestao"]');
+        const role = user?.role || null;
+        const isAdmin = role === 'adm_supremo' || role === 'adm_vinicola';
+        const isSupremo = role === 'adm_supremo';
+
+        // Links de gestao: nav, footer e o link [data-gestao-link] do #nav-menu.
+        document.querySelectorAll('a[href="#gestao"], #nav-menu [data-gestao-link]')
+            .forEach(a => { a.hidden = !isAdmin; });
         const gestaoSection = document.getElementById('gestao');
-        const isAdmin = user && (user.role === 'adm_supremo' || user.role === 'adm_vinicola');
-        if (gestao) gestao.style.display = isAdmin ? '' : 'none';
-        if (gestaoSection) gestaoSection.style.display = isAdmin ? '' : 'none';
+        if (gestaoSection) gestaoSection.hidden = !isAdmin;
+
+        // Subtabs restritas ao admin supremo (elementos de "usuarios" podem
+        // ainda nao existir no DOM). Os paineis nao sao reexibidos aqui: o
+        // hidden deles tambem e controlado pelo clique nas subtabs (gestao.js).
+        ['vinicolas', 'usuarios'].forEach(nome => {
+            const btn = document.querySelector(`.manage-subtab[data-subtab="${nome}"]`);
+            const painel = document.querySelector(`[data-subtab-panel="${nome}"]`);
+            if (btn) btn.hidden = !isSupremo;
+            if (painel && !isSupremo) painel.hidden = true;
+        });
+
+        if (!isAdmin) return;
+
+        // Se a subtab ativa ficou oculta, volta para "horarios".
+        const ativa = document.querySelector('.manage-subtab.is-active');
+        if (ativa?.hidden) {
+            document.querySelector('.manage-subtab[data-subtab="horarios"]')?.click();
+        }
+
+        window.applyVinicolaScope?.(user);
+        if (isSupremo) window.renderUsuariosPanel?.();
     }
 
     // -------- liga eventos globais
@@ -518,6 +614,7 @@ body.auth-locked .auth-modal-foot { background: rgba(245,236,217,.6); }
             openModal('login');
         } else if (user.must_change_password) {
             setLocked(true);
+            setFirstSessionNotice(true);
             openModal('change-password');
         } else {
             setLocked(false);

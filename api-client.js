@@ -130,7 +130,61 @@ const UvaViaApi = {
 window.UvaViaApi = UvaViaApi;
 
 // --- Mapeamento campos API -> frontend legado
+
+// Snapshot dos seeds estaticos (js/data.js) capturado ANTES do splice do
+// bootstrap — fallback por id para tags (slugs) e tipo/tone das vinicolas.
+const EXPERIENCIAS_TAGS_FALLBACK = {};
+(window.EXPERIENCIAS || []).forEach(e => {
+    if (Array.isArray(e.tags)) EXPERIENCIAS_TAGS_FALLBACK[Number(e.id)] = e.tags.slice();
+});
+const VINICOLAS_ESTILO_FALLBACK = {};
+(window.VINICOLAS || []).forEach(v => {
+    VINICOLAS_ESTILO_FALLBACK[Number(v.id)] = { tipo: v.tipo, tone: v.tone };
+});
+
+// Nomes do seed do banco (db/install.mysql.sql, tags_interesse) -> slugs do front.
+const TAG_NOME_PARA_SLUG = {
+    'Degustacao classica':       'degustacao-classica',
+    'Degustacao premium':        'degustacao-premium',
+    'Gastronomia harmonizada':   'harmonizado',
+    'Piquenique entre vinhedos': 'piquenique',
+    'Tour pelas caves':          'visita-tecnica',
+    'Experiencia boutique':      'boutique',
+    'Vinhos raros':              'raros',
+    'Experiencia com sommelier': 'sommelier',
+    'Por do sol':                'por-do-sol',
+    'Vindima':                   'vindima',
+    'Vinicolas familiares':      'familiar',
+    'Arquitetura e paisagens':   'arquitetura',
+    'Experiencia rapida':        'rapida',
+    'Experiencia completa':      'completa',
+};
+
+// Slug generico: minusculas, sem diacriticos, espacos/pontuacao -> hifen.
+function slugifyTag(nome) {
+    return String(nome || '')
+        .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase().trim()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '');
+}
+
+// Converte as tags da API ([{id, nome}]) nos slugs que o front espera.
+function mapTagsExperiencia(e) {
+    // 1) Fallback por id: seed estatico ja usa os slugs corretos do front.
+    const seed = EXPERIENCIAS_TAGS_FALLBACK[Number(e.id)];
+    if (seed) return seed.slice();
+    // 2) Dicionario nome-do-banco -> slug; 3) slugify generico.
+    return (Array.isArray(e.tags) ? e.tags : [])
+        .map(t => {
+            const nome = typeof t === 'string' ? t : (t && t.nome) || '';
+            return TAG_NOME_PARA_SLUG[nome] || slugifyTag(nome);
+        })
+        .filter(Boolean);
+}
+
 function mapVinicola(v) {
+    const estilo = VINICOLAS_ESTILO_FALLBACK[Number(v.id)] || {};
     return {
         id: Number(v.id),
         nome: v.nome,
@@ -142,6 +196,8 @@ function mapVinicola(v) {
         duracao_media_min: v.duracao_media_min != null ? Number(v.duracao_media_min) : null,
         preco_min: v.preco_min != null ? Number(v.preco_min) : null,
         preco_max: v.preco_max != null ? Number(v.preco_max) : null,
+        tipo: v.tipo || estilo.tipo || 'grande',
+        tone: v.tone || estilo.tone || 'a',
     };
 }
 function mapExperiencia(e) {
@@ -154,7 +210,7 @@ function mapExperiencia(e) {
         preco: Number(e.preco_por_pessoa),
         duracao: Number(e.duracao_minutos),
         categoria: e.categoria,
-        tags: Array.isArray(e.tags) ? e.tags : [],
+        tags: mapTagsExperiencia(e),
     };
 }
 function mapHorario(h) {
@@ -219,8 +275,14 @@ async function bootstrap() {
         repopularSelect(document.getElementById('m-vinicola'), window.VINICOLAS || [], 'id',
             v => v.nome, 'Selecione…');
 
-        if (typeof window.renderExperiencias === 'function') window.renderExperiencias();
-        if (typeof window.renderManageTable === 'function') window.renderManageTable();
+        // Re-renderiza tudo que depende dos arrays substituidos pelos splices.
+        window.populateVinicolaSelects?.();
+        window.renderBoutique?.();
+        window.renderSugestoes?.();
+        window.renderManageVinList?.();
+        window.renderAvaliacoes?.();
+        window.renderExperiencias?.();
+        window.renderManageTable?.();
 
         console.info(`[Uva&Via] API carregada: ${(window.VINICOLAS||[]).length} vinicolas, ${(window.EXPERIENCIAS||[]).length} experiencias, ${(window.HORARIOS||[]).length} horarios. user=${authState.user ? authState.user.email : 'anon'}`);
     } catch (err) {

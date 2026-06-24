@@ -4,6 +4,9 @@
 // =================== Mapa / Rota ===================
 let mapaActiveDay = 0;
 
+// Permite que outros modulos (ex.: geracao de roteiro novo) voltem para o Dia 1.
+window.resetMapaActiveDay = () => { mapaActiveDay = 0; };
+
 // Detecta se uma parada deve ser precedida por sugestao de almoco —
 // quando o gap (chegada da proxima vs saida da atual) cruza 12h-14h
 // e nenhuma das duas paradas eh harmonizada.
@@ -102,6 +105,8 @@ function renderMapa(plano) {
             renderMapa(plano);
         });
     });
+    // Garante a tab ativa visivel quando ha muitos dias (scroll horizontal)
+    tabsEl.querySelector('.is-active')?.scrollIntoView({ inline: 'nearest', block: 'nearest' });
 
     // Cabecalho do dia ativo — km do dia, paradas do dia, primeiro e ultimo horario
     const dia = plano.dias[mapaActiveDay] || plano.dias[0];

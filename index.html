@@ -39,6 +39,7 @@
                 <a href="#reservar" class="nav-link"><i class="fa-regular fa-calendar-plus" aria-hidden="true"></i><span>Reservar</span></a>
                 <a href="#minhas-reservas" class="nav-link"><i class="fa-regular fa-calendar-check" aria-hidden="true"></i><span>Reservas</span></a>
                 <a href="#avaliacoes" class="nav-link"><i class="fa-regular fa-star" aria-hidden="true"></i><span>Avaliações</span></a>
+                <a href="#gestao" class="nav-link" data-gestao-link hidden><i class="fa-solid fa-gears" aria-hidden="true"></i><span>Gestão</span></a>
             </nav>
         </div>
     </header>
@@ -609,6 +610,9 @@
                 <button type="button" class="manage-subtab" role="tab" aria-selected="false" data-subtab="vinicolas">
                     <i class="fa-solid fa-wine-bottle" aria-hidden="true"></i> Vinícolas
                 </button>
+                <button type="button" class="manage-subtab" role="tab" aria-selected="false" data-subtab="usuarios" hidden>
+                    <i class="fa-solid fa-users" aria-hidden="true"></i> Usuários
+                </button>
             </div>
 
             <!-- ============ TAB: HORÁRIOS ============ -->
@@ -799,6 +803,83 @@
                         </div>
                     </div>
                     <div class="manage-vin-list" id="manage-vin-list"></div>
+                </div>
+            </div>
+
+            <!-- ============ TAB: USUÁRIOS (adm_supremo) ============ -->
+            <div class="manage-tab-panel" data-subtab-panel="usuarios" hidden>
+                <form id="usuario-form" class="manage-form" data-reveal>
+                    <header class="manage-form-head">
+                        <h3 class="manage-form-title">
+                            <i class="fa-solid fa-user-plus" aria-hidden="true"></i>
+                            Criar usuário
+                        </h3>
+                        <p class="manage-form-subtitle">
+                            Contas criadas aqui exigem troca de senha no primeiro acesso.
+                        </p>
+                    </header>
+
+                    <div class="form-grid">
+                        <div class="form-field">
+                            <label for="u-nome">Nome completo</label>
+                            <input type="text" id="u-nome" required maxlength="120" autocomplete="off" placeholder="Ex.: Maria Antoniazzi">
+                            <small class="form-error" id="u-nome-error"></small>
+                        </div>
+
+                        <div class="form-field">
+                            <label for="u-email">E-mail</label>
+                            <input type="email" id="u-email" required maxlength="160" autocomplete="off" placeholder="maria@vinicola.com.br">
+                            <small class="form-error" id="u-email-error"></small>
+                        </div>
+
+                        <div class="form-field">
+                            <label for="u-telefone">Telefone (opcional)</label>
+                            <input type="tel" id="u-telefone" maxlength="20" autocomplete="off" placeholder="(54) 99999-0000">
+                            <small class="form-error" id="u-telefone-error"></small>
+                        </div>
+
+                        <div class="form-field">
+                            <label for="u-senha">Senha provisória</label>
+                            <input type="password" id="u-senha" required minlength="8" autocomplete="new-password" placeholder="Mínimo 8 caracteres">
+                            <small class="form-error" id="u-senha-error"></small>
+                        </div>
+
+                        <div class="form-field">
+                            <label for="u-role">Papel</label>
+                            <select id="u-role" required>
+                                <option value="usuario" selected>Membro (usuário)</option>
+                                <option value="adm_vinicola">Admin de vinícola</option>
+                                <option value="adm_supremo">Admin supremo</option>
+                            </select>
+                            <small class="form-error" id="u-role-error"></small>
+                        </div>
+
+                        <div class="form-field" id="u-vinicola-field" hidden>
+                            <label for="u-vinicola">Vinícola vinculada</label>
+                            <select id="u-vinicola">
+                                <option value="">Selecione a vinícola…</option>
+                            </select>
+                            <small class="form-error" id="u-vinicola-error"></small>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="reset" class="btn btn-ghost">Limpar</button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fa-solid fa-plus btn-icon" aria-hidden="true"></i>
+                            Criar usuário
+                        </button>
+                    </div>
+                </form>
+
+                <div class="manage-table-wrap" data-reveal>
+                    <div class="manage-table-head">
+                        <h3><i class="fa-solid fa-users" aria-hidden="true"></i> Usuários cadastrados</h3>
+                        <div class="manage-stats">
+                            <span><strong id="u-stat-total">0</strong> usuários</span>
+                        </div>
+                    </div>
+                    <div class="manage-user-list" id="manage-user-list"></div>
                 </div>
             </div>
         </div>

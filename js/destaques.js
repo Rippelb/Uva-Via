@@ -252,12 +252,19 @@ function renderVinicolaPerfil(vin, focusExpId) {
     const exps = EXPERIENCIAS.filter(e => e.vinicola_id === vin.id);
     const { media, total } = getMediaAvaliacoes(vin.id);
 
+    // Foto real no cover (quando existir) com overlay bordo para legibilidade.
+    // encodeURI + escape de aspas simples para nao quebrar o atributo style.
+    const fotoSafe = vin.foto_url ? encodeURI(vin.foto_url).replace(/'/g, '%27') : '';
+    const coverStyle = fotoSafe
+        ? ` style="background-image: linear-gradient(rgba(42,6,18,.35), rgba(42,6,18,.65)), url('${fotoSafe}'); background-size: cover; background-position: center"`
+        : '';
+
     container.innerHTML = `
         <article class="vin-profile">
-            <header class="vin-cover tone-${vin.tone || 'a'}" style="font-size:5rem">
+            <header class="vin-cover tone-${vin.tone || 'a'}"${coverStyle}>
                 <div class="vin-cover-inner">
                     <span class="vin-cidade">${vin.cidade}${vin.tipo === 'boutique' ? ' · Boutique' : ''}</span>
-                    <h2>${vin.nome}</h2>
+                    <h2 id="vinicola-title">${vin.nome}</h2>
                 </div>
             </header>
             <div class="vin-body">

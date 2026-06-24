@@ -53,6 +53,8 @@ CREATE TABLE vinicolas (
   latitude DECIMAL(9,6) NOT NULL,
   longitude DECIMAL(9,6) NOT NULL,
   cidade VARCHAR(80),
+  tipo ENUM('boutique','grande') NOT NULL DEFAULT 'boutique',
+  tone CHAR(1) NOT NULL DEFAULT 'a',
   duracao_media_min INT NOT NULL,
   preco_min DECIMAL(10,2) NOT NULL,
   preco_max DECIMAL(10,2) NOT NULL,
@@ -239,17 +241,17 @@ INSERT INTO categorias_experiencia (nome) VALUES
   ('Evento especial'),
   ('Masterclass');
 
-INSERT INTO vinicolas (nome, descricao, foto_url, latitude, longitude, cidade, duracao_media_min, preco_min, preco_max) VALUES
-  ('Vinicola Pizzato',  'Vinicola familiar em Faria Lemos, reconhecida pelos Merlots.',     'https://exemplo.com/pizzato.jpg',     -29.264500, -51.528500, 'Bento Goncalves',     90,  60.00, 320.00),
-  ('Vinicola Torcello', 'Pequena vinicola em Monte Belo do Sul com vista panoramica.',      'https://exemplo.com/torcello.jpg',    -29.162800, -51.634200, 'Monte Belo do Sul',   75,  45.00, 180.00),
-  ('Vinicola Larentis', 'Vinicola familiar com quatro geracoes em Monte Belo do Sul.',      'https://exemplo.com/larentis.jpg',    -29.155000, -51.627000, 'Monte Belo do Sul',   90,  40.00, 220.00),
-  ('Lidio Carraro',     'Uma das vinicolas mais premiadas do Brasil.',                       'https://exemplo.com/lidio.jpg',       -29.185000, -51.522000, 'Bento Goncalves',     90,  70.00, 380.00),
-  ('Miolo Wine Group',  'Grande vinicola com tour completo e restaurante.',                  'https://exemplo.com/miolo.jpg',       -29.183300, -51.535000, 'Bento Goncalves',    120,  50.00, 450.00),
-  ('Casa Valduga',      'Vinicola e pousada historica no Vale dos Vinhedos.',                'https://exemplo.com/valduga.jpg',     -29.189100, -51.539600, 'Bento Goncalves',    120,  55.00, 420.00),
-  ('Cave Geisse',       'Referencia em espumantes metodo tradicional.',                       'https://exemplo.com/geisse.jpg',      -29.196000, -51.515000, 'Pinto Bandeira',     105,  80.00, 350.00),
-  ('Vinicola Salton',   'Fundada em 1910, a mais antiga em atividade do Brasil.',            'https://exemplo.com/salton.jpg',      -29.255000, -51.497000, 'Bento Goncalves',     90,  40.00, 260.00),
-  ('Don Giovanni',      'Vinicola de estilo toscano no Vale dos Vinhedos.',                  'https://exemplo.com/dongiovanni.jpg', -29.175000, -51.520000, 'Bento Goncalves',     75,  50.00, 260.00),
-  ('Dom Candido',       'Vinicola familiar com cave subterranea.',                            'https://exemplo.com/domcandido.jpg',  -29.216000, -51.462000, 'Garibaldi',           75,  35.00, 180.00);
+INSERT INTO vinicolas (nome, descricao, foto_url, latitude, longitude, cidade, tipo, tone, duracao_media_min, preco_min, preco_max) VALUES
+  ('Vinicola Pizzato',  'Vinicola familiar em Faria Lemos, reconhecida pelos Merlots.',     'https://exemplo.com/pizzato.jpg',     -29.264500, -51.528500, 'Bento Goncalves',   'boutique', 'a',  90,  60.00, 320.00),
+  ('Vinicola Torcello', 'Pequena vinicola em Monte Belo do Sul com vista panoramica.',      'https://exemplo.com/torcello.jpg',    -29.162800, -51.634200, 'Monte Belo do Sul', 'boutique', 'b',  75,  45.00, 180.00),
+  ('Vinicola Larentis', 'Vinicola familiar com quatro geracoes em Monte Belo do Sul.',      'https://exemplo.com/larentis.jpg',    -29.155000, -51.627000, 'Monte Belo do Sul', 'boutique', 'c',  90,  40.00, 220.00),
+  ('Lidio Carraro',     'Uma das vinicolas mais premiadas do Brasil.',                       'https://exemplo.com/lidio.jpg',       -29.185000, -51.522000, 'Bento Goncalves',   'boutique', 'd',  90,  70.00, 380.00),
+  ('Miolo Wine Group',  'Grande vinicola com tour completo e restaurante.',                  'https://exemplo.com/miolo.jpg',       -29.183300, -51.535000, 'Bento Goncalves',   'grande',   'a', 120,  50.00, 450.00),
+  ('Casa Valduga',      'Vinicola e pousada historica no Vale dos Vinhedos.',                'https://exemplo.com/valduga.jpg',     -29.189100, -51.539600, 'Bento Goncalves',   'grande',   'd', 120,  55.00, 420.00),
+  ('Cave Geisse',       'Referencia em espumantes metodo tradicional.',                       'https://exemplo.com/geisse.jpg',      -29.196000, -51.515000, 'Pinto Bandeira',    'boutique', 'e', 105,  80.00, 350.00),
+  ('Vinicola Salton',   'Fundada em 1910, a mais antiga em atividade do Brasil.',            'https://exemplo.com/salton.jpg',      -29.255000, -51.497000, 'Bento Goncalves',   'grande',   'a',  90,  40.00, 260.00),
+  ('Don Giovanni',      'Vinicola de estilo toscano no Vale dos Vinhedos.',                  'https://exemplo.com/dongiovanni.jpg', -29.175000, -51.520000, 'Bento Goncalves',   'boutique', 'b',  75,  50.00, 260.00),
+  ('Dom Candido',       'Vinicola familiar com cave subterranea.',                            'https://exemplo.com/domcandido.jpg',  -29.216000, -51.462000, 'Garibaldi',         'boutique', 'c',  75,  35.00, 180.00);
 
 INSERT INTO experiencias (vinicola_id, categoria_id, nome, descricao, duracao_minutos, preco_por_pessoa) VALUES
   (1, 1, 'Degustacao de Merlots Pizzato',         'Degustacao guiada da linha Merlot.',                75, 120.00),

@@ -2086,6 +2086,12 @@ body.nav-open {
     position: relative;
     overflow: hidden;
 }
+/* Variantes tone — mesmos gradientes do .bout-cover */
+.vin-cover.tone-a { background: linear-gradient(135deg, #4a0d1f, #8b2e3f); }
+.vin-cover.tone-b { background: linear-gradient(135deg, #6b1e2f, #c98e3e); }
+.vin-cover.tone-c { background: linear-gradient(135deg, #4a0d1f, #6b7a3a); }
+.vin-cover.tone-d { background: linear-gradient(135deg, #2c1a1f, #6b1e2f); }
+.vin-cover.tone-e { background: linear-gradient(135deg, #6b7a3a, #8a9a52); }
 .vin-cover::after {
     content: "";
     position: absolute;
@@ -3885,4 +3891,131 @@ body.nav-open {
     .mapa-dia-header { box-shadow: none; }
     /* No modo impressao mostra todos os dias da timeline empilhados */
     .mapa-tabs { display: none !important; }
+}
+
+/* ============================================================
+   GESTAO: painel de usuarios
+   ============================================================ */
+.manage-user-list {
+    display: flex;
+    flex-direction: column;
+}
+/* Mobile-first: 1 coluna; alinha ao grid do .manage-vin-row em telas largas */
+.manage-user-row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-3);
+    padding: var(--space-4) var(--space-5);
+    border-bottom: 1px solid var(--borda);
+    transition: background-color var(--t-fast);
+}
+@media (min-width: 720px) {
+    .manage-user-row {
+        grid-template-columns: 56px 1.5fr 1fr auto;
+        align-items: center;
+        gap: var(--space-4);
+    }
+}
+.manage-user-row:last-child { border-bottom: 0; }
+.manage-user-row:hover { background-color: var(--bege); }
+
+.user-row-avatar {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #4a0d1f, #8b2e3f);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--bege);
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: 1.4rem;
+    box-shadow: var(--shadow-sm);
+}
+.user-row-info h4 {
+    color: var(--vinho);
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 1.1rem;
+    line-height: 1.25;
+    margin-bottom: .25rem;
+}
+.user-row-info .user-row-email {
+    font-size: .82rem;
+    color: var(--texto);
+    opacity: .75;
+    word-break: break-all;
+}
+.user-row-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .35rem .75rem;
+}
+.user-row-vin {
+    font-size: .78rem;
+    color: var(--oliva);
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: .35rem;
+}
+
+/* Badges de papel — bordo / oliva / bege, seguindo a paleta */
+.user-row-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: .35rem;
+    font-size: .68rem;
+    text-transform: uppercase;
+    letter-spacing: .14em;
+    padding: .3rem .65rem;
+    border-radius: 999px;
+    font-weight: 600;
+    align-self: flex-start;
+}
+.user-row-badge.role-supremo {
+    background-color: var(--vinho);
+    color: var(--bege);
+}
+.user-row-badge.role-vinicola {
+    background-color: rgba(107, 122, 58, .16);
+    color: var(--oliva);
+}
+.user-row-badge.role-usuario {
+    background-color: var(--bege);
+    color: var(--texto);
+    border: 1px solid var(--borda);
+}
+
+.user-row-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem;
+    align-items: center;
+}
+/* Select inline de papel, discreto */
+.user-role-select {
+    padding: .45rem .65rem;
+    min-height: 36px;
+    font-size: .78rem;
+    color: var(--texto);
+    background-color: transparent;
+    border: 1px solid var(--borda);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: border-color var(--t-fast);
+}
+.user-role-select:hover { border-color: var(--oliva); }
+.user-role-select:focus-visible {
+    outline: 2px solid var(--vinho);
+    outline-offset: 2px;
+}
+@media (max-width: 719px) {
+    .user-row-actions .user-role-select,
+    .user-row-actions .manage-delete {
+        min-height: var(--touch);
+    }
 }
