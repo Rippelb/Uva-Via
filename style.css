@@ -516,6 +516,7 @@ body.nav-open {
 
 .hero-search {
     position: relative;
+    z-index: 40; /* sela o dropdown de resultados acima dos hero-stats (que tem transform do reveal) */
     display: grid;
     grid-template-columns: auto 1fr auto;
     align-items: center;
@@ -597,6 +598,8 @@ body.nav-open {
 
 .hero-stats {
     margin-top: var(--space-7);
+    position: relative;
+    z-index: 1; /* fica abaixo do .hero-search para nao vazar sobre o dropdown de busca */
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: var(--space-3);
