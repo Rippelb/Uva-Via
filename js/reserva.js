@@ -18,19 +18,22 @@ const btnReservar = document.getElementById('btn-reservar');
 // Snapshot capacidade
 HORARIOS.forEach(h => { h.capacidade = h.vagas; });
 
-// Re-mapeia datas do seed para serem sempre futuras (demo nunca expira).
+// Re-mapeia as datas do seed para serem sempre futuras (a demo nunca expira) e,
+// de proposito, distribuidas em HOJE, AMANHA e um FIM DE SEMANA, para que as
+// abas de "Sugestoes do dia" (Hoje/Amanha/Fim de semana) sempre tenham conteudo.
 (function remapSeedDates() {
     const distinctDates = [...new Set(HORARIOS.map(h => h.data))].sort();
     if (distinctDates.length === 0) return;
     const today = new Date();
     today.setHours(0, 0, 0, 0);
+    const iso = (d) => d.toISOString().slice(0, 10);
+    const at = (n) => { const d = new Date(today); d.setDate(d.getDate() + n); return iso(d); };
+    const dow = today.getDay();              // 0=domingo ... 6=sabado
+    const toSat = ((6 - dow) % 7) || 7;       // dias ate o proximo sabado (nunca hoje)
+    // Alvos: hoje, amanha, proximo sabado e domingo. Mapeia ciclicamente.
+    const targets = [at(0), at(1), at(toSat), at(toSat + 1)];
     const map = {};
-    distinctDates.forEach((d, i) => {
-        const target = new Date(today);
-        target.setDate(target.getDate() + 3 + i); // hoje+3, +4, +5...
-        const iso = target.toISOString().slice(0, 10);
-        map[d] = iso;
-    });
+    distinctDates.forEach((d, i) => { map[d] = targets[i % targets.length]; });
     HORARIOS.forEach(h => {
         if (map[h.data]) h.data = map[h.data];
     });
