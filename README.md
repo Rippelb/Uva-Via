@@ -75,7 +75,7 @@ baseados em:
 - 🏛️ **Vinícolas boutique em destaque** - Lídio Carraro, Torcello, Cave Geisse…
 
 ### 🧙 Wizard de Criação de Roteiro
-- 6 campos validados (dias, pessoas, orçamento, perfil, ritmo)
+- 6 campos validados (dias, pessoas, orçamento, perfil, ritmo, interesses)
 - 14 chips de interesses
 - Geração instantânea (zero round-trip)
 
